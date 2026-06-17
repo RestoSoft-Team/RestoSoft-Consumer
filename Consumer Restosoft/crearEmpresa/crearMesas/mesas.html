@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft - Gestión de Mesas</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/mesas.css" id="responsive-sidebar-upgrade">
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+
+                <div class="brand-text">
+                    <h3>RestSoft</h3>
+                    <p>Enterprise Restaurant</p>
+                </div>
+
+            </div>
+
+            <div class="menu">
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#" class="menu-link active">
+                    <i class="fa-solid fa-table"></i>
+                    <span>Mesas</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <span>Pedidos</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+            <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="page-title">
+                <h1>Gestión de Mesas</h1>
+                <p>Administra disponibilidad, reservas y ocupación en tiempo real.</p>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text" placeholder="Buscar mesa o cliente...">
+
+                </div>
+
+                <div class="profile">
+
+                    <img src="https://i.pravatar.cc/100?img=32" alt="">
+
+                    <div>
+                        <strong>Camila Torres</strong>
+                        <div style="font-size:13px;color:var(--gray);">
+                            Restaurant Manager
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- STATS -->
+
+        <div class="row g-3 stats-grid">
+            <div class="col-lg-3">
+                <div class="stats-card">
+                    <div class="stats-top">
+                        <div class="stats-icon success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="table-status status-success">Disponibles</span>
+                    </div>
+                    <h2 id="stat-disponibles">0</h2>
+                    <p>Mesas libres actualmente</p>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="stats-card">
+                    <div class="stats-top">
+                        <div class="stats-icon danger-icon"><i class="fa-solid fa-users"></i></div>
+                        <span class="table-status status-danger">Ocupadas</span>
+                    </div>
+                    <h2 id="stat-ocupadas">0</h2>
+                    <p>Mesas con pedidos activos</p>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="stats-card">
+                    <div class="stats-top">
+                        <div class="stats-icon warning-icon"><i class="fa-solid fa-calendar"></i></div>
+                        <span class="table-status status-warning">Reservadas</span>
+                    </div>
+                    <h2 id="stat-reservadas">0</h2>
+                    <p>Reservas próximas</p>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="stats-card">
+                    <div class="stats-top">
+                        <div class="stats-icon secondary-icon" style="background: #f1f3f5; color: #6c757d;"><i
+                                class="fa-solid fa-ban"></i></div>
+                        <span class="table-status status-gray">Inactivas</span>
+                    </div>
+                    <h2 id="stat-fuera-servicio">0</h2>
+                    <p>Fuera de servicio</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+
+        <div class="filters" id="filtersContainer"></div>
+
+        <!-- TABLES GRID -->
+
+        <div class="tables-grid" id="tablesGrid"></div>
+
+    </main>
+
+    <!-- NOTIFICATION -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-content">
+
+            <div class="notification-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+
+                <strong>Mesa asignada</strong>
+
+                <div style="font-size:14px;color:var(--gray);margin-top:4px;">
+                    La mesa fue asignada correctamente al cliente.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JS -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+
+                notification.classList.remove('show');
+
+            }, 3000);
+
+        }
+
+    </script>
+
+
+    <script id="responsive-sidebar-upgrade-script">
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+
+        menuToggle?.addEventListener("click", () => {
+            sidebar?.classList.toggle("open");
+            overlay?.classList.toggle("show");
+        });
+
+        overlay?.addEventListener("click", () => {
+            sidebar?.classList.remove("open");
+            overlay?.classList.remove("show");
+        });
+    </script>
+
+    <script type="module" src="../../js/mesas.js"></script>
+
+
+</body>
+
+</html>

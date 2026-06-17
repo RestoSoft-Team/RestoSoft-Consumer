@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft • Crear Producto</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--dark);
+            padding: 28px 22px;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 42px;
+        }
+
+        .brand-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand span {
+            color: #c6ced8;
+            font-size: 13px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #c7cfda;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .sidebar-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================== */
+
+        .main {
+            margin-left: 280px;
+            padding: 34px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 34px;
+        }
+
+        .topbar-title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-box img {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            object-fit: cover;
+        }
+
+        .profile-box h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-box span {
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           PREMIUM CARD
+        ========================================================== */
+
+        .premium-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: 0.3s;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* =========================================================
+           SECTION TITLE
+        ========================================================== */
+
+        .section-title {
+            margin-bottom: 28px;
+        }
+
+        .section-title h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================== */
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .form-control,
+        .form-select,
+        textarea {
+            background: #f7f8fa !important;
+            border: none !important;
+            border-radius: 16px !important;
+            min-height: 58px;
+            padding: 14px 18px !important;
+            transition: 0.3s;
+            box-shadow: none !important;
+            color: var(--dark);
+        }
+
+        textarea {
+            min-height: 140px !important;
+            resize: none;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea:focus {
+            border: 1px solid var(--primary) !important;
+            background: white !important;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        /* =========================================================
+           DROPZONE
+        ========================================================== */
+
+        .upload-box {
+            border: 2px dashed #d9d9d9;
+            border-radius: 22px;
+            background: #fafafa;
+            padding: 42px 30px;
+            text-align: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .upload-icon {
+            width: 78px;
+            height: 78px;
+            border-radius: 24px;
+            background: rgba(107, 30, 40, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto auto 22px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .upload-box h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .upload-box p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        /* =========================================================
+           SWITCH
+        ========================================================== */
+
+        .switch-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 22px;
+            border-radius: 22px;
+            background: #fafbfc;
+        }
+
+        .form-check-input {
+            width: 52px !important;
+            height: 28px !important;
+            border: none !important;
+            background-color: #d8dde4;
+            cursor: pointer;
+            box-shadow: none !important;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+        }
+
+        /* =========================================================
+           INFO BOXES
+        ========================================================== */
+
+        .info-box {
+            background: #fafbfc;
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .info-box h6 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: var(--gray);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================== */
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 380px;
+            background: white;
+            border-left: 6px solid var(--success);
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            z-index: 9999;
+
+            transform: translateX(420px);
+            transition: 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: rgba(61, 139, 92, 0.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 20px;
+        }
+
+        .notification h6 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 96px;
+            }
+
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .sidebar-item span {
+                display: none;
+            }
+
+            .sidebar-item {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 96px;
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .notification {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <!-- =========================================================
+       SIDEBAR
+    ========================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+
+            <div>
+                <h2>RestSoft</h2>
+                <span>Enterprise POS</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="sidebar-item active">
+                <i class="fa-solid fa-box-open"></i>
+                <span>Crear Producto</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Inventario</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-truck"></i>
+                <span>Proveedores</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Reportes</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Configuración</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- =========================================================
+       MAIN
+    ========================================================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="topbar-title">
+
+                <h1>Nuevo Producto</h1>
+
+                <p>
+                    Registra insumos y productos premium para el inventario operativo.
+                </p>
+
+            </div>
+
+            <div class="profile-box">
+
+                <img src="https://i.pravatar.cc/100?img=32">
+
+                <div>
+                    <h6>Sebastián Torres</h6>
+                    <span>Inventory Admin</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FORM -->
+
+        <div class="row g-4">
+
+            <!-- LEFT -->
+
+            <div class="col-xl-8">
+
+                <div class="premium-card">
+
+                    <div class="section-title">
+
+                        <h3>Información del Producto</h3>
+
+                        <p>
+                            Completa los datos generales para registrar un nuevo artículo.
+                        </p>
+
+                    </div>
+
+                    <form>
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Nombre del Producto
+                                </label>
+
+                                <input type="text" class="form-control" placeholder="Ej: Vino Reserva Premium">
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Código SKU
+                                </label>
+
+                                <input type="text" class="form-control" placeholder="INV-204">
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Categoría
+                                </label>
+
+                                <select class="form-select">
+                                    <option>Seleccionar categoría</option>
+                                    <option>Bebidas</option>
+                                    <option>Carnes</option>
+                                    <option>Vegetales</option>
+                                    <option>Postres</option>
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Proveedor
+                                </label>
+
+                                <select class="form-select">
+                                    <option>Seleccionar proveedor</option>
+                                    <option>Distribuidora Gourmet</option>
+                                    <option>Fresh Foods SAS</option>
+                                    <option>Premium Drinks</option>
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Cantidad Inicial
+                                </label>
+
+                                <input type="number" class="form-control" placeholder="0">
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Precio Compra
+                                </label>
+
+                                <input type="number" class="form-control" placeholder="$0.00">
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">
+                                    Precio Venta
+                                </label>
+
+                                <input type="number" class="form-control" placeholder="$0.00">
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label class="form-label">
+                                    Descripción
+                                </label>
+
+                                <textarea class="form-control"
+                                    placeholder="Describe características, uso y detalles del producto..."></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <!-- UPLOAD -->
+
+                <div class="premium-card mt-4">
+
+                    <div class="section-title">
+
+                        <h3>Imagen del Producto</h3>
+
+                        <p>
+                            Sube fotografías premium para identificación visual del inventario.
+                        </p>
+
+                    </div>
+
+                    <div class="upload-box">
+
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+
+                        <h5>
+                            Arrastra archivos o haz clic para subir
+                        </h5>
+
+                        <p>
+                            PNG, JPG o WEBP • Máximo 10MB
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="col-xl-4">
+
+                <div class="premium-card mb-4">
+
+                    <div class="section-title">
+
+                        <h3>Configuración</h3>
+
+                        <p>
+                            Ajustes operativos y disponibilidad del producto.
+                        </p>
+
+                    </div>
+
+                    <div class="info-box">
+
+                        <h6>Control de Stock</h6>
+
+                        <p>
+                            Activa monitoreo automático de inventario mínimo.
+                        </p>
+
+                    </div>
+
+                    <div class="switch-wrapper mb-4">
+
+                        <div>
+
+                            <h6 class="fw-bold mb-1">
+                                Producto Activo
+                            </h6>
+
+                            <small class="text-secondary">
+                                Visible en operaciones del sistema.
+                            </small>
+
+                        </div>
+
+                        <div class="form-check form-switch m-0">
+
+                            <input class="form-check-input" type="checkbox" checked>
+
+                        </div>
+
+                    </div>
+
+                    <div class="switch-wrapper mb-4">
+
+                        <div>
+
+                            <h6 class="fw-bold mb-1">
+                                Alertas de Stock
+                            </h6>
+
+                            <small class="text-secondary">
+                                Notificar inventario crítico.
+                            </small>
+
+                        </div>
+
+                        <div class="form-check form-switch m-0">
+
+                            <input class="form-check-input" type="checkbox" checked>
+
+                        </div>
+
+                    </div>
+
+                    <div class="switch-wrapper">
+
+                        <div>
+
+                            <h6 class="fw-bold mb-1">
+                                Producto Premium
+                            </h6>
+
+                            <small class="text-secondary">
+                                Destacar dentro del catálogo.
+                            </small>
+
+                        </div>
+
+                        <div class="form-check form-switch m-0">
+
+                            <input class="form-check-input" type="checkbox">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ACTIONS -->
+
+                <div class="premium-card">
+
+                    <div class="section-title">
+
+                        <h3>Acciones</h3>
+
+                        <p>
+                            Guarda o administra el nuevo registro de inventario.
+                        </p>
+
+                    </div>
+
+                    <div class="d-grid gap-3">
+
+                        <button class="btn btn-premium" onclick="showNotification()">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>
+                            Guardar Producto
+                        </button>
+
+                        <button class="btn btn-outline-premium">
+                            <i class="fa-solid fa-eye me-2"></i>
+                            Vista Previa
+                        </button>
+
+                        <button class="btn btn-outline-premium">
+                            <i class="fa-solid fa-xmark me-2"></i>
+                            Cancelar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- =========================================================
+       NOTIFICATION
+    ========================================================== -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div>
+
+            <h6>Producto Registrado</h6>
+
+            <p>
+                El nuevo producto fue creado exitosamente dentro del inventario.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+       JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            event.preventDefault();
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                hideNotification();
+            }, 3500);
+
+        }
+
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft | Historial Cliente</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            transition: 0.3s;
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================== */
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            margin-bottom: 42px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: #d4dae2;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            color: #d7dce5;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .menu-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            color: white;
+        }
+
+        .sidebar-footer h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-footer p {
+            color: #d7dde4;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        /* =========================================================
+           CONTENT
+        ========================================================== */
+
+        .content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 32px;
+        }
+
+        .topbar-title h1 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-box img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-box h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-box span {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           PROFILE HEADER
+        ========================================================== */
+
+        .profile-header {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .profile-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 22px;
+            object-fit: cover;
+        }
+
+        .profile-info h4 {
+            margin-bottom: 6px;
+            font-weight: 800;
+        }
+
+        .profile-info span {
+            color: var(--gray);
+        }
+
+        .badge-vip {
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================== */
+
+        .stats-grid {
+            margin-bottom: 28px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h6 {
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .stats-card h2 {
+            font-size: 34px;
+            font-weight: 800;
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bg-primary-soft {
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+        }
+
+        .bg-success-soft {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .bg-warning-soft {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .bg-danger-soft {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           TIMELINE
+        ========================================================== */
+
+        .card-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline {
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #f0f0f0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 26px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 38px;
+            height: 38px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+            z-index: 2;
+        }
+
+        .timeline-content {
+            background: #fafafa;
+            padding: 18px;
+            border-radius: 18px;
+            flex: 1;
+            transition: 0.3s;
+        }
+
+        .timeline-content:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-content h5 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .timeline-content p {
+            color: var(--gray);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .timeline-meta {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--soft);
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 100px;
+                padding: 28px 14px;
+            }
+
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .content {
+                margin-left: 100px;
+                width: calc(100% - 100px);
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 18px;
+            }
+
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div>
+
+                <div class="brand">
+                    <h2>RestSoft</h2>
+                    <span>Historial Clientes</span>
+                </div>
+
+                <nav class="menu">
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+
+                    <a href="#" class="menu-item active">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Historial</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-gift"></i>
+                        <span>Fidelización</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Analítica</span>
+                    </a>
+
+                </nav>
+
+            </div>
+
+            <div class="sidebar-footer">
+
+                <h5>Cliente Premium</h5>
+
+                <p>Consulta historial de consumo, visitas y comportamiento.</p>
+
+                <button class="btn btn-premium w-100">
+                    Exportar Datos
+                </button>
+
+            </div>
+
+        </aside>
+
+        <!-- CONTENT -->
+
+        <main class="content">
+
+            <!-- TOPBAR -->
+
+            <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+                <div class="topbar-title">
+
+                    <h1>Historial del Cliente</h1>
+
+                    <p>Seguimiento completo de consumo y actividad.</p>
+
+                </div>
+
+                <div class="profile-box">
+
+                    <div>
+                        <h6>Sofía Martínez</h6>
+                        <span>CRM Manager</span>
+                    </div>
+
+                    <img src="https://i.pravatar.cc/150?img=28">
+
+                </div>
+
+            </div>
+
+            <!-- PROFILE HEADER -->
+
+            <div class="profile-header">
+
+                <div class="profile-info">
+
+                    <img src="https://i.pravatar.cc/150?img=12">
+
+                    <div>
+
+                        <h4>Juan Carlos Pérez</h4>
+                        <span>ID #CL-2041 • +57 300 884 1255</span>
+
+                    </div>
+
+                </div>
+
+                <div class="badge-vip">
+                    Cliente VIP
+                </div>
+
+            </div>
+
+            <!-- STATS -->
+
+            <div class="row g-4 stats-grid">
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Total Consumo</h6>
+                            <h2>$6,480</h2>
+
+                        </div>
+
+                        <div class="icon-box bg-primary-soft">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Visitas</h6>
+                            <h2>64</h2>
+
+                        </div>
+
+                        <div class="icon-box bg-success-soft">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Última Visita</h6>
+                            <h2>Hoy</h2>
+
+                        </div>
+
+                        <div class="icon-box bg-warning-soft">
+                            <i class="fa-solid fa-calendar"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TIMELINE -->
+
+            <div class="card-panel">
+
+                <h4 class="mb-4 fw-bold">Actividad Reciente</h4>
+
+                <div class="timeline">
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <h5>Pedido en restaurante</h5>
+                            <p>Consumo de menú ejecutivo en mesa 08.</p>
+
+                            <div class="timeline-meta">
+                                Hace 2 horas • $45.000
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot">
+                            <i class="fa-solid fa-credit-card"></i>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <h5>Pago realizado</h5>
+                            <p>Pago con tarjeta aprobado correctamente.</p>
+
+                            <div class="timeline-meta">
+                                Ayer • $120.000
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="timeline-item">
+
+                        <div class="timeline-dot">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+
+                        <div class="timeline-content">
+
+                            <h5>Recompensa aplicada</h5>
+                            <p>Descuento VIP del 10% aplicado en factura.</p>
+
+                            <div class="timeline-meta">
+                                Hace 3 días
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

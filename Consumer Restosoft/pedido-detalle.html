@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft - Detalle del Pedido</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ====================================
+           SIDEBAR
+        ==================================== */
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--dark);
+            padding: 28px 22px;
+            overflow: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .logo-box {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .logo h3 {
+            color: white;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .logo p {
+            color: #b9c2d0;
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #d9dee8;
+            transition: .3s;
+            font-weight: 500;
+        }
+
+        .menu-link:hover {
+            background: rgba(255, 255, 255, .06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .menu-link i {
+            width: 22px;
+            text-align: center;
+        }
+
+        /* ====================================
+           MAIN
+        ==================================== */
+
+        .main {
+            margin-left: 280px;
+            padding: 34px;
+        }
+
+        /* ====================================
+           TOPBAR
+        ==================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 320px;
+            border: none;
+            background: #f6f7f9;
+            border-radius: 16px;
+            min-height: 56px;
+            padding: 14px 18px 14px 52px;
+            transition: .3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 19px;
+            color: var(--gray);
+        }
+
+        .profile {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ====================================
+           CARDS
+        ==================================== */
+
+        .card-premium {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 28px;
+            transition: .3s;
+        }
+
+        .card-premium:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .card-header-custom h4 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .card-header-custom p {
+            margin: 0;
+            color: var(--gray);
+        }
+
+        /* ====================================
+           STATUS
+        ==================================== */
+
+        .status {
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status.warning {
+            background: rgba(217, 164, 65, .12);
+            color: var(--warning);
+        }
+
+        .status.success {
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+        }
+
+        /* ====================================
+           INFO GRID
+        ==================================== */
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .info-box {
+            background: #fafafa;
+            border-radius: 22px;
+            padding: 22px;
+        }
+
+        .info-box span {
+            display: block;
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .info-box h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* ====================================
+           PRODUCTS
+        ==================================== */
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px;
+            background: #fafafa;
+            border-radius: 22px;
+            margin-bottom: 18px;
+            transition: .3s;
+        }
+
+        .product-item:hover {
+            background: white;
+            box-shadow: var(--shadow);
+        }
+
+        .product-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .product-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: #f3e9eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .product-desc {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .product-right {
+            text-align: right;
+        }
+
+        .qty {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 6px;
+        }
+
+        .price {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* ====================================
+           BUTTONS
+        ==================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        /* ====================================
+           TOTAL BOX
+        ==================================== */
+
+        .summary-box {
+            background: #fafafa;
+            border-radius: 24px;
+            padding: 28px;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            color: var(--gray);
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 22px;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        /* ====================================
+           TIMELINE
+        ==================================== */
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 18px;
+        }
+
+        .timeline-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: #f3ebec;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .timeline-content h6 {
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .timeline-content p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* ====================================
+           NOTIFICATION
+        ==================================== */
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 380px;
+            background: white;
+            border-radius: 22px;
+            padding: 22px;
+            border-left: 6px solid var(--success);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
+            transform: translateX(420px);
+            transition: .3s;
+            z-index: 9999;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-wrap {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: #edf7f1;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* ====================================
+           RESPONSIVE
+        ==================================== */
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 95px;
+            }
+
+            .sidebar .logo-text,
+            .sidebar .menu-link span {
+                display: none;
+            }
+
+            .main {
+                margin-left: 95px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .main {
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-right {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .product-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 18px;
+            }
+
+            .product-right {
+                text-align: left;
+            }
+
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="logo">
+
+                <div class="logo-box">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+
+                <div class="logo-text">
+                    <h3>RestSoft</h3>
+                    <p>Enterprise POS</p>
+                </div>
+
+            </div>
+
+            <div class="menu">
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#" class="menu-link active">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Pedidos</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-box"></i>
+                    <span>Inventario</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="page-title">
+                <h1>Detalle del Pedido</h1>
+                <p>Visualiza y administra la orden activa del restaurante.</p>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text" placeholder="Buscar pedidos o clientes...">
+
+                </div>
+
+                <div class="profile">
+
+                    <img src="https://i.pravatar.cc/100?img=12" alt="">
+
+                    <div>
+                        <strong>Camila Torres</strong>
+                        <div style="font-size:13px;color:var(--gray);">
+                            Restaurant Manager
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ORDER INFO -->
+
+        <div class="card-premium">
+
+            <div class="card-header-custom">
+
+                <div>
+                    <h4>Pedido #RS-2048</h4>
+                    <p>Orden creada hace 12 minutos</p>
+                </div>
+
+                <span class="status warning">
+                    <i class="fa-solid fa-clock"></i>
+                    En preparación
+                </span>
+
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-box">
+                    <span>Mesa</span>
+                    <h5>Mesa #08</h5>
+                </div>
+
+                <div class="info-box">
+                    <span>Mesero</span>
+                    <h5>Daniel Rojas</h5>
+                </div>
+
+                <div class="info-box">
+                    <span>Cliente</span>
+                    <h5>Andrea Mendoza</h5>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <!-- LEFT -->
+
+            <div class="col-lg-8">
+
+                <!-- PRODUCTS -->
+
+                <div class="card-premium">
+
+                    <div class="card-header-custom">
+
+                        <div>
+                            <h4>Productos Ordenados</h4>
+                            <p>Resumen completo del pedido actual</p>
+                        </div>
+
+                        <button class="btn-premium">
+                            <i class="fa-solid fa-plus"></i>
+                            Agregar Producto
+                        </button>
+
+                    </div>
+
+                    <!-- ITEM -->
+
+                    <div class="product-item">
+
+                        <div class="product-left">
+
+                            <div class="product-icon">
+                                <i class="fa-solid fa-burger"></i>
+                            </div>
+
+                            <div>
+
+                                <div class="product-name">
+                                    Wagyu Burger Deluxe
+                                </div>
+
+                                <div class="product-desc">
+                                    Extra queso · Sin cebolla · Salsa especial
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="product-right">
+
+                            <div class="qty">
+                                Cantidad: 2
+                            </div>
+
+                            <div class="price">
+                                $84.000
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ITEM -->
+
+                    <div class="product-item">
+
+                        <div class="product-left">
+
+                            <div class="product-icon">
+                                <i class="fa-solid fa-wine-glass"></i>
+                            </div>
+
+                            <div>
+
+                                <div class="product-name">
+                                    Red Wine Premium
+                                </div>
+
+                                <div class="product-desc">
+                                    Copa reserva especial
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="product-right">
+
+                            <div class="qty">
+                                Cantidad: 1
+                            </div>
+
+                            <div class="price">
+                                $38.000
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ITEM -->
+
+                    <div class="product-item">
+
+                        <div class="product-left">
+
+                            <div class="product-icon">
+                                <i class="fa-solid fa-ice-cream"></i>
+                            </div>
+
+                            <div>
+
+                                <div class="product-name">
+                                    Cheesecake Gourmet
+                                </div>
+
+                                <div class="product-desc">
+                                    Frutos rojos premium
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="product-right">
+
+                            <div class="qty">
+                                Cantidad: 1
+                            </div>
+
+                            <div class="price">
+                                $24.000
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- TIMELINE -->
+
+                <div class="card-premium">
+
+                    <div class="card-header-custom">
+
+                        <div>
+                            <h4>Seguimiento</h4>
+                            <p>Estado operativo del pedido</p>
+                        </div>
+
+                    </div>
+
+                    <div class="timeline">
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+
+                            <div class="timeline-content">
+                                <h6>Pedido confirmado</h6>
+                                <p>Hace 12 minutos · Caja principal</p>
+                            </div>
+
+                        </div>
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-fire-burner"></i>
+                            </div>
+
+                            <div class="timeline-content">
+                                <h6>Enviado a cocina</h6>
+                                <p>Preparación iniciada correctamente</p>
+                            </div>
+
+                        </div>
+
+                        <div class="timeline-item">
+
+                            <div class="timeline-icon">
+                                <i class="fa-solid fa-bell-concierge"></i>
+                            </div>
+
+                            <div class="timeline-content">
+                                <h6>Esperando entrega</h6>
+                                <p>Tiempo estimado: 8 minutos</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="col-lg-4">
+
+                <div class="card-premium">
+
+                    <div class="card-header-custom">
+
+                        <div>
+                            <h4>Resumen</h4>
+                            <p>Total del pedido</p>
+                        </div>
+
+                    </div>
+
+                    <div class="summary-box">
+
+                        <div class="summary-line">
+                            <span>Subtotal</span>
+                            <strong>$146.000</strong>
+                        </div>
+
+                        <div class="summary-line">
+                            <span>Impuestos</span>
+                            <strong>$18.000</strong>
+                        </div>
+
+                        <div class="summary-line">
+                            <span>Servicio</span>
+                            <strong>$10.000</strong>
+                        </div>
+
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span>$174.000</span>
+                        </div>
+
+                    </div>
+
+                    <div class="d-grid gap-3 mt-4">
+
+                        <button class="btn-premium" onclick="showNotification()">
+                            Marcar como listo
+                        </button>
+
+                        <button class="btn-outline-premium">
+                            Imprimir Ticket
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- NOTIFICATION -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-wrap">
+
+            <div class="notification-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+                <strong>Pedido actualizado</strong>
+                <div style="font-size:14px;color:var(--gray);margin-top:4px;">
+                    El pedido fue marcado como listo para entrega.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JS -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+
+                notification.classList.remove('show');
+
+            }, 3000);
+
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RestSoft | Tiempos de Preparación</title>
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        select {
+            transition: 0.3s;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================== */
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--dark);
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            margin-bottom: 42px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: #d5dbe2;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            color: #d7dce5;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .menu-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            color: white;
+        }
+
+        .sidebar-footer h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-footer p {
+            color: #d6dbe3;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* =========================================================
+           CONTENT
+        ========================================================== */
+
+        .content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 32px;
+        }
+
+        .topbar-title h1 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px 14px 50px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .chef-profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .chef-profile img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chef-profile h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .chef-profile span {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================== */
+
+        .stats-grid {
+            margin-bottom: 28px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h6 {
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .stats-card h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stats-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .danger {
+            color: var(--danger);
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bg-success-soft {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .bg-warning-soft {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .bg-danger-soft {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        .bg-primary-soft {
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+        }
+
+        /* =========================================================
+           PERFORMANCE GRID
+        ========================================================== */
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .panel-header h4 {
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .badge-live {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           BARRAS TIEMPO
+        ========================================================== */
+
+        .prep-item {
+            margin-bottom: 28px;
+        }
+
+        .prep-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .prep-title {
+            font-weight: 700;
+        }
+
+        .prep-time {
+            font-weight: 700;
+            color: var(--gray);
+        }
+
+        .progress-premium {
+            width: 100%;
+            height: 14px;
+            background: #f1f2f5;
+            border-radius: 40px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 40px;
+            transition: 0.4s;
+        }
+
+        .green {
+            background: linear-gradient(90deg,
+                    #3d8b5c,
+                    #4eb377);
+        }
+
+        .yellow {
+            background: linear-gradient(90deg,
+                    #d9a441,
+                    #efbc5c);
+        }
+
+        .red {
+            background: linear-gradient(90deg,
+                    #bb3a4b,
+                    #df5568);
+        }
+
+        /* =========================================================
+           ACTIVIDAD
+        ========================================================== */
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #f0f1f4;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .activity-content h6 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .activity-content p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .activity-time {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--soft);
+            margin-top: 6px;
+        }
+
+        /* =========================================================
+           TABLA
+        ========================================================== */
+
+        .table-card {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .table-premium {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 14px;
+        }
+
+        .table-premium thead th {
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            padding-bottom: 14px;
+        }
+
+        .table-premium tbody tr {
+            background: #fafafa;
+            transition: 0.3s;
+        }
+
+        .table-premium tbody tr:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .table-premium td {
+            padding: 20px;
+            border: none;
+            vertical-align: middle;
+        }
+
+        .table-premium tbody tr td:first-child {
+            border-top-left-radius: 18px;
+            border-bottom-left-radius: 18px;
+        }
+
+        .table-premium tbody tr td:last-child {
+            border-top-right-radius: 18px;
+            border-bottom-right-radius: 18px;
+        }
+
+        .status {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status.fast {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .status.medium {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .status.slow {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 22px;
+            font-weight: 600;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:1200px) {
+
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 100px;
+                padding: 28px 14px;
+            }
+
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .brand h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .content {
+                margin-left: 100px;
+                width: calc(100% - 100px);
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+        }
+    </style>
+
+<style id="responsive-table-cards">
+@media (max-width: 768px) {
+  .table-responsive table,
+  .table-responsive thead,
+  .table-responsive tbody,
+  .table-responsive th,
+  .table-responsive td,
+  .table-responsive tr {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tr {
+    background: #fff;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+  }
+
+  .table-responsive td {
+    border: none !important;
+    position: relative;
+    padding-left: 48% !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    min-height: 42px;
+    text-align: left !important;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    width: 42%;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #555;
+  }
+}
+</style>
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+<body>
+<div class="main-wrapper">
+<!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+<aside class="sidebar">
+<div>
+<div class="brand">
+<h2>RestSoft</h2>
+<span>Analítica Cocina</span>
+</div>
+<nav class="menu">
+<a class="menu-item" href="#">
+<i class="fa-solid fa-chart-line"></i>
+<span>Dashboard</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-fire-burner"></i>
+<span>Preparación</span>
+</a>
+<a class="menu-item active" href="#">
+<i class="fa-solid fa-stopwatch"></i>
+<span>Tiempos</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-chart-pie"></i>
+<span>Analítica</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-gear"></i>
+<span>Configuración</span>
+</a>
+</nav>
+</div>
+<div class="sidebar-footer">
+<h5>Optimización Inteligente</h5>
+<p>
+                    Analiza tiempos promedio,
+                    rendimiento operativo y productividad de cocina.
+                </p>
+<button class="btn btn-premium w-100">
+                    Exportar Reporte
+                </button>
+</div>
+</aside>
+<!-- =========================================================
+         CONTENT
+    ========================================================== -->
+<main class="content">
+<!-- TOPBAR -->
+<div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+<div class="topbar-title">
+<h1>Tiempos de Preparación</h1>
+<p>
+                        Supervisa eficiencia, velocidad y rendimiento operativo en cocina.
+                    </p>
+</div>
+<div class="topbar-actions">
+<div class="search-box">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input placeholder="Buscar platillos..." type="text"/>
+</div>
+<div class="chef-profile">
+<div>
+<h6>Chef Alejandro</h6>
+<span>Chef Ejecutivo</span>
+</div>
+<img src="https://i.pravatar.cc/150?img=15"/>
+</div>
+</div>
+</div>
+<!-- STATS -->
+<div class="row g-4 stats-grid">
+<div class="col-lg-3 col-md-6">
+<div class="stats-card">
+<div>
+<h6>Tiempo Promedio</h6>
+<h2>18m</h2>
+<div class="stats-meta success">
+<i class="fa-solid fa-arrow-trend-down"></i>
+                                -12% optimización
+                            </div>
+</div>
+<div class="icon-box bg-success-soft">
+<i class="fa-solid fa-stopwatch"></i>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6">
+<div class="stats-card">
+<div>
+<h6>Pedidos Activos</h6>
+<h2>24</h2>
+<div class="stats-meta warning">
+<i class="fa-solid fa-fire"></i>
+                                Cocina operando
+                            </div>
+</div>
+<div class="icon-box bg-warning-soft">
+<i class="fa-solid fa-bowl-food"></i>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6">
+<div class="stats-card">
+<div>
+<h6>Pedidos Retrasados</h6>
+<h2>03</h2>
+<div class="stats-meta danger">
+<i class="fa-solid fa-triangle-exclamation"></i>
+                                Atención requerida
+                            </div>
+</div>
+<div class="icon-box bg-danger-soft">
+<i class="fa-solid fa-bell"></i>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6">
+<div class="stats-card">
+<div>
+<h6>Productividad</h6>
+<h2>92%</h2>
+<div class="stats-meta success">
+<i class="fa-solid fa-chart-line"></i>
+                                Excelente rendimiento
+                            </div>
+</div>
+<div class="icon-box bg-primary-soft">
+<i class="fa-solid fa-chart-pie"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- PERFORMANCE GRID -->
+<div class="performance-grid">
+<!-- PANEL IZQUIERDO -->
+<div class="panel-card">
+<div class="panel-header">
+<h4>Rendimiento por Platillo</h4>
+<div class="badge-live">
+                            Tiempo Real
+                        </div>
+</div>
+<div class="prep-item">
+<div class="prep-top">
+<div class="prep-title">
+                                Hamburguesa Premium
+                            </div>
+<div class="prep-time">
+                                14 min
+                            </div>
+</div>
+<div class="progress-premium">
+<div class="progress-fill green" style="width:72%"></div>
+</div>
+</div>
+<div class="prep-item">
+<div class="prep-top">
+<div class="prep-title">
+                                Pizza Margarita Familiar
+                            </div>
+<div class="prep-time">
+                                22 min
+                            </div>
+</div>
+<div class="progress-premium">
+<div class="progress-fill yellow" style="width:84%"></div>
+</div>
+</div>
+<div class="prep-item">
+<div class="prep-top">
+<div class="prep-title">
+                                Sushi Mix Deluxe
+                            </div>
+<div class="prep-time">
+                                28 min
+                            </div>
+</div>
+<div class="progress-premium">
+<div class="progress-fill red" style="width:96%"></div>
+</div>
+</div>
+<div class="prep-item mb-0">
+<div class="prep-top">
+<div class="prep-title">
+                                Pasta Alfredo
+                            </div>
+<div class="prep-time">
+                                16 min
+                            </div>
+</div>
+<div class="progress-premium">
+<div class="progress-fill green" style="width:68%"></div>
+</div>
+</div>
+</div>
+<!-- PANEL DERECHO -->
+<div class="panel-card">
+<div class="panel-header">
+<h4>Actividad Cocina</h4>
+</div>
+<div class="activity-list">
+<div class="activity-item">
+<div class="activity-icon bg-success-soft">
+<i class="fa-solid fa-check"></i>
+</div>
+<div class="activity-content">
+<h6>Pedido completado</h6>
+<p>
+                                    Mesa 08 entregada correctamente.
+                                </p>
+<div class="activity-time">
+                                    Hace 3 minutos
+                                </div>
+</div>
+</div>
+<div class="activity-item">
+<div class="activity-icon bg-warning-soft">
+<i class="fa-solid fa-fire"></i>
+</div>
+<div class="activity-content">
+<h6>Cocina ocupada</h6>
+<p>
+                                    Alta carga de pedidos en parrilla.
+                                </p>
+<div class="activity-time">
+                                    Hace 9 minutos
+                                </div>
+</div>
+</div>
+<div class="activity-item">
+<div class="activity-icon bg-danger-soft">
+<i class="fa-solid fa-bell"></i>
+</div>
+<div class="activity-content">
+<h6>Retraso detectado</h6>
+<p>
+                                    Sushi Mix superó tiempo esperado.
+                                </p>
+<div class="activity-time">
+                                    Hace 12 minutos
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TABLA -->
+<div class="table-card">
+<div class="panel-header">
+<h4>Análisis Detallado</h4>
+<button class="btn btn-premium">
+                        Descargar Reporte
+                    </button>
+</div>
+<div class="table-responsive">
+<table class="table-premium">
+<thead>
+<tr>
+<th>Platillo</th>
+<th>Pedidos</th>
+<th>Tiempo Promedio</th>
+<th>Chef Responsable</th>
+<th>Rendimiento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Platillo">Hamburguesa Premium</td>
+<td data-label="Pedidos">48</td>
+<td data-label="Tiempo Promedio">14 min</td>
+<td data-label="Chef Responsable">Carlos Medina</td>
+<td data-label="Rendimiento">
+<span class="status fast">
+                                        Excelente
+                                    </span>
+</td>
+</tr>
+<tr>
+<td data-label="Platillo">Pizza Margarita</td>
+<td data-label="Pedidos">36</td>
+<td data-label="Tiempo Promedio">22 min</td>
+<td data-label="Chef Responsable">Laura Gómez</td>
+<td data-label="Rendimiento">
+<span class="status medium">
+                                        Normal
+                                    </span>
+</td>
+</tr>
+<tr>
+<td data-label="Platillo">Sushi Mix Deluxe</td>
+<td data-label="Pedidos">18</td>
+<td data-label="Tiempo Promedio">28 min</td>
+<td data-label="Chef Responsable">Andrés Torres</td>
+<td data-label="Rendimiento">
+<span class="status slow">
+                                        Retrasado
+                                    </span>
+</td>
+</tr>
+<tr>
+<td data-label="Platillo">Pasta Alfredo</td>
+<td data-label="Pedidos">42</td>
+<td data-label="Tiempo Promedio">16 min</td>
+<td data-label="Chef Responsable">María Fernández</td>
+<td data-label="Rendimiento">
+<span class="status fast">
+                                        Excelente
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1025 @@
+html
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft • Editar Empleado</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--dark);
+            padding: 28px 22px;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 42px;
+        }
+
+        .brand-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand span {
+            color: #c2cad4;
+            font-size: 13px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #c8d0db;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .sidebar-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================== */
+
+        .main {
+            margin-left: 280px;
+            padding: 34px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .topbar-title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa5b3;
+        }
+
+        .search-box input {
+            width: 300px;
+            min-height: 56px;
+            border: none;
+            background: #f4f6f8;
+            border-radius: 18px;
+            padding: 14px 18px 14px 50px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-box img {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            object-fit: cover;
+        }
+
+        .profile-box h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-box span {
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================== */
+
+        .premium-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: 0.3s;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* =========================================================
+           EMPLOYEE HEADER
+        ========================================================== */
+
+        .employee-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 34px;
+            flex-wrap: wrap;
+        }
+
+        .employee-info {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .employee-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 30px;
+            object-fit: cover;
+        }
+
+        .employee-name h3 {
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .employee-name p {
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .badge-role {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: rgba(107, 30, 40, 0.08);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================== */
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .form-control,
+        .form-select {
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            min-height: 58px;
+            padding: 14px 18px;
+            transition: 0.3s;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: none;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .btn-danger-soft {
+            background: rgba(187, 58, 75, 0.1);
+            color: var(--danger);
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-danger-soft:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* =========================================================
+           SWITCH
+        ========================================================== */
+
+        .form-check-input {
+            width: 52px;
+            height: 28px;
+            border: none;
+            box-shadow: none !important;
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+        }
+
+        /* =========================================================
+           INFO BOXES
+        ========================================================== */
+
+        .info-box {
+            background: #fafbfc;
+            border-radius: 22px;
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .info-box h6 {
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item span {
+            color: var(--gray);
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================== */
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 380px;
+            background: white;
+            border-left: 6px solid var(--success);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            transform: translateX(420px);
+            transition: 0.3s;
+            z-index: 9999;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: rgba(61, 139, 92, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 20px;
+        }
+
+        .notification h6 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 96px;
+            }
+
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .sidebar-item span {
+                display: none;
+            }
+
+            .sidebar-item {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 96px;
+            }
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .employee-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .notification {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <!-- =========================================================
+       SIDEBAR
+    ========================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+
+            <div>
+                <h2>RestSoft</h2>
+                <span>Enterprise POS</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#" class="sidebar-item active">
+                <i class="fa-solid fa-users"></i>
+                <span>Empleados</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Inventario</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Pedidos</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>Facturación</span>
+            </a>
+
+            <a href="#" class="sidebar-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Configuración</span>
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- =========================================================
+       MAIN
+    ========================================================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="topbar-title">
+
+                <h1>Editar Empleado</h1>
+
+                <p>
+                    Gestiona la información y permisos del personal operativo.
+                </p>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text" placeholder="Buscar empleados...">
+
+                </div>
+
+                <div class="profile-box">
+
+                    <img src="https://i.pravatar.cc/100?img=12" alt="">
+
+                    <div>
+                        <h6>Daniel Rojas</h6>
+                        <span>Administrador</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- EMPLOYEE CARD -->
+
+        <div class="premium-card">
+
+            <!-- EMPLOYEE HEADER -->
+
+            <div class="employee-header">
+
+                <div class="employee-info">
+
+                    <img src="https://i.pravatar.cc/200?img=33" class="employee-avatar">
+
+                    <div class="employee-name">
+
+                        <h3>María Fernanda López</h3>
+
+                        <p>
+                            Mesera Senior • ID #EMP-2031
+                        </p>
+
+                        <div class="badge-role">
+                            <i class="fa-solid fa-user-check"></i>
+                            Empleado Activo
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="d-flex gap-3 flex-wrap">
+
+                    <button class="btn btn-outline-premium">
+                        <i class="fa-solid fa-print me-2"></i>
+                        Imprimir
+                    </button>
+
+                    <button class="btn btn-danger-soft">
+                        <i class="fa-solid fa-user-xmark me-2"></i>
+                        Desactivar
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- FORM -->
+
+            <form>
+
+                <div class="row g-4">
+
+                    <!-- LEFT -->
+
+                    <div class="col-xl-8">
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Nombre Completo
+                                </label>
+
+                                <input type="text" class="form-control" value="María Fernanda López">
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">
+                                    Documento
+                                </label>
+
+                                <input type="text" class="form-control" value="1098223341">
+
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="form-label">
+                                    Correo Electrónico
+                                </label>
+
+                                <input type="email" class="form-control" value="maria.lopez@restsoft.com">
+
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="form-label">
+                                    Teléfono
+                                </label>
+
+                                <input type="text" class="form-control" value="+57 301 458 2291">
+
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="form-label">
+                                    Rol del Sistema
+                                </label>
+
+                                <select class="form-select">
+                                    <option>Administrador</option>
+                                    <option selected>Mesero</option>
+                                    <option>Cajero</option>
+                                    <option>Cocina</option>
+                                    <option>Supervisor</option>
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="form-label">
+                                    Turno Laboral
+                                </label>
+
+                                <select class="form-select">
+                                    <option>Mañana</option>
+                                    <option selected>Tarde</option>
+                                    <option>Noche</option>
+                                    <option>Rotativo</option>
+                                </select>
+
+                            </div>
+
+                            <div class="col-12 mt-4">
+
+                                <label class="form-label">
+                                    Dirección
+                                </label>
+
+                                <textarea class="form-control">Cra 45 #12-90, Bogotá, Colombia</textarea>
+
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="form-label">
+                                    Estado Laboral
+                                </label>
+
+                                <div class="d-flex align-items-center gap-3 mt-3">
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+
+                                    <span class="fw-semibold">
+                                        Empleado Activo
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT -->
+
+                    <div class="col-xl-4">
+
+                        <div class="info-box">
+
+                            <h6>
+                                Información Interna
+                            </h6>
+
+                            <div class="info-item">
+                                <span>Fecha Registro</span>
+                                <strong>12 Ene 2025</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Último Acceso</span>
+                                <strong>Hoy 09:42 AM</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Departamento</span>
+                                <strong>Operaciones</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Sucursal</span>
+                                <strong>Zona Norte</strong>
+                            </div>
+
+                        </div>
+
+                        <div class="info-box">
+
+                            <h6>
+                                Rendimiento
+                            </h6>
+
+                            <div class="info-item">
+                                <span>Pedidos Atendidos</span>
+                                <strong>1,248</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Calificación</span>
+                                <strong>4.9/5</strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Puntualidad</span>
+                                <strong class="text-success">
+                                    Excelente
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ACTIONS -->
+
+                <div class="d-flex gap-3 flex-wrap mt-5">
+
+                    <button type="button" class="btn btn-premium" onclick="showNotification()">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>
+                        Guardar Cambios
+                    </button>
+
+                    <button type="reset" class="btn btn-outline-premium">
+                        Restaurar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <!-- =========================================================
+       NOTIFICATION
+    ========================================================== -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <div>
+            <h6>Empleado Actualizado</h6>
+
+            <p>
+                Los cambios fueron guardados correctamente.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+       JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                hideNotification();
+            }, 3500);
+
+        }
+
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

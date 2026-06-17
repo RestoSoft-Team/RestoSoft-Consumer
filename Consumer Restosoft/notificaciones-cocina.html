@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft | Notificaciones Cocina</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            transition: 0.3s;
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================== */
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            margin-bottom: 42px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: #d4dae2;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            color: #d7dce5;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .menu-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            color: white;
+        }
+
+        .sidebar-footer h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-footer p {
+            color: #d6dce3;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* =========================================================
+           CONTENT
+        ========================================================== */
+
+        .content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 32px;
+        }
+
+        .topbar-title h1 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px 14px 50px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-box img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-box h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-box span {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================== */
+
+        .stats-grid {
+            margin-bottom: 28px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h6 {
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .stats-card h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stats-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .danger {
+            color: var(--danger);
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bg-primary-soft {
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+        }
+
+        .bg-success-soft {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .bg-warning-soft {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .bg-danger-soft {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           GRID
+        ========================================================== */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .card-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        .card-panel:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-header-premium {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 26px;
+        }
+
+        .card-header-premium h4 {
+            margin: 0;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           NOTIFICATIONS
+        ========================================================== */
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 18px;
+            padding: 22px;
+            border-radius: 22px;
+            background: #fafafa;
+            transition: 0.3s;
+        }
+
+        .notification-item:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .notification-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h5 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .notification-content p {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .notification-meta {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .notification-time {
+            color: var(--soft);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status.success {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .status.warning {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .status.danger {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           FORM
+        ========================================================== */
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .form-control-premium {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px;
+        }
+
+        textarea.form-control-premium {
+            min-height: 140px;
+            resize: none;
+        }
+
+        .form-control-premium:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 12px 22px;
+            font-weight: 600;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           TOAST
+        ========================================================== */
+
+        .toast-premium {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            width: 360px;
+            background: white;
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            gap: 16px;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+            border-left: 6px solid var(--success);
+            transform: translateX(420px);
+            transition: 0.4s;
+            z-index: 9999;
+        }
+
+        .toast-premium.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .toast-content h5 {
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .toast-content p {
+            color: var(--gray);
+            margin: 0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:1200px) {
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 100px;
+                padding: 28px 14px;
+            }
+
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .brand h2 {
+                text-align: center;
+                font-size: 22px;
+            }
+
+            .content {
+                margin-left: 100px;
+                width: calc(100% - 100px);
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .toast-premium {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+
+        <aside class="sidebar">
+
+            <div>
+
+                <div class="brand">
+
+                    <h2>RestSoft</h2>
+                    <span>Centro de Cocina</span>
+
+                </div>
+
+                <nav class="menu">
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-fire-burner"></i>
+                        <span>Preparación</span>
+                    </a>
+
+                    <a href="#" class="menu-item active">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>Notificaciones</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Tiempos</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Reportes</span>
+                    </a>
+
+                </nav>
+
+            </div>
+
+            <div class="sidebar-footer">
+
+                <h5>Comunicación Operativa</h5>
+
+                <p>
+                    Gestiona alertas internas,
+                    avisos a meseros y coordinación de cocina.
+                </p>
+
+                <button class="btn btn-premium w-100">
+                    Ver Historial
+                </button>
+
+            </div>
+
+        </aside>
+
+        <!-- =========================================================
+         CONTENT
+    ========================================================== -->
+
+        <main class="content">
+
+            <!-- TOPBAR -->
+
+            <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+                <div class="topbar-title">
+
+                    <h1>Notificaciones Cocina</h1>
+
+                    <p>
+                        Controla alertas, mensajes y coordinación en tiempo real.
+                    </p>
+
+                </div>
+
+                <div class="topbar-actions">
+
+                    <div class="search-box">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input type="text" placeholder="Buscar notificaciones...">
+
+                    </div>
+
+                    <div class="profile-box">
+
+                        <div>
+                            <h6>Chef Alejandro</h6>
+                            <span>Chef Ejecutivo</span>
+                        </div>
+
+                        <img src="https://i.pravatar.cc/150?img=15">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- STATS -->
+
+            <div class="row g-4 stats-grid">
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Alertas Activas</h6>
+
+                            <h2>08</h2>
+
+                            <div class="stats-meta warning">
+                                <i class="fa-solid fa-bell"></i>
+                                Cocina en monitoreo
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-warning-soft">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Mensajes Enviados</h6>
+
+                            <h2>142</h2>
+
+                            <div class="stats-meta success">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Comunicación activa
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-success-soft">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Pedidos Listos</h6>
+
+                            <h2>46</h2>
+
+                            <div class="stats-meta success">
+                                <i class="fa-solid fa-check"></i>
+                                Entregados hoy
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-primary-soft">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Retrasos</h6>
+
+                            <h2>03</h2>
+
+                            <div class="stats-meta danger">
+                                <i class="fa-solid fa-clock"></i>
+                                Atención inmediata
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-danger-soft">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- GRID -->
+
+            <div class="dashboard-grid">
+
+                <!-- LISTADO -->
+
+                <div class="card-panel">
+
+                    <div class="card-header-premium">
+
+                        <h4>Centro de Alertas</h4>
+
+                        <button class="btn btn-outline-premium">
+                            Marcar Todo Leído
+                        </button>
+
+                    </div>
+
+                    <div class="notification-list">
+
+                        <div class="notification-item">
+
+                            <div class="notification-icon bg-danger-soft">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+
+                            <div class="notification-content">
+
+                                <h5>Pedido retrasado en parrilla</h5>
+
+                                <p>
+                                    El pedido #PED-2041 excedió el tiempo esperado de preparación.
+                                </p>
+
+                                <div class="notification-meta">
+
+                                    <span class="status danger">
+                                        Alta prioridad
+                                    </span>
+
+                                    <span class="notification-time">
+                                        Hace 2 minutos
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="notification-item">
+
+                            <div class="notification-icon bg-success-soft">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+
+                            <div class="notification-content">
+
+                                <h5>Pedido listo para entrega</h5>
+
+                                <p>
+                                    Mesa 08 lista para ser atendida por el mesero.
+                                </p>
+
+                                <div class="notification-meta">
+
+                                    <span class="status success">
+                                        Completado
+                                    </span>
+
+                                    <span class="notification-time">
+                                        Hace 5 minutos
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="notification-item">
+
+                            <div class="notification-icon bg-warning-soft">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+
+                            <div class="notification-content">
+
+                                <h5>Nuevo pedido recibido</h5>
+
+                                <p>
+                                    Ingresó un nuevo pedido desde la Mesa 12.
+                                </p>
+
+                                <div class="notification-meta">
+
+                                    <span class="status warning">
+                                        Pendiente
+                                    </span>
+
+                                    <span class="notification-time">
+                                        Hace 8 minutos
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- FORMULARIO -->
+
+                <div class="card-panel">
+
+                    <div class="card-header-premium">
+
+                        <h4>Enviar Notificación</h4>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Destinatario
+                        </label>
+
+                        <select class="form-control-premium">
+
+                            <option>Seleccionar área</option>
+                            <option>Meseros</option>
+                            <option>Caja</option>
+                            <option>Bar</option>
+                            <option>Gerencia</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Tipo de Notificación
+                        </label>
+
+                        <select class="form-control-premium">
+
+                            <option>Seleccionar tipo</option>
+                            <option>Pedido listo</option>
+                            <option>Retraso</option>
+                            <option>Alerta cocina</option>
+                            <option>Mensaje interno</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Mensaje
+                        </label>
+
+                        <textarea class="form-control-premium"
+                            placeholder="Escribe una notificación interna..."></textarea>
+
+                    </div>
+
+                    <button class="btn btn-premium w-100" onclick="showToast()">
+                        Enviar Notificación
+                    </button>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- =========================================================
+     TOAST
+========================================================== -->
+
+    <div class="toast-premium" id="toast">
+
+        <div class="toast-icon">
+            <i class="fa-solid fa-paper-plane"></i>
+        </div>
+
+        <div class="toast-content">
+
+            <h5>Notificación enviada</h5>
+
+            <p>
+                El mensaje fue enviado correctamente al equipo seleccionado.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+     SCRIPT
+========================================================== -->
+
+    <script>
+
+        const toast = document.getElementById('toast');
+
+        function showToast() {
+
+            toast.classList.add('show');
+
+            setTimeout(() => {
+
+                toast.classList.remove('show');
+
+            }, 3500);
+
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

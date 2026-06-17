@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft - Transferir Mesa</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* =========================================
+           SIDEBAR
+        ========================================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--dark);
+            padding: 28px 22px;
+            overflow: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 42px;
+        }
+
+        .brand-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .brand h3 {
+            color: white;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .brand p {
+            margin: 0;
+            color: #c4ccd7;
+            font-size: 13px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #dbe1eb;
+            font-weight: 500;
+            transition: .3s;
+        }
+
+        .menu-link:hover {
+            background: rgba(255, 255, 255, .06);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .menu-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .menu-link i {
+            width: 22px;
+            text-align: center;
+        }
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .main {
+            margin-left: 280px;
+            padding: 34px;
+        }
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 34px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 320px;
+            min-height: 56px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px 14px 52px;
+            transition: .3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 19px;
+            color: var(--gray);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* =========================================
+           CONTENT GRID
+        ========================================= */
+
+        .transfer-grid {
+            display: grid;
+            grid-template-columns: 1fr 140px 1fr;
+            gap: 28px;
+            align-items: center;
+        }
+
+        /* =========================================
+           CARDS
+        ========================================= */
+
+        .premium-card {
+            background: white;
+            border-radius: 32px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: .3s;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+
+        .card-header h3 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            margin: 0;
+            color: var(--gray);
+        }
+
+        .table-status {
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-danger {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        .status-success {
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+        }
+
+        /* =========================================
+           TABLE VISUAL
+        ========================================= */
+
+        .table-visual {
+            width: 180px;
+            height: 180px;
+            border-radius: 42px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
+            margin-bottom: 30px;
+        }
+
+        .table-danger {
+            background: var(--danger);
+        }
+
+        .table-success {
+            background: var(--success);
+        }
+
+        .table-visual h2 {
+            font-size: 58px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .table-visual span {
+            font-size: 15px;
+            opacity: .9;
+        }
+
+        /* =========================================
+           INFO LIST
+        ========================================= */
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: #fafafa;
+        }
+
+        .info-item span {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .info-item strong {
+            font-size: 14px;
+        }
+
+        /* =========================================
+           TRANSFER CENTER
+        ========================================= */
+
+        .transfer-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .transfer-btn {
+            width: 90px;
+            height: 90px;
+            border-radius: 28px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 28px;
+            transition: .3s;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
+        }
+
+        .transfer-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .transfer-label {
+            text-align: center;
+        }
+
+        .transfer-label h5 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .transfer-label p {
+            color: var(--gray);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* =========================================
+           ACTIONS
+        ========================================= */
+
+        .actions {
+            display: flex;
+            gap: 18px;
+            margin-top: 30px;
+        }
+
+        .btn-premium {
+            flex: 1;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 22px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================
+           NOTIFICATION
+        ========================================= */
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 390px;
+            background: white;
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
+            border-left: 6px solid var(--success);
+            transform: translateX(420px);
+            transition: .3s;
+            z-index: 9999;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .notification-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: #edf7f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 20px;
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media(max-width:1200px) {
+
+            .transfer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .transfer-center {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+        }
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 95px;
+            }
+
+            .sidebar .brand-text,
+            .sidebar .menu-link span {
+                display: none;
+            }
+
+            .main {
+                margin-left: 95px;
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .main {
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-right {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .notification {
+                width: 90%;
+                right: 5%;
+            }
+
+        }
+    </style>
+
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    <i class="fa-solid fa-right-left"></i>
+                </div>
+
+                <div class="brand-text">
+                    <h3>RestSoft</h3>
+                    <p>Enterprise Restaurant</p>
+                </div>
+
+            </div>
+
+            <div class="menu">
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="#" class="menu-link active">
+                    <i class="fa-solid fa-right-left"></i>
+                    <span>Transferencias</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-table"></i>
+                    <span>Mesas</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-bell-concierge"></i>
+                    <span>Pedidos</span>
+                </a>
+
+                <a href="#" class="menu-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+            <div class="page-title">
+
+                <h1>Transferir Mesa</h1>
+
+                <p>Mueve pedidos y clientes entre mesas activas del restaurante.</p>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="search-box">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text" placeholder="Buscar pedido o mesa...">
+
+                </div>
+
+                <div class="profile">
+
+                    <img src="https://i.pravatar.cc/100?img=56" alt="">
+
+                    <div>
+                        <strong>Daniel Herrera</strong>
+                        <div style="font-size:13px;color:var(--gray);">
+                            Floor Supervisor
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TRANSFER GRID -->
+
+        <div class="transfer-grid">
+
+            <!-- ORIGIN -->
+
+            <div class="premium-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Mesa Origen</h3>
+                        <p>Pedido actualmente activo</p>
+                    </div>
+
+                    <div class="table-status status-danger">
+                        Ocupada
+                    </div>
+
+                </div>
+
+                <div class="table-visual table-danger">
+
+                    <h2>07</h2>
+
+                    <span>Mesa Ejecutiva</span>
+
+                </div>
+
+                <div class="info-list">
+
+                    <div class="info-item">
+                        <span>Cliente</span>
+                        <strong>Camilo Vargas</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Pedido</span>
+                        <strong>#RS-2048</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Comensales</span>
+                        <strong>5 Personas</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Total</span>
+                        <strong>$186.000</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Tiempo Activo</span>
+                        <strong>48 Min</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CENTER -->
+
+            <div class="transfer-center">
+
+                <button class="transfer-btn" onclick="showNotification()">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <div class="transfer-label">
+
+                    <h5>Transferencia</h5>
+
+                    <p>Mover pedido y clientes</p>
+
+                </div>
+
+            </div>
+
+            <!-- DESTINATION -->
+
+            <div class="premium-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h3>Mesa Destino</h3>
+                        <p>Mesa seleccionada para traslado</p>
+                    </div>
+
+                    <div class="table-status status-success">
+                        Disponible
+                    </div>
+
+                </div>
+
+                <div class="table-visual table-success">
+
+                    <h2>12</h2>
+
+                    <span>Mesa Terraza</span>
+
+                </div>
+
+                <div class="info-list">
+
+                    <div class="info-item">
+                        <span>Capacidad</span>
+                        <strong>6 Personas</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Zona</span>
+                        <strong>Terraza VIP</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Estado</span>
+                        <strong>Lista para uso</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Última Limpieza</span>
+                        <strong>Hace 8 Min</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span>Mesero</span>
+                        <strong>Sofía Medina</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <button class="btn-premium btn-outline-custom">
+                Cancelar Operación
+            </button>
+
+            <button class="btn-premium btn-primary-custom" onclick="showNotification()">
+                Confirmar Transferencia
+            </button>
+
+        </div>
+
+    </main>
+
+    <!-- NOTIFICATION -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-content">
+
+            <div class="notification-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+
+            <div>
+
+                <strong>Transferencia completada</strong>
+
+                <div style="font-size:14px;color:var(--gray);margin-top:4px;">
+                    El pedido fue transferido exitosamente a la mesa 12.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JS -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+
+                notification.classList.remove('show');
+
+            }, 3000);
+
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>

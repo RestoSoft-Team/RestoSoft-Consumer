@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RestSoft — Salidas &amp; Mermas</title>
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .app {
+            display: flex;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--dark);
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+
+        .brand-logo {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand span {
+            color: #a7b1bd;
+            font-size: 13px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #d3d9e2;
+            transition: .3s;
+            font-weight: 500;
+        }
+
+        .menu-item i {
+            width: 22px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sidebar-footer {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 20px;
+        }
+
+        .sidebar-footer h6 {
+            color: white;
+            font-weight: 700;
+        }
+
+        .sidebar-footer p {
+            color: #b7c0cb;
+            font-size: 13px;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================== */
+
+        .main {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 280px;
+            height: 55px;
+            border: none;
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 14px 18px 14px 48px;
+            outline: none;
+            transition: .3s;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            border: 1px solid var(--primary);
+            box-shadow: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            color: #9ca6b2;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+
+        .profile h6 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .profile span {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        /* =========================================================
+           CARDS
+        ========================================================== */
+
+        .card-premium {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: .3s;
+        }
+
+        .card-premium:hover {
+            transform: translateY(-5px);
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================== */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .bg-danger-soft {
+            background: rgba(187, 58, 75, .15);
+            color: var(--danger);
+        }
+
+        .bg-warning-soft {
+            background: rgba(217, 164, 65, .15);
+            color: var(--warning);
+        }
+
+        .bg-success-soft {
+            background: rgba(61, 139, 92, .15);
+            color: var(--success);
+        }
+
+        .stat-info h3 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .growth {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           FILTERS
+        ========================================================== */
+
+        .filters {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .input-premium {
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            min-height: 55px;
+            padding: 14px 18px;
+            transition: .3s;
+            width: 100%;
+        }
+
+        .input-premium:focus {
+            border: 1px solid var(--primary);
+            outline: none;
+            box-shadow: none;
+            background: white;
+        }
+
+        /* =========================================================
+           TABLE
+        ========================================================== */
+
+        .table-card {
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 14px;
+        }
+
+        thead th {
+            font-size: 13px;
+            font-weight: 700;
+            color: #97a1af;
+            padding: 0 18px;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            background: #ffffff;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.03);
+            transition: .3s;
+        }
+
+        tbody tr:hover {
+            transform: scale(1.01);
+        }
+
+        tbody td {
+            padding: 20px 18px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr td:first-child {
+            border-radius: 18px 0 0 18px;
+        }
+
+        tbody tr td:last-child {
+            border-radius: 0 18px 18px 0;
+        }
+
+        .product {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .product-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: #f3f4f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .status {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-danger {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        .status-warning {
+            background: rgba(217, 164, 65, .15);
+            color: var(--warning);
+        }
+
+        .status-success {
+            background: rgba(61, 139, 92, .15);
+            color: var(--success);
+        }
+
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 14px;
+            background: #f7f8fa;
+            transition: .3s;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           DROPZONE
+        ========================================================== */
+
+        .dropzone {
+            margin-top: 28px;
+            border: 2px dashed #d9d9d9;
+            border-radius: 22px;
+            background: #fafafa;
+            padding: 50px 30px;
+            text-align: center;
+            transition: .3s;
+            cursor: pointer;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .dropzone i {
+            font-size: 42px;
+            color: var(--primary);
+            margin-bottom: 18px;
+        }
+
+        .dropzone h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .dropzone p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        /* =========================================================
+           NOTIFICATION
+        ========================================================== */
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            width: 360px;
+            padding: 20px;
+            border-radius: 22px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            border-left: 6px solid var(--success);
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transform: translateX(420px);
+            transition: .3s;
+            z-index: 99999;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: rgba(61, 139, 92, .15);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .notification h6 {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 92px;
+                padding: 28px 16px;
+            }
+
+            .brand-text,
+            .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .main {
+                margin-left: 92px;
+                width: calc(100% - 92px);
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+        }
+
+        @media(max-width:768px) {
+
+            .main {
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-right {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .notification {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+        }
+    </style>
+
+<style id="responsive-table-cards">
+@media (max-width: 768px) {
+  .table-responsive table,
+  .table-responsive thead,
+  .table-responsive tbody,
+  .table-responsive th,
+  .table-responsive td,
+  .table-responsive tr {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tr {
+    background: #fff;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+  }
+
+  .table-responsive td {
+    border: none !important;
+    position: relative;
+    padding-left: 48% !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    min-height: 42px;
+    text-align: left !important;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    width: 42%;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #555;
+  }
+}
+</style>
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+<body>
+<!-- =========================================================
+         NOTIFICATION
+    ========================================================== -->
+<div class="notification" id="notification">
+<div class="notification-icon">
+<i class="fa-solid fa-circle-check"></i>
+</div>
+<div>
+<h6>Merma registrada</h6>
+<p>La salida de inventario fue procesada correctamente.</p>
+</div>
+</div>
+<!-- =========================================================
+         APP
+    ========================================================== -->
+<div class="app">
+<!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+<aside class="sidebar">
+<div>
+<div class="brand">
+<div class="brand-logo">
+<i class="fa-solid fa-utensils"></i>
+</div>
+<div class="brand-text">
+<h2>RestSoft</h2>
+<span>Enterprise POS</span>
+</div>
+</div>
+<nav class="menu">
+<a class="menu-item" href="#">
+<i class="fa-solid fa-chart-line"></i>
+<span>Dashboard</span>
+</a>
+<a class="menu-item active" href="#">
+<i class="fa-solid fa-boxes-stacked"></i>
+<span>Inventario</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-cart-shopping"></i>
+<span>Pedidos</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-chair"></i>
+<span>Mesas</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-file-invoice-dollar"></i>
+<span>Facturación</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-chart-pie"></i>
+<span>Reportes</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-gear"></i>
+<span>Configuración</span>
+</a>
+</nav>
+</div>
+<div class="sidebar-footer">
+<h6>Inventario Inteligente</h6>
+<p>
+                    Controla pérdidas, desperdicios y movimientos internos en tiempo real.
+                </p>
+</div>
+</aside>
+<!-- =====================================================
+             MAIN
+        ====================================================== -->
+<main class="main">
+<!-- =================================================
+                 TOPBAR
+            ================================================== -->
+<div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+<div class="page-title">
+<h1>Salidas &amp; Mermas</h1>
+<p>
+                        Gestión avanzada de pérdidas, consumo interno y desperdicios.
+                    </p>
+</div>
+<div class="topbar-right">
+<div class="search-box">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input placeholder="Buscar movimientos..." type="text"/>
+</div>
+<div class="profile">
+<img alt="" src="https://i.pravatar.cc/100"/>
+<div>
+<h6>Camila Torres</h6>
+<span>Administradora</span>
+</div>
+</div>
+</div>
+</div>
+<!-- =================================================
+                 STATS
+            ================================================== -->
+<div class="stats-grid">
+<div class="card-premium stat-card">
+<div class="stat-info">
+<h3>48</h3>
+<p>Salidas Registradas</p>
+<div class="growth text-danger">
+<i class="fa-solid fa-arrow-up"></i>
+                            +12% esta semana
+                        </div>
+</div>
+<div class="stat-icon bg-danger-soft">
+<i class="fa-solid fa-arrow-right-arrow-left"></i>
+</div>
+</div>
+<div class="card-premium stat-card">
+<div class="stat-info">
+<h3>$1.240</h3>
+<p>Pérdidas Totales</p>
+<div class="growth text-warning">
+<i class="fa-solid fa-triangle-exclamation"></i>
+                            Revisar desperdicios
+                        </div>
+</div>
+<div class="stat-icon bg-warning-soft">
+<i class="fa-solid fa-chart-column"></i>
+</div>
+</div>
+<div class="card-premium stat-card">
+<div class="stat-info">
+<h3>96%</h3>
+<p>Control de Inventario</p>
+<div class="growth text-success">
+<i class="fa-solid fa-circle-check"></i>
+                            Operación estable
+                        </div>
+</div>
+<div class="stat-icon bg-success-soft">
+<i class="fa-solid fa-shield-heart"></i>
+</div>
+</div>
+</div>
+<!-- =================================================
+                 FILTERS
+            ================================================== -->
+<div class="card-premium mb-4">
+<div class="row g-4">
+<div class="col-lg-3">
+<label class="form-label fw-semibold mb-3">
+                            Producto
+                        </label>
+<input class="input-premium" placeholder="Buscar producto" type="text"/>
+</div>
+<div class="col-lg-3">
+<label class="form-label fw-semibold mb-3">
+                            Tipo de salida
+                        </label>
+<select class="input-premium">
+<option>Todos</option>
+<option>Merma</option>
+<option>Consumo Interno</option>
+<option>Daño</option>
+</select>
+</div>
+<div class="col-lg-3">
+<label class="form-label fw-semibold mb-3">
+                            Responsable
+                        </label>
+<select class="input-premium">
+<option>Seleccionar</option>
+<option>Cocina</option>
+<option>Bar</option>
+<option>Bodega</option>
+</select>
+</div>
+<div class="col-lg-3 d-flex align-items-end">
+<button class="btn-premium w-100">
+<i class="fa-solid fa-plus me-2"></i>
+                            Registrar Salida
+                        </button>
+</div>
+</div>
+</div>
+<!-- =================================================
+                 TABLE
+            ================================================== -->
+<div class="card-premium table-card">
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+<h4 class="fw-bold mb-1">
+                            Historial de Mermas
+                        </h4>
+<p class="text-secondary mb-0">
+                            Movimientos recientes del inventario gastronómico.
+                        </p>
+</div>
+<button class="btn-outline-premium">
+<i class="fa-solid fa-file-export me-2"></i>
+                        Exportar
+                    </button>
+</div>
+<div class="table-responsive">
+<table>
+<thead>
+<tr>
+<th>Producto</th>
+<th>Tipo</th>
+<th>Cantidad</th>
+<th>Responsable</th>
+<th>Fecha</th>
+<th>Estado</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Producto">
+<div class="product">
+<div class="product-icon">
+<i class="fa-solid fa-cheese"></i>
+</div>
+<div>
+<strong>Queso Mozzarella</strong>
+<div class="text-secondary small">
+                                                Lácteos
+                                            </div>
+</div>
+</div>
+</td>
+<td data-label="Tipo">Merma</td>
+<td data-label="Cantidad">12 Kg</td>
+<td data-label="Responsable">Chef Principal</td>
+<td data-label="Fecha">28 May 2026</td>
+<td data-label="Estado">
+<span class="status status-danger">
+<i class="fa-solid fa-circle"></i>
+                                        Crítico
+                                    </span>
+</td>
+<td data-label="">
+<button class="action-btn">
+<i class="fa-solid fa-ellipsis"></i>
+</button>
+</td>
+</tr>
+<tr>
+<td data-label="Producto">
+<div class="product">
+<div class="product-icon">
+<i class="fa-solid fa-wine-bottle"></i>
+</div>
+<div>
+<strong>Vino Tinto Reserva</strong>
+<div class="text-secondary small">
+                                                Bebidas
+                                            </div>
+</div>
+</div>
+</td>
+<td data-label="Tipo">Consumo Interno</td>
+<td data-label="Cantidad">4 Botellas</td>
+<td data-label="Responsable">Bar</td>
+<td data-label="Fecha">27 May 2026</td>
+<td data-label="Estado">
+<span class="status status-warning">
+<i class="fa-solid fa-circle"></i>
+                                        Moderado
+                                    </span>
+</td>
+<td data-label="">
+<button class="action-btn">
+<i class="fa-solid fa-ellipsis"></i>
+</button>
+</td>
+</tr>
+<tr>
+<td data-label="Producto">
+<div class="product">
+<div class="product-icon">
+<i class="fa-solid fa-drumstick-bite"></i>
+</div>
+<div>
+<strong>Pollo Marinado</strong>
+<div class="text-secondary small">
+                                                Proteínas
+                                            </div>
+</div>
+</div>
+</td>
+<td data-label="Tipo">Daño</td>
+<td data-label="Cantidad">6 Kg</td>
+<td data-label="Responsable">Bodega</td>
+<td data-label="Fecha">26 May 2026</td>
+<td data-label="Estado">
+<span class="status status-success">
+<i class="fa-solid fa-circle"></i>
+                                        Controlado
+                                    </span>
+</td>
+<td data-label="">
+<button class="action-btn">
+<i class="fa-solid fa-ellipsis"></i>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- =================================================
+                 DROPZONE
+            ================================================== -->
+<div class="dropzone">
+<i class="fa-solid fa-cloud-arrow-up"></i>
+<h5>Subir Evidencia o Reporte</h5>
+<p>
+                    Arrastra archivos aquí o haz clic para cargar imágenes y documentos.
+                </p>
+</div>
+</main>
+</div>
+<!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+<script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                hideNotification();
+            }, 4000);
+        }
+
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showNotification();
+            }, 800);
+        });
+
+    </script>
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+</html>

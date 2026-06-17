@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RestSoft | Reporte Financiero</title>
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--dark);
+        }
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--dark);
+            position: fixed;
+            height: 100vh;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand h2 {
+            color: #fff;
+            font-weight: 800;
+            font-size: 30px;
+        }
+
+        .brand span {
+            color: #cfd6df;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .menu-item {
+            color: #d7dce5;
+            padding: 16px;
+            border-radius: 18px;
+            display: flex;
+            gap: 14px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: #fff;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* CONTENT */
+        .content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 38px;
+            font-weight: 800;
+        }
+
+        .topbar p {
+            color: var(--gray);
+        }
+
+        .profile-box {
+            background: #fff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-box img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+
+        /* CARDS */
+        .card-panel {
+            background: #fff;
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        .card-panel:hover {
+            transform: translateY(-4px);
+        }
+
+        /* STATS */
+        .stats-card {
+            background: #fff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h6 {
+            color: var(--gray);
+            margin-bottom: 6px;
+        }
+
+        .stats-card h3 {
+            font-weight: 800;
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        /* TABLE */
+        .table-premium {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-premium th {
+            text-align: left;
+            padding: 14px;
+            font-weight: 700;
+            color: var(--gray);
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-premium td {
+            padding: 16px 14px;
+            border-bottom: 1px solid #f4f4f4;
+            font-weight: 500;
+        }
+
+        .status {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .profit {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .loss {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        .pending {
+            background: rgba(217, 164, 65, 0.12);
+            color: var(--warning);
+        }
+
+        /* CHART */
+        .chart-box {
+            height: 320px;
+            border-radius: 28px;
+            border: 1px solid #eee;
+            background: linear-gradient(135deg, #f7f8fa, #fff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width:992px) {
+            .sidebar {
+                width: 80px;
+                padding: 20px 10px;
+            }
+
+            .content {
+                margin-left: 80px;
+                width: calc(100% - 80px);
+            }
+
+            .menu-item span {
+                display: none;
+            }
+
+            .brand span {
+                display: none;
+            }
+        }
+    </style>
+
+<style id="responsive-table-cards">
+@media (max-width: 768px) {
+  .table-responsive table,
+  .table-responsive thead,
+  .table-responsive tbody,
+  .table-responsive th,
+  .table-responsive td,
+  .table-responsive tr {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive thead {
+    display: none;
+  }
+
+  .table-responsive tr {
+    background: #fff;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+  }
+
+  .table-responsive td {
+    border: none !important;
+    position: relative;
+    padding-left: 48% !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    min-height: 42px;
+    text-align: left !important;
+  }
+
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 10px;
+    width: 42%;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #555;
+  }
+}
+</style>
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+<body>
+<div class="main-wrapper">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<div>
+<div class="brand mb-4">
+<h2>RS</h2>
+<span>Finanzas</span>
+</div>
+<nav class="menu">
+<a class="menu-item active" href="#">
+<i class="fa-solid fa-coins"></i>
+<span>Financiero</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-receipt"></i>
+<span>Ingresos</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-arrow-trend-down"></i>
+<span>Gastos</span>
+</a>
+<a class="menu-item" href="#">
+<i class="fa-solid fa-scale-balanced"></i>
+<span>Balance</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- CONTENT -->
+<main class="content">
+<!-- TOPBAR -->
+<div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+<div>
+<h1>Reporte Financiero</h1>
+<p>Ingresos, gastos y rentabilidad del restaurante</p>
+</div>
+<div class="profile-box">
+<div>
+<strong>Admin</strong><br/>
+<small style="color:gray;">RestSoft</small>
+</div>
+<img src="https://i.pravatar.cc/150?img=5"/>
+</div>
+</div>
+<!-- STATS -->
+<div class="row g-4 mb-4">
+<div class="col-md-4">
+<div class="stats-card">
+<div>
+<h6>Ingresos</h6>
+<h3>$52,300</h3>
+</div>
+<div class="icon-box">
+<i class="fa-solid fa-dollar-sign"></i>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="stats-card">
+<div>
+<h6>Gastos</h6>
+<h3>$18,940</h3>
+</div>
+<div class="icon-box" style="background:rgba(187,58,75,0.15); color:var(--danger);">
+<i class="fa-solid fa-arrow-trend-down"></i>
+</div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="stats-card">
+<div>
+<h6>Utilidad</h6>
+<h3>$33,360</h3>
+</div>
+<div class="icon-box" style="background:rgba(61,139,92,0.15); color:var(--success);">
+<i class="fa-solid fa-chart-line"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- CHART -->
+<div class="card-panel mb-4">
+<h5 class="fw-bold mb-3">Flujo Financiero Mensual</h5>
+<div class="chart-box">
+                    📊 Ingresos vs Gastos vs Utilidad (placeholder)
+                </div>
+</div>
+<!-- TABLE -->
+<div class="card-panel">
+<h5 class="fw-bold mb-3">Movimientos Financieros</h5>
+<table class="table-premium w-100">
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Tipo</th>
+<th>Monto</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Concepto">Ventas del día</td>
+<td data-label="Tipo">Ingreso</td>
+<td data-label="Monto">$2,450</td>
+<td data-label="Estado"><span class="status profit">Ganancia</span></td>
+</tr>
+<tr>
+<td data-label="Concepto">Compra insumos</td>
+<td data-label="Tipo">Gasto</td>
+<td data-label="Monto">$680</td>
+<td data-label="Estado"><span class="status loss">Gasto</span></td>
+</tr>
+<tr>
+<td data-label="Concepto">Delivery</td>
+<td data-label="Tipo">Ingreso</td>
+<td data-label="Monto">$320</td>
+<td data-label="Estado"><span class="status profit">Ganancia</span></td>
+</tr>
+<tr>
+<td data-label="Concepto">Mantenimiento</td>
+<td data-label="Tipo">Gasto</td>
+<td data-label="Monto">$150</td>
+<td data-label="Estado"><span class="status pending">Programado</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+</div>
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+</html>

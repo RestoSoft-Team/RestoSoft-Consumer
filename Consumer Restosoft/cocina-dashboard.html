@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestSoft | Dashboard Cocina</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+
+            --background: #fbfcfb;
+
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+
+            --dark: #262f3c;
+            --dark-light: #39485c;
+
+            --soft: #b09da2;
+            --soft-light: #d9d2d4;
+
+            --white: #ffffff;
+
+            --gray: #6f7782;
+
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+
+            --shadow:
+                0 10px 40px rgba(38, 47, 60, 0.08);
+
+            --radius: 24px;
+        }
+
+        /* =========================================================
+           GLOBAL
+        ========================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            transition: 0.3s;
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================== */
+
+        .main-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================== */
+
+        .sidebar {
+            width: 280px;
+            background: var(--dark);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            margin-bottom: 42px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand span {
+            color: #d4d8df;
+            font-size: 14px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            color: #d7dce5;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .menu-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .sidebar-footer {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 24px;
+            color: white;
+        }
+
+        .sidebar-footer h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-footer p {
+            color: #d6dbe3;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* =========================================================
+           CONTENT
+        ========================================================== */
+
+        .content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 32px;
+        }
+
+        /* =========================================================
+           TOPBAR
+        ========================================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 22px;
+        }
+
+        .topbar-title h1 {
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .topbar-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 18px;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px 14px 50px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .perfil-chef {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 18px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .perfil-chef img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .perfil-chef h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .perfil-chef span {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           STATS
+        ========================================================== */
+
+        .stats-grid {
+            margin-bottom: 28px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h6 {
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .stats-card h2 {
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stats-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .warning {
+            color: var(--warning);
+        }
+
+        .danger {
+            color: var(--danger);
+        }
+
+        .icon-box {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bg-primary-soft {
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+        }
+
+        .bg-success-soft {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        .bg-warning-soft {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .bg-danger-soft {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           TABLERO COCINA
+        ========================================================== */
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+        }
+
+        .kitchen-column {
+            background: white;
+            border-radius: 28px;
+            padding: 26px;
+            box-shadow: var(--shadow);
+        }
+
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .column-header h5 {
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .badge-counter {
+            width: 38px;
+            height: 38px;
+            border-radius: 14px;
+            background: #f4f5f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           TARJETA PEDIDO
+        ========================================================== */
+
+        .order-card {
+            background: #fafafa;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 18px;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .order-card:hover {
+            background: white;
+            border-color: #f0f0f0;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .order-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .order-id {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .mesa-badge {
+            padding: 8px 14px;
+            border-radius: 12px;
+            background: rgba(107, 30, 40, 0.12);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .order-items {
+            margin-bottom: 20px;
+        }
+
+        .order-items li {
+            list-style: none;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-light);
+        }
+
+        .order-items li i {
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .priority {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .priority.high {
+            background: rgba(187, 58, 75, 0.12);
+            color: var(--danger);
+        }
+
+        .priority.medium {
+            background: rgba(217, 164, 65, 0.15);
+            color: var(--warning);
+        }
+
+        .priority.low {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+        }
+
+        /* =========================================================
+           BOTONES
+        ========================================================== */
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 12px 18px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-success-soft {
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 18px;
+            font-weight: 700;
+        }
+
+        .btn-success-soft:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        /* =========================================================
+           NOTIFICACIÓN
+        ========================================================== */
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 360px;
+            background: white;
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            gap: 18px;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.12);
+            border-left: 6px solid var(--success);
+            transform: translateX(420px);
+            transition: 0.4s;
+            z-index: 9999;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(61, 139, 92, 0.12);
+            color: var(--success);
+            font-size: 22px;
+        }
+
+        .notification-content h5 {
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .notification-content p {
+            color: var(--gray);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media(max-width:1200px) {
+
+            .board-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 100px;
+                padding: 28px 14px;
+            }
+
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .brand h2 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .content {
+                margin-left: 100px;
+                width: calc(100% - 100px);
+            }
+
+        }
+
+        @media(max-width:768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .notification {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+
+        }
+    </style>
+
+<style id="responsive-sidebar-upgrade">
+.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
+.sidebar-overlay.show{opacity:1;visibility:visible}
+
+@media(max-width:992px){
+    .sidebar{width:90px}
+    .sidebar .menu-title,.sidebar .logo h3{display:none}
+    .sidebar .menu-item span{display:none}
+    .main{margin-left:90px}
+}
+
+@media(max-width:768px){
+    .sidebar{
+        width:280px!important;
+        left:-280px!important;
+        transition:.3s;
+        z-index:999;
+    }
+
+    .sidebar.open{left:0!important}
+
+    .sidebar .menu-title,
+    .sidebar .logo h3,
+    .sidebar .menu-item span{
+        display:block;
+    }
+
+    .main{
+        margin-left:0!important;
+        padding:18px!important;
+    }
+
+    .mobile-menu-btn{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:15px;
+    }
+
+    .topbar-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .search-box{
+        width:100%;
+        min-width:100%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+
+        <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+
+        <aside class="sidebar">
+
+            <div>
+
+                <div class="brand">
+                    <h2>RestSoft</h2>
+                    <span>Centro Operativo Cocina</span>
+                </div>
+
+                <nav class="menu">
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="#" class="menu-item active">
+                        <i class="fa-solid fa-kitchen-set"></i>
+                        <span>Cocina</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-bowl-food"></i>
+                        <span>Pedidos</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-bell-concierge"></i>
+                        <span>Mesas</span>
+                    </a>
+
+                    <a href="#" class="menu-item">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Analítica</span>
+                    </a>
+
+                </nav>
+
+            </div>
+
+            <div class="sidebar-footer">
+
+                <h5>Rendimiento Cocina</h5>
+
+                <p>
+                    Monitoreo en tiempo real de pedidos,
+                    preparación y eficiencia operativa.
+                </p>
+
+                <button class="btn btn-premium w-100">
+                    Ver Reportes
+                </button>
+
+            </div>
+
+        </aside>
+
+        <!-- =========================================================
+         CONTENIDO
+    ========================================================== -->
+
+        <main class="content">
+
+            <!-- TOPBAR -->
+
+            <div class="topbar">
+<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+
+                <div class="topbar-title">
+
+                    <h1>Dashboard Cocina</h1>
+
+                    <p>
+                        Supervisa pedidos en tiempo real y el flujo operativo de cocina.
+                    </p>
+
+                </div>
+
+                <div class="topbar-actions">
+
+                    <div class="search-box">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input type="text" placeholder="Buscar pedidos...">
+
+                    </div>
+
+                    <div class="perfil-chef">
+
+                        <div>
+                            <h6>Chef Alejandro</h6>
+                            <span>Chef Ejecutivo</span>
+                        </div>
+
+                        <img src="https://i.pravatar.cc/150?img=15">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- STATS -->
+
+            <div class="row g-4 stats-grid">
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Pedidos Pendientes</h6>
+
+                            <h2>18</h2>
+
+                            <div class="stats-meta warning">
+                                <i class="fa-solid fa-clock"></i>
+                                +4 nuevos pedidos
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-warning-soft">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>En Preparación</h6>
+
+                            <h2>12</h2>
+
+                            <div class="stats-meta success">
+                                <i class="fa-solid fa-fire-burner"></i>
+                                Cocina activa
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-primary-soft">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Pedidos Finalizados</h6>
+
+                            <h2>46</h2>
+
+                            <div class="stats-meta success">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                +18% eficiencia
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-success-soft">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <div class="stats-card">
+
+                        <div>
+
+                            <h6>Pedidos Retrasados</h6>
+
+                            <h2>03</h2>
+
+                            <div class="stats-meta danger">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Atención requerida
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-danger-soft">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TABLERO -->
+
+            <div class="board-grid">
+
+                <!-- PENDIENTES -->
+
+                <div class="kitchen-column">
+
+                    <div class="column-header">
+
+                        <h5>Pendientes</h5>
+
+                        <div class="badge-counter">
+                            6
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1024
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 08
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                2x Hamburguesa Trufa
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Ensalada César
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                2x Agua Mineral
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Hace 4 minutos
+                            </div>
+
+                            <div class="priority high">
+                                Alta Prioridad
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1023
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 02
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Ribeye Premium
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Copa de Vino
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Hace 7 minutos
+                            </div>
+
+                            <div class="priority medium">
+                                Media
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- PREPARANDO -->
+
+                <div class="kitchen-column">
+
+                    <div class="column-header">
+
+                        <h5>Preparando</h5>
+
+                        <div class="badge-counter">
+                            12
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1019
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 11
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                3x Rollos Sushi
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Tempura Mixta
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Cocinando • 14 min
+                            </div>
+
+                            <button class="btn btn-premium" onclick="showNotification()">
+                                Marcar Listo
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1017
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 04
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                2x Pasta Alfredo
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Pan de Ajo
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Preparando • 10 min
+                            </div>
+
+                            <button class="btn btn-premium" onclick="showNotification()">
+                                Marcar Listo
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- LISTOS -->
+
+                <div class="kitchen-column">
+
+                    <div class="column-header">
+
+                        <h5>Listos para Servir</h5>
+
+                        <div class="badge-counter">
+                            8
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1012
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 06
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                2x Pizza Margarita
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                2x Soda Limón
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Listo ahora
+                            </div>
+
+                            <button class="btn btn-success-soft">
+                                Notificar Mesero
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="order-card">
+
+                        <div class="order-top">
+
+                            <div class="order-id">
+                                #PED-1008
+                            </div>
+
+                            <div class="mesa-badge">
+                                Mesa 03
+                            </div>
+
+                        </div>
+
+                        <ul class="order-items">
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Bowl de Salmón
+                            </li>
+
+                            <li>
+                                <i class="fa-solid fa-circle"></i>
+                                1x Té Verde
+                            </li>
+
+                        </ul>
+
+                        <div class="order-footer">
+
+                            <div class="time">
+                                Esperando entrega
+                            </div>
+
+                            <button class="btn btn-success-soft">
+                                Notificar Mesero
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- =========================================================
+     NOTIFICACIÓN
+========================================================== -->
+
+    <div class="notification" id="notification">
+
+        <div class="notification-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div class="notification-content">
+
+            <h5>Pedido Actualizado</h5>
+
+            <p>
+                El pedido fue marcado correctamente como listo.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+     SCRIPTS
+========================================================== -->
+
+    <script>
+
+        const notification = document.getElementById('notification');
+
+        function showNotification() {
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+
+                hideNotification();
+
+            }, 3500);
+
+        }
+
+        function hideNotification() {
+
+            notification.classList.remove('show');
+
+        }
+
+    </script>
+
+
+<script id="responsive-sidebar-upgrade-script">
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.querySelector(".sidebar");
+const overlay=document.getElementById("sidebarOverlay");
+
+menuToggle?.addEventListener("click",()=>{
+ sidebar?.classList.toggle("open");
+ overlay?.classList.toggle("show");
+});
+
+overlay?.addEventListener("click",()=>{
+ sidebar?.classList.remove("open");
+ overlay?.classList.remove("show");
+});
+</script>
+
+</body>
+
+</html>
