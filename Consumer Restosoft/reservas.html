@@ -425,62 +425,248 @@
     </style>
 
 
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
+    <style id="responsive-sidebar-upgrade">
+        .mobile-menu-btn {
+            display: none;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            font-size: 20px
+        }
 
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998
+        }
 
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible
+        }
 
-    .sidebar.open{left:0!important}
+        @media(max-width:992px) {
+            .sidebar {
+                width: 90px
+            }
 
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
+            .sidebar .menu-title,
+            .sidebar .logo h3 {
+                display: none
+            }
 
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
+            .sidebar .menu-item span {
+                display: none
+            }
 
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
+            .main {
+                margin-left: 90px
+            }
+        }
 
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
+        @media(max-width:768px) {
+            .sidebar {
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
+            }
 
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
+            .sidebar.open {
+                left: 0 !important
+            }
 
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
+            .sidebar .menu-title,
+            .sidebar .logo h3,
+            .sidebar .menu-item span {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 18px !important;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+                min-width: 100%;
+            }
+        }
+
+        /* ==========================
+   MAPA DE ZONAS
+========================== */
+
+        .zonas-map {
+            display: grid;
+            gap: 18px;
+        }
+
+        .zona-card {
+            position: relative;
+            border-radius: 24px;
+            background: white;
+            cursor: pointer;
+            padding: 24px;
+            overflow: hidden;
+
+            transition: .35s;
+
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, .08),
+                0 8px 12px rgba(0, 0, 0, .05);
+        }
+
+        .zona-card:hover {
+
+            transform:
+                perspective(1000px) rotateX(0deg) translateY(-8px);
+
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, .12);
+        }
+
+        .zona-card i {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .zona-card h5 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .zona-card span {
+            color: var(--gray);
+        }
+
+        .zona-terraza {
+            background: linear-gradient(135deg,
+                    #fff5d6,
+                    #fffdf3);
+        }
+
+        .zona-salon {
+            background: linear-gradient(135deg,
+                    #f4f4f4,
+                    white);
+        }
+
+        .zona-vip {
+            background: linear-gradient(135deg,
+                    #f6ebff,
+                    white);
+        }
+
+        /* ==========================
+   VISTA MESAS
+========================== */
+
+        .zona-header {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 14px;
+            background: #f7f8fa;
+        }
+
+        .layout-mesas {
+
+            position: relative;
+
+            width: 100%;
+            height: 450px;
+
+            background: #fafafa;
+
+            border-radius: 24px;
+
+            border: 2px dashed #ececec;
+
+            overflow: hidden;
+        }
+
+        /* ==========================
+   MESAS
+========================== */
+
+        .mesa {
+
+            position: absolute;
+
+            width: 72px;
+            height: 72px;
+
+            border-radius: 20px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .25s;
+        }
+
+        .mesa small {
+            font-size: 11px;
+        }
+
+        .mesa.libre {
+            background: #eef8f1;
+            color: #3d8b5c;
+        }
+
+        .mesa.ocupada {
+            background: #fdecee;
+            color: #bb3a4b;
+            cursor: not-allowed;
+        }
+
+        .mesa.selected {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.08);
+        }
+
+        .mesa:hover:not(.ocupada) {
+            transform: translateY(-3px);
+        }
+    </style>
 
 </head>
 
@@ -526,7 +712,7 @@
         <!-- TOPBAR -->
 
         <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
 
             <div class="title">
 
@@ -661,13 +847,57 @@
                     <input type="time">
                 </div>
 
-                <div class="form-group">
-                    <label>Mesa</label>
-                    <select>
-                        <option>Mesa 01</option>
-                        <option>Mesa 02</option>
-                        <option>Mesa VIP</option>
-                    </select>
+                <!-- VISTA ZONAS -->
+
+                <div id="zonasView">
+
+                    <h3>Seleccionar Zona</h3>
+                    <p>Elige una zona del restaurante</p>
+
+                    <div class="zonas-map">
+
+                        <div class="zona-card zona-terraza" data-zona="terraza">
+                            <i class="fa-solid fa-sun"></i>
+                            <h5>Terraza</h5>
+                            <span>8 mesas</span>
+                        </div>
+
+                        <div class="zona-card zona-salon" data-zona="salon">
+                            <i class="fa-solid fa-utensils"></i>
+                            <h5>Salón Principal</h5>
+                            <span>12 mesas</span>
+                        </div>
+
+                        <div class="zona-card zona-vip" data-zona="vip">
+                            <i class="fa-solid fa-crown"></i>
+                            <h5>VIP</h5>
+                            <span>4 mesas</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- VISTA MESAS -->
+
+                <div id="mesasView" style="display:none;">
+
+                    <div class="zona-header">
+
+                        <button id="volverBtn" class="back-btn">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+
+                        <div>
+                            <h3 id="zonaTitulo">Zona</h3>
+                            <p>Selecciona una o varias mesas</p>
+                        </div>
+
+                    </div>
+
+                    <div id="layoutMesas" class="layout-mesas"></div>
+
                 </div>
 
                 <button class="btn-primary">
@@ -681,21 +911,148 @@
     </main>
 
 
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
+    <script id="responsive-sidebar-upgrade-script">
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
 
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
+        menuToggle?.addEventListener("click", () => {
+            sidebar?.classList.toggle("open");
+            overlay?.classList.toggle("show");
+        });
 
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
+        overlay?.addEventListener("click", () => {
+            sidebar?.classList.remove("open");
+            overlay?.classList.remove("show");
+        });
+    </script>
+
+    <script>
+
+        const zonas = {
+
+            salon: {
+                nombre: "Salón Principal",
+                mesas: [
+                    { id: "M1", x: 50, y: 50, estado: "libre" },
+                    { id: "M2", x: 180, y: 50, estado: "ocupada" },
+                    { id: "M3", x: 310, y: 50, estado: "libre" },
+
+                    { id: "M4", x: 110, y: 180, estado: "libre" },
+                    { id: "M5", x: 260, y: 180, estado: "libre" },
+
+                    { id: "M6", x: 50, y: 320, estado: "ocupada" },
+                    { id: "M7", x: 180, y: 320, estado: "libre" },
+                    { id: "M8", x: 310, y: 320, estado: "libre" }
+                ]
+            },
+
+            terraza: {
+                nombre: "Terraza",
+                mesas: [
+                    { id: "T1", x: 60, y: 60, estado: "libre" },
+                    { id: "T2", x: 200, y: 60, estado: "libre" },
+                    { id: "T3", x: 340, y: 60, estado: "ocupada" },
+
+                    { id: "T4", x: 130, y: 220, estado: "libre" },
+                    { id: "T5", x: 280, y: 220, estado: "libre" }
+                ]
+            },
+
+            vip: {
+                nombre: "VIP",
+                mesas: [
+                    { id: "V1", x: 100, y: 120, estado: "libre" },
+                    { id: "V2", x: 260, y: 120, estado: "ocupada" },
+                    { id: "V3", x: 180, y: 280, estado: "libre" }
+                ]
+            }
+
+        };
+
+        let mesasSeleccionadas = [];
+
+        const zonasView = document.getElementById("zonasView");
+        const mesasView = document.getElementById("mesasView");
+        const layout = document.getElementById("layoutMesas");
+
+        document.querySelectorAll(".zona-card").forEach(card => {
+
+            card.addEventListener("click", () => {
+
+                const zona = card.dataset.zona;
+
+                abrirZona(zona);
+
+            });
+
+        });
+
+        function abrirZona(zona) {
+
+            zonasView.style.display = "none";
+            mesasView.style.display = "block";
+
+            document.getElementById("zonaTitulo").textContent =
+                zonas[zona].nombre;
+
+            renderMesas(zona);
+        }
+
+        function renderMesas(zona) {
+
+            layout.innerHTML = "";
+
+            zonas[zona].mesas.forEach(mesa => {
+
+                const el = document.createElement("div");
+
+                el.className = `mesa ${mesa.estado}`;
+
+                el.style.left = mesa.x + "px";
+                el.style.top = mesa.y + "px";
+
+                el.innerHTML = `
+            ${mesa.id}
+            <small>4 pax</small>
+        `;
+
+                if (mesa.estado === "libre") {
+
+                    el.addEventListener("click", () => {
+
+                        el.classList.toggle("selected");
+
+                        if (el.classList.contains("selected")) {
+                            mesasSeleccionadas.push(mesa.id);
+                        } else {
+                            mesasSeleccionadas =
+                                mesasSeleccionadas.filter(
+                                    m => m !== mesa.id
+                                );
+                        }
+
+                        console.log(mesasSeleccionadas);
+
+                    });
+
+                }
+
+                layout.appendChild(el);
+
+            });
+
+        }
+
+        document.getElementById("volverBtn")
+            .addEventListener("click", () => {
+
+                mesasView.style.display = "none";
+                zonasView.style.display = "block";
+
+            });
+
+    </script>
 
 </body>
 
