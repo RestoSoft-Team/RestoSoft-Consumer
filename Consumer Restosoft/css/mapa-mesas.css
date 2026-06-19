@@ -160,24 +160,29 @@ a { text-decoration: none; }
 .map-card {
     background: white; border-radius: var(--radius);
     padding: 30px; box-shadow: var(--shadow);
+    width: 100%; /* Asegura que no se desborde */
 }
 
 .map-header {
     display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 14px;
 }
 .map-header h3 { font-size: 24px; font-weight: 800; margin: 0; }
 
-.floating-toolbar { display: flex; gap: 12px; align-items: center; }
+.floating-toolbar { display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end; }
 
 .custom-input {
-    width: 220px; height: 48px; padding: 0 15px; border-radius: 14px;
+    width: 220px; height: 48px;
+    padding: 0 15px; border-radius: 14px;
     border: 2px solid var(--gray-light); background: var(--background);
-    color: var(--dark); font-weight: 600; cursor: pointer; outline: none; transition: var(--transition);
+    color: var(--dark); font-weight: 600; cursor: pointer; outline: none;
+    transition: var(--transition);
 }
 .custom-input:focus { border-color: var(--primary); background: var(--white); }
 
 .btn-refresh {
-    width: 48px; height: 48px; border: none; border-radius: 14px;
+    width: 48px; height: 48px; border: none;
+    border-radius: 14px;
     background: var(--background); color: var(--primary); font-size: 1.1rem;
     cursor: pointer; transition: var(--transition);
 }
@@ -186,10 +191,17 @@ a { text-decoration: none; }
 .canvas-container {
     background: var(--white); border-radius: 20px;
     border: 2px solid var(--gray-light); padding: 10px;
-    overflow: auto; display: flex; justify-content: center; align-items: center;
+    width: 100%; /* Crucial para responsividad */
+    overflow: hidden; /* Sin scrollbars */
+    display: flex;
+    justify-content: center; align-items: center;
 }
 
 #restaurantCanvas {
+    width: 100% !important; /* Adaptable */
+    height: auto !important; /* Mantiene proporciones */
+    max-width: 800px; /* Limite de tamaño */
+    aspect-ratio: 800 / 600; /* Fórmula perfecta */
     background: #fafafa; display: block; border-radius: 12px;
 }
 

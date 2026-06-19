@@ -395,10 +395,15 @@ body {
 }
 
 #restaurantCanvas {
-    background: #fafafa;
+    width: 100%;
+    height: auto;
+    max-width: 800px; 
+    aspect-ratio: 800 / 600;
     display: block;
-    cursor: crosshair;
-    border-radius: calc(var(--radius) - 10px);
+    background: #fafafa;
+    border: 1px solid #eef0f2;
+    border-radius: 12px;
+    box-sizing: border-box;
 }
 
 /* PANEL DE PROPIEDADES (DERECHA) */
