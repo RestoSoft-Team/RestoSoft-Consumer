@@ -1,5 +1,5 @@
 // Asegúrate de que apiMesas.js exporte: obtenerMesas(id) y obtenerZonas(id)
-import { api } from './apiMesas.js';
+import { api } from '../consumo/apiMesas.js';
 
 // 1. ESTADO GLOBAL
 const state = {
