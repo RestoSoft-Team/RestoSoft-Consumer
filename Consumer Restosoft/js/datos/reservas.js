@@ -1,4 +1,4 @@
-import { api } from '../consumo/apiReservas.js';
+import { apiReservas } from '../consumo/apiReservas.js';
 
 const state = {
     mesas: [],
@@ -17,7 +17,6 @@ const dom = {
     filtersContainer: document.getElementById('filtersContainer'),
     tablesGrid: document.getElementById('tablesGrid'),
 
-    // NUEVO PLANO
     zonasView: document.getElementById('zonasView'),
     mesasView: document.getElementById('mesasView'),
     layoutMesas: document.getElementById('layoutMesas'),

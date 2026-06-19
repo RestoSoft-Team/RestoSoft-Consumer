@@ -1,4 +1,4 @@
-import { api } from '../consumo/apiPlanoMesas.js';
+import { api } from './apiPlanoMesas.js';
 
 // 1. ESTADO GLOBAL Y VARIABLES DE FÍSICA
 const state = {
@@ -590,7 +590,7 @@ const detenerEventosRaton = () => {
                     y: nuevaY,
                     tipo: 'estándar',
                     disponibilidadPersonas: 4,
-                    estado: 'DISPONIBLE',
+                    estado: 'LIBRE',
                     idZona: idZonaSeleccionada,
                     numero: sugerenciaNumero
                 };
@@ -648,7 +648,7 @@ function drawGourmetTable(ctx, mesa, numeroGlobal, isSelected) {
     let strokeColor = "#4a121a";
 
     if (mesa.estado === 'OCUPADA') { mainColor = "#d32f2f"; strokeColor = "#7f0000"; }
-    else if (mesa.estado === 'INACTIVA') { mainColor = "#757575"; strokeColor = "#424242"; }
+    else if (mesa.estado === 'FUERA_SERVICIO') { mainColor = "#757575"; strokeColor = "#424242"; }
 
     if (isSelected) {
         ctx.shadowColor = "#ff9800";

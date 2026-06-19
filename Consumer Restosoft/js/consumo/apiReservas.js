@@ -1,59 +1,6 @@
 const API_BASE = "http://localhost:8080/api";
 
-export const api = {
-
-    // =====================
-    // MESAS
-    // =====================
-
-    obtenerMesas: async (idEmpresa) => {
-        try {
-            const response = await fetch(
-                `${API_BASE}/mesas/empresa/${idEmpresa}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al obtener mesas");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
-    },
-
-    // =====================
-    // ZONAS
-    // =====================
-
-    obtenerZonas: async (idEmpresa) => {
-        try {
-
-            const response = await fetch(
-                `${API_BASE}/zonas/empresa/${idEmpresa}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al obtener zonas");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
-    },
-
-    // =====================
-    // RESERVAS
-    // =====================
+export const apiReservas = {
 
     crearReserva: async (reserva, idsMesa) => {
 
