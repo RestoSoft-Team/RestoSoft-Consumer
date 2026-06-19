@@ -134,7 +134,7 @@ function renderTables() {
             <div class="table-card">
                 <div class="table-top">
                     <div class="table-number ${colorClass}">${mesa.numeroMesa}</div>
-                    <div class="table-status ${statusClass}">${mesa.estado}</div>
+                    <div class="table-status ${statusClass}">${mesa.estado == 'LIBRE' ? 'Disponible' : mesa.estado == 'OCUPADA' ? 'Ocupada' : mesa.estado == 'RESERVADA' ? 'Reservada' : 'Fuera de Servicio'}</div>
                 </div>
                 <h4>Mesa ${mesa.tipoMesa || 'Estándar'}</h4>
                 <p>${nombreZona} • ${mesa.disponibilidadPersonas} personas</p>
@@ -145,7 +145,7 @@ function renderTables() {
                         <strong>${mesa.disponibilidadPersonas} Personas</strong>
                     </div>
                     <div class="table-info-item">
-                        <span>Ubicación</span>
+                        <span>Ubicación</span> 
                         <strong>${nombreZona}</strong>
                     </div>
                 </div>
