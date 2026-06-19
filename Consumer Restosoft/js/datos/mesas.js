@@ -1,4 +1,4 @@
-import { api } from './apiMesas.js';
+import { api } from '../consumo/apiMesas.js';
 
 const state = {
     mesas: [],

@@ -1,4 +1,4 @@
-import { api } from './apiPlanoMesas.js';
+import { api } from '../consumo/apiPlanoMesas.js';
 
 // 1. ESTADO GLOBAL Y VARIABLES DE FÍSICA
 const state = {
