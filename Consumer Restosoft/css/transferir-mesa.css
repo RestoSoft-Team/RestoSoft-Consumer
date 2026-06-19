@@ -21,7 +21,13 @@
 body { background: var(--background); color: var(--dark); overflow-x: hidden; min-height: 100vh; padding-bottom: 40px; }
 
 /* WIZARD CONTAINER */
-.wizard-container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 30px; }
+.wizard-container {
+    margin-left: 280px; /* Ancho base del sidebar en escritorio */
+    transition: margin-left 0.3s ease;
+    padding: 30px;
+    width: auto;
+    box-sizing: border-box;
+}
 .top-nav { margin-bottom: -10px; }
 .wizard-header { text-align: center; margin-bottom: 10px; }
 .wizard-header h1 { font-size: 36px; font-weight: 800; color: var(--dark); }
@@ -36,7 +42,7 @@ body { background: var(--background); color: var(--dark); overflow-x: hidden; mi
 .step.active span { background: var(--primary); color: var(--white); box-shadow: 0 4px 12px rgba(107, 30, 40, 0.3); }
 
 /* WIZARD STEPS */
-.wizard-step { display: none; animation: fadeIn 0.4s ease-in-out forwards; }
+.wizard-step { display: none; animation: fadeIn 0.4s ease-in-out forwards;margin-top: 40px; }
 .wizard-step.active-step { display: block; }
 
 /* BOTONES */
@@ -99,14 +105,13 @@ canvas { width: 100% !important; height: auto !important; max-width: 800px; aspe
 /* RESPONSIVE */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 992px) {
-    .dual-map-container { grid-template-columns: 1fr; }
-    .stepper { padding: 15px 20px; }
-    .step span { width: 28px; height: 28px; font-size: 12px; }
-    .step:not(:last-child)::after { display: none; }
+    .wizard-container {
+        margin-left: 90px; /* Se encoge igual que el sidebar mini */
+    }
 }
 @media (max-width: 768px) {
-    .summary-grid { flex-direction: column; }
-    .summary-icon { transform: rotate(90deg); margin: -10px 0; }
-    .wizard-actions { flex-direction: column-reverse; }
-    .btn-primary-custom, .btn-outline-custom { width: 100%; justify-content: center; }
+    .wizard-container {
+        margin-left: 0; /* Ocupa toda la pantalla porque el sidebar ahora es flotante */
+        padding: 15px;
+    }
 }
