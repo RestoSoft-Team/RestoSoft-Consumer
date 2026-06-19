@@ -23,6 +23,8 @@ export const api = {
         }
     },
 
+    
+
     intercambiarMesas: async (idMesaA, idMesaB) => {
         try {
             const response = await fetch(`${API_BASE}/mesas/${idMesaA}/${idMesaB}`, {
