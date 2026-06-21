@@ -2,7 +2,98 @@ const API_BASE = "http://localhost:8080/api";
 
 export const apiReserva = {
 
-    crearReserva: async (reserva, idsMesa) => {
+    listarPorReservaId: async (idReserva) => {
+
+        try {
+
+            const response = await fetch(
+                `${API_BASE}/reserva-mesa/reserva/${idReserva}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al listar por reserva");
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.error("Fallo de API:", error);
+            return [];
+
+        }
+    },
+
+    listarPorEmpresaDiario: async (idEmpresa) => {
+
+        try {
+
+            const response = await fetch(
+                `${API_BASE}/reserva-mesa/empresa/${idEmpresa}/hoy`
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al listar reservas diarias");
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.error("Fallo de API:", error);
+            return [];
+
+        }
+    },
+
+    listarPorEmpresaGeneral: async (idEmpresa) => {
+
+        try {
+
+            const response = await fetch(
+                `${API_BASE}/reserva-mesa/empresa/${idEmpresa}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al listar reservas");
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.error("Fallo de API:", error);
+            return [];
+
+        }
+    },
+
+    listarPorMesaId: async (idMesa) => {
+
+        try {
+
+            const response = await fetch(
+                `${API_BASE}/reserva-mesa/mesa/${idMesa}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al listar reservas de la mesa");
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.error("Fallo de API:", error);
+            return [];
+
+        }
+    },
+
+    guardarReserva: async (
+        reserva,
+        idsMesa
+    ) => {
 
         try {
 
@@ -21,7 +112,7 @@ export const apiReserva = {
             );
 
             if (!response.ok) {
-                throw new Error("Error al crear reserva");
+                throw new Error("Error al guardar reserva");
             }
 
             return await response.json();
@@ -70,7 +161,6 @@ export const apiReserva = {
         }
     },
 
-
     eliminarReserva: async (idReserva) => {
 
         try {
@@ -82,11 +172,7 @@ export const apiReserva = {
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Error al eliminar reserva");
-            }
-
-            return true;
+            return response.ok;
 
         } catch (error) {
 
@@ -96,54 +182,7 @@ export const apiReserva = {
         }
     },
 
-
-    obtenerMesasReserva: async (idReserva) => {
-
-        try {
-
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/reserva/${idReserva}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al obtener mesas de la reserva");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
-    },
-
-
-    obtenerReservasMesa: async (idMesa) => {
-
-        try {
-
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/mesa/${idMesa}`
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al obtener reservas de la mesa");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
-    },
-
-
-    eliminarMesaDeReserva: async (
+    eliminarPorReservaYMesa: async (
         idReserva,
         idMesa
     ) => {
@@ -167,10 +206,7 @@ export const apiReserva = {
         }
     },
 
-
-    eliminarTodasMesasReserva: async (
-        idReserva
-    ) => {
+    eliminarPorReserva: async (idReserva) => {
 
         try {
 
@@ -189,5 +225,27 @@ export const apiReserva = {
             return false;
 
         }
+    },
+
+    listarClientes: async () => {
+        try {
+
+            const response = await fetch(
+                `${API_BASE}/usuarios/clientes`
+            );
+
+            if (!response.ok) {
+                throw new Error("Error al listar clientes");
+            }
+
+            return await response.json();
+
+        } catch (error) {
+
+            console.error("Fallo de API:", error);
+            return [];
+
+        }
     }
-};
+
+    }

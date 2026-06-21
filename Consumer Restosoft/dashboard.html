@@ -1,0 +1,955 @@
+<!doctype html>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard | RestSoft</title>
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --background: #fbfcfb;
+
+        --primary: #6b1e28;
+        --primary-light: #8a3b47;
+
+        --dark: #262f3c;
+        --dark-light: #364355;
+
+        --soft: #b09da2;
+        --soft-light: #d9d2d4;
+
+        --white: #ffffff;
+
+        --gray: #6f7782;
+
+        --success: #3d8b5c;
+        --warning: #d9a441;
+        --danger: #bb3a4b;
+
+        --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
+
+        --radius: 24px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: var(--background);
+        overflow-x: hidden;
+        color: var(--dark);
+      }
+
+      /* =========================
+           MAIN
+        ========================== */
+
+      .main {
+        margin-left: 280px;
+
+        padding: 35px;
+      }
+
+      /* =========================
+           TOPBAR
+        ========================== */
+
+      .topbar {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 35px;
+      }
+
+      .page-title h2 {
+        font-size: 34px;
+
+        font-weight: 800;
+
+        margin-bottom: 8px;
+      }
+
+      .page-title p {
+        color: var(--gray);
+
+        margin: 0;
+      }
+
+      .topbar-actions {
+        display: flex;
+
+        align-items: center;
+
+        gap: 18px;
+      }
+
+      .search-box {
+        background: white;
+
+        border: 1px solid #ececec;
+
+        border-radius: 18px;
+
+        padding: 14px 18px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        min-width: 320px;
+      }
+
+      .search-box input {
+        border: none;
+
+        outline: none;
+
+        width: 100%;
+
+        background: none;
+      }
+
+      .profile {
+        display: flex;
+
+        align-items: center;
+
+        gap: 14px;
+
+        background: white;
+
+        padding: 10px 16px;
+
+        border-radius: 18px;
+
+        border: 1px solid #ececec;
+      }
+
+      .profile img {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 14px;
+
+        object-fit: cover;
+      }
+
+      .profile h6 {
+        margin: 0;
+
+        font-weight: 700;
+      }
+
+      .profile span {
+        font-size: 13px;
+
+        color: var(--gray);
+      }
+
+      /* =========================
+           STATS
+        ========================== */
+
+      .stats-card {
+        background: white;
+
+        border-radius: 28px;
+
+        padding: 28px;
+
+        border: 1px solid #f0f0f0;
+
+        position: relative;
+
+        overflow: hidden;
+
+        transition: 0.35s;
+
+        height: 100%;
+      }
+
+      .stats-card:hover {
+        transform: translateY(-5px);
+
+        box-shadow: var(--shadow);
+      }
+
+      .stats-icon {
+        width: 68px;
+        height: 68px;
+
+        border-radius: 20px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 28px;
+
+        margin-bottom: 25px;
+      }
+
+      .icon-primary {
+        background: rgba(107, 30, 40, 0.08);
+
+        color: var(--primary);
+      }
+
+      .icon-dark {
+        background: rgba(38, 47, 60, 0.08);
+
+        color: var(--dark);
+      }
+
+      .icon-success {
+        background: rgba(61, 139, 92, 0.1);
+
+        color: var(--success);
+      }
+
+      .icon-warning {
+        background: rgba(217, 164, 65, 0.1);
+
+        color: var(--warning);
+      }
+
+      .stats-card h3 {
+        font-size: 34px;
+
+        font-weight: 800;
+
+        margin-bottom: 8px;
+      }
+
+      .stats-card p {
+        color: var(--gray);
+
+        margin: 0;
+      }
+
+      .stats-growth {
+        margin-top: 18px;
+
+        font-size: 14px;
+
+        font-weight: 600;
+      }
+
+      .growth-positive {
+        color: var(--success);
+      }
+
+      .growth-negative {
+        color: var(--danger);
+      }
+
+      /* =========================
+           TABLES
+        ========================== */
+
+      .custom-card {
+        background: white;
+
+        border-radius: 28px;
+
+        padding: 28px;
+
+        border: 1px solid #f0f0f0;
+      }
+
+      .card-header-custom {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 25px;
+      }
+
+      .card-header-custom h4 {
+        margin: 0;
+
+        font-weight: 800;
+      }
+
+      .btn-primary-custom {
+        background: var(--primary);
+
+        color: white;
+
+        border: none;
+
+        padding: 12px 22px;
+
+        border-radius: 16px;
+
+        font-weight: 600;
+
+        transition: 0.3s;
+      }
+
+      .btn-primary-custom:hover {
+        background: var(--primary-light);
+      }
+
+      .table {
+        margin: 0;
+      }
+
+      .table thead th {
+        border: none;
+
+        color: var(--gray);
+
+        font-weight: 600;
+
+        font-size: 14px;
+
+        padding-bottom: 18px;
+      }
+
+      .table tbody td {
+        border: none;
+
+        padding: 18px 0;
+
+        vertical-align: middle;
+      }
+
+      .status {
+        padding: 8px 14px;
+
+        border-radius: 12px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+      }
+
+      .status.pending {
+        background: rgba(217, 164, 65, 0.12);
+
+        color: var(--warning);
+      }
+
+      .status.completed {
+        background: rgba(61, 139, 92, 0.12);
+
+        color: var(--success);
+      }
+
+      .status.preparing {
+        background: rgba(107, 30, 40, 0.1);
+
+        color: var(--primary);
+      }
+
+      /* =========================
+           ACTIVITY
+        ========================== */
+
+      .activity-item {
+        display: flex;
+
+        gap: 16px;
+
+        margin-bottom: 22px;
+      }
+
+      .activity-icon {
+        width: 52px;
+        height: 52px;
+
+        border-radius: 16px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(107, 30, 40, 0.08);
+
+        color: var(--primary);
+
+        font-size: 20px;
+      }
+
+      .activity-item h6 {
+        margin-bottom: 6px;
+
+        font-weight: 700;
+      }
+
+      .activity-item p {
+        margin: 0;
+
+        color: var(--gray);
+
+        font-size: 14px;
+      }
+
+      /* =========================
+           CUSTOM NOTIFICATION
+        ========================== */
+
+      .notification {
+        position: fixed;
+
+        top: 30px;
+        right: 30px;
+
+        background: white;
+
+        border-radius: 22px;
+
+        padding: 22px;
+
+        width: 360px;
+
+        display: flex;
+
+        gap: 16px;
+
+        align-items: flex-start;
+
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+
+        transform: translateX(420px);
+
+        opacity: 0;
+
+        visibility: hidden;
+
+        transition: 0.4s;
+
+        z-index: 9999;
+
+        border-left: 6px solid var(--primary);
+      }
+
+      .notification.show {
+        transform: translateX(0);
+
+        opacity: 1;
+
+        visibility: visible;
+      }
+
+      .notification-icon {
+        width: 55px;
+        height: 55px;
+
+        border-radius: 16px;
+
+        background: rgba(107, 30, 40, 0.08);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: var(--primary);
+
+        font-size: 22px;
+      }
+
+      .notification h5 {
+        margin-bottom: 8px;
+
+        font-weight: 700;
+      }
+
+      .notification p {
+        margin: 0;
+
+        color: var(--gray);
+
+        line-height: 1.6;
+      }
+
+      .close-notification {
+        position: absolute;
+
+        top: 14px;
+        right: 14px;
+
+        background: none;
+
+        border: none;
+
+        color: #999;
+      }
+
+      /* =========================
+           RESPONSIVE
+        ========================== */
+    </style>
+    <style id="responsive-table-cards">
+      @media (max-width: 768px) {
+        .table-responsive table,
+        .table-responsive thead,
+        .table-responsive tbody,
+        .table-responsive th,
+        .table-responsive td,
+        .table-responsive tr {
+          display: block;
+          width: 100%;
+        }
+
+        .table-responsive thead {
+          display: none;
+        }
+
+        .table-responsive tr {
+          background: #fff;
+          margin-bottom: 16px;
+          border-radius: 12px;
+          padding: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          border: 1px solid #eee;
+        }
+
+        .table-responsive td {
+          border: none !important;
+          position: relative;
+          padding-left: 48% !important;
+          padding-top: 10px !important;
+          padding-bottom: 10px !important;
+          min-height: 42px;
+          text-align: left !important;
+        }
+
+        .table-responsive td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 12px;
+          top: 10px;
+          width: 42%;
+          font-weight: 700;
+          white-space: nowrap;
+          color: #555;
+        }
+      }
+    </style>
+
+    <style id="dynamic-sidebar-style"></style>
+
+    <style id="responsive-sidebar-upgrade"></style>
+    <link rel="stylesheet" href="./css/sidebar.css" />
+  </head>
+
+  <body>
+    <!-- =========================
+     NOTIFICATION
+========================== -->
+    <div class="notification" id="notification">
+      <div class="notification-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <h5 id="notificationTitle">Acción completada</h5>
+        <p id="notificationText">El sistema se actualizó correctamente.</p>
+      </div>
+      <button class="close-notification" onclick="hideNotification()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <!-- =========================
+     SIDEBAR
+========================== -->
+     <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3>RestSoft</h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item active" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="configuracion-general.html">General</a
+        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
+    </div>
+    <!-- =========================
+     MAIN
+========================== -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <div class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <button id="menuToggle" class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="page-title">
+          <h2>Dashboard</h2>
+          <p>Bienvenido nuevamente al sistema administrativo.</p>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+            <input placeholder="Buscar..." type="text" />
+          </div>
+          <div class="profile">
+            <img alt="" src="https://i.pravatar.cc/100" />
+            <div>
+              <h6>Carlos Admin</h6>
+              <span> Administrador </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- STATS -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+          <div class="stats-card">
+            <div class="stats-icon icon-primary">
+              <i class="fa-solid fa-dollar-sign"></i>
+            </div>
+            <h3>$24,850</h3>
+            <p>Ventas del día</p>
+            <div class="stats-growth growth-positive">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+
+              +12.5%
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="stats-card">
+            <div class="stats-icon icon-dark">
+              <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <h3>148</h3>
+            <p>Pedidos activos</p>
+            <div class="stats-growth growth-positive">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+
+              +8.2%
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="stats-card">
+            <div class="stats-icon icon-success">
+              <i class="fa-solid fa-chair"></i>
+            </div>
+            <h3>18 / 25</h3>
+            <p>Mesas ocupadas</p>
+            <div class="stats-growth growth-positive">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+
+              Alta demanda
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="stats-card">
+            <div class="stats-icon icon-warning">
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3>5</h3>
+            <p>Productos críticos</p>
+            <div class="stats-growth growth-negative">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+
+              Revisar stock
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div class="row g-4">
+        <!-- TABLE -->
+        <div class="col-lg-8">
+          <div class="custom-card">
+            <div class="card-header-custom">
+              <h4>Pedidos recientes</h4>
+              <button
+                class="btn-primary-custom"
+                onclick="
+                  showNotification(
+                    'Pedido creado',
+                    'Se registró correctamente un nuevo pedido.',
+                  )
+                "
+              >
+                <i class="fa-solid fa-plus"></i>
+
+                Nuevo Pedido
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Mesa</th>
+                    <th>Cliente</th>
+                    <th>Estado</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="ID">#1024</td>
+                    <td data-label="Mesa">Mesa 12</td>
+                    <td data-label="Cliente">Juan Pérez</td>
+                    <td data-label="Estado">
+                      <span class="status preparing"> Preparando </span>
+                    </td>
+                    <td data-label="Total">$520</td>
+                  </tr>
+                  <tr>
+                    <td data-label="ID">#1025</td>
+                    <td data-label="Mesa">Mesa 7</td>
+                    <td data-label="Cliente">María López</td>
+                    <td data-label="Estado">
+                      <span class="status pending"> Pendiente </span>
+                    </td>
+                    <td data-label="Total">$890</td>
+                  </tr>
+                  <tr>
+                    <td data-label="ID">#1026</td>
+                    <td data-label="Mesa">Mesa 3</td>
+                    <td data-label="Cliente">Carlos Ruiz</td>
+                    <td data-label="Estado">
+                      <span class="status completed"> Completado </span>
+                    </td>
+                    <td data-label="Total">$1,240</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- ACTIVITY -->
+        <div class="col-lg-4">
+          <div class="custom-card">
+            <div class="card-header-custom">
+              <h4>Actividad reciente</h4>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+              </div>
+              <div>
+                <h6>Nuevo pedido registrado</h6>
+                <p>Hace 5 minutos</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <div>
+                <h6>Inventario actualizado</h6>
+                <p>Hace 15 minutos</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+              <div>
+                <h6>Empleado ingresó turno</h6>
+                <p>Hace 30 minutos</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+              <div>
+                <h6>Corte de caja completado</h6>
+                <p>Hace 1 hora</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================
+     JS
+========================== -->
+
+    <script>
+      const notification = document.getElementById("notification");
+
+      const notificationTitle = document.getElementById("notificationTitle");
+
+      const notificationText = document.getElementById("notificationText");
+
+      let notificationTimeout;
+
+      function showNotification(title, text) {
+        notificationTitle.textContent = title;
+
+        notificationText.textContent = text;
+
+        notification.classList.add("show");
+
+        clearTimeout(notificationTimeout);
+
+        notificationTimeout = setTimeout(() => {
+          hideNotification();
+        }, 4000);
+      }
+
+      function hideNotification() {
+        notification.classList.remove("show");
+      }
+    </script>
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/datos/sidebar.js"></script>
+  </body>
+</html>

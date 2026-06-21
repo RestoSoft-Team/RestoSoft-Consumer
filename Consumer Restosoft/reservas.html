@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>RestoSoft - Reservas</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/reservas.css" />
+  </head>
+
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3>RestSoft</h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="active" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="configuracion-general.html">General</a
+        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
+    </div>
+
+    <main class="main">
+      <div class="topbar">
+        <button id="menuToggle" class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="title">
+          <h1>Reservas</h1>
+          <p>Gestión de reservas en tiempo real del restaurante</p>
+        </div>
+        <div class="topbar-right">
+          <div class="search">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" placeholder="Buscar reserva..." />
+          </div>
+          <div class="profile">
+            <img src="https://i.pravatar.cc/100?img=12" alt="Perfil" />
+            <div>
+              <strong>Admin</strong>
+              <div style="font-size: 13px; color: var(--gray)">Manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Reservas de hoy</h3>
+          <p>Listado general de reservas agrupadas</p>
+          <div id="listaReservasContainer">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando reservas...
+            </p>
+          </div>
+        </div>
+
+        <div class="card" id="wizardContainer">
+          <div id="panelFormulario" class="action-panel active">
+            <div class="card-header-info">
+              <div>
+                <h3 id="formTitulo">Nueva Reserva</h3>
+                <p id="formSubtitulo" style="color: var(--gray); margin: 0">
+                  Crear una reserva rápidamente
+                </p>
+              </div>
+              <button
+                id="btnCancelarEdicion"
+                class="btn-outline"
+                style="display: none; padding: 8px 16px"
+              >
+                <i class="fa-solid fa-xmark"></i> Cancelar
+              </button>
+            </div>
+
+            <div id="vistaPrincipalForm">
+              <div class="form-group">
+                <label>Cliente</label>
+                <div id="selectorCliente" class="cliente-selector">
+                  <div class="cliente-selector-content">
+                    <i class="fa-solid fa-user"></i>
+                    <span id="clienteSeleccionado">Seleccionar cliente</span>
+                  </div>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+                <input type="hidden" id="idCliente" />
+              </div>
+
+              <div
+                class="grid"
+                style="grid-template-columns: 1fr 1fr; gap: 15px"
+              >
+                <div class="form-group">
+                  <label>Fecha</label>
+                  <input id="fechaReserva" type="date" />
+                </div>
+                <div class="form-group">
+                  <label>Hora</label>
+                  <input id="horaReserva" type="time" />
+                </div>
+              </div>
+
+              <div
+                class="form-group"
+                style="display: none"
+                id="contenedorEstado"
+              >
+                <label>Estado</label>
+                <select id="estadoReserva">
+                  <option value="PENDIENTE">Pendiente</option>
+                  <option value="CONFIRMADA">Confirmada</option>
+                  <option value="ACTIVA">Activa</option>
+                  <option value="CANCELADA">Cancelada</option>
+                  <option value="FINALIZADA">Finalizada</option>
+                </select>
+              </div>
+
+              <div id="zonasView">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-end;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div>
+                    <label style="margin: 0; font-weight: 700"
+                      >Mesas asignadas</label
+                    >
+                    <p
+                      style="color: var(--gray); font-size: 13px; margin: 0"
+                      id="infoComensales"
+                    >
+                      Capacidad: 0 personas
+                    </p>
+                  </div>
+                </div>
+                <div class="zonas-map" id="tablesGrid"></div>
+              </div>
+
+              <div
+                class="actions"
+                style="margin-top: 20px"
+                id="contenedorBotonesForm"
+              >
+                <button id="btnGuardarReserva" class="btn-primary">
+                  Crear Reserva
+                </button>
+              </div>
+            </div>
+
+            <div id="mesasView" style="display: none">
+              <div class="zona-header">
+                <button id="volverBtn" class="back-btn">
+                  <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div>
+                  <h3 id="zonaTitulo"></h3>
+                  <p style="margin: 0">Selecciona una o varias mesas</p>
+                </div>
+              </div>
+              <div id="layoutMesas" class="layout-mesas"></div>
+              <button
+                id="btnConfirmarMesas"
+                class="btn-primary"
+                style="margin-top: 20px"
+              >
+                Confirmar Mesas
+              </button>
+            </div>
+          </div>
+
+          <div id="panelEliminar" class="action-panel">
+            <h3 style="color: var(--danger); margin-bottom: 5px">
+              Eliminar Reserva
+            </h3>
+            <p>¿Estás seguro de que deseas eliminar esta reserva?</p>
+
+            <div class="info-box" id="infoEliminarContenedor"></div>
+
+            <div class="actions" style="margin-top: 20px">
+              <button id="btnConfirmarEliminar" class="btn-danger">
+                Sí, Eliminar
+              </button>
+              <button id="btnCancelarEliminar" class="btn-outline">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal-clientes" id="modalClientes">
+      <div class="modal-clientes-card">
+        <div class="modal-clientes-header">
+          <h3 style="margin: 0">Seleccionar Cliente</h3>
+          <button
+            id="cerrarModalClientes"
+            class="btn-outline"
+            style="border: none; padding: 8px 12px"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-clientes-search search">
+          <i class="fa-solid fa-search"></i>
+          <input
+            type="text"
+            id="buscarCliente"
+            placeholder="Buscar por nombre..."
+          />
+        </div>
+        <div class="clientes-list" id="clientesList"></div>
+      </div>
+    </div>
+
+    <div id="notification" class="notification">
+      <div class="notification-body">
+        <i id="notificationIcon"></i>
+        <div class="notification-text-content">
+          <strong id="notificationTitle"></strong>
+          <p id="notificationText"></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="pantalla-carga" class="loader-overlay oculto">
+      <lottie-player
+        src="complementos/loader.lottie"
+        background="transparent"
+        speed="1"
+        style="width: 200px; height: 200px"
+        loop
+        autoplay
+      >
+      </lottie-player>
+      <p>Cargando datos...</p>
+    </div>
+    
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js"></script>
+    <script type="module" src="js/datos/reservas.js"></script>
+    <script type="module" src="js/datos/sidebar.js"></script>
+  </body>
+</html>
