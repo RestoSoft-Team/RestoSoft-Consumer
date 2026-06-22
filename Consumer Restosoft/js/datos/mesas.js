@@ -1,13 +1,22 @@
-import { api } from './apiMesas.js';
+import { api } from '../consumo/apiMesas.js';
 
 const state = {
     mesas: [],
     zonas: [],
     filtroActivo: 'todas' 
 };
+const cache = {
+    datos: null,
+    ultimaVez: 0,
+    TTL: 60000 // 60 segundos de validez
+};
 
 // Referencias al DOM
 const dom = {
+    dashboardContent: document.getElementById('dashboard-content'),
+    errorState: document.getElementById('error-state'),
+    errorMessage: document.getElementById('error-message'),
+
     statDisponibles: document.getElementById('stat-disponibles'),
     statOcupadas: document.getElementById('stat-ocupadas'),
     statReservadas: document.getElementById('stat-reservadas'),
@@ -16,24 +25,122 @@ const dom = {
     tablesGrid: document.getElementById('tablesGrid')
 };
 
-// 1. INICIALIZACIÓN
+// 1. Función única y robusta de reintento
+const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+async function fetchConBackoff(idEmpresa, intento = 0) {
+    const MAX_INTENTOS = 5;
+    const DELAY_BASE = 1000; // 1 segundo base
+    
+    try {
+        console.log(`Intento de conexión: ${intento + 1}`);
+        
+        const [mesas, zonas] = await Promise.all([
+            api.obtenerMesas(idEmpresa),
+            api.obtenerZonas(idEmpresa)
+        ]);
+
+        // Si recibimos datos, terminamos
+        if (mesas && mesas.length > 0) return { mesas, zonas };
+
+        // Si están vacíos, forzamos el catch para reintentar
+        throw new Error("EMPTY_DATA");
+
+    } catch (error) {
+        if (intento < MAX_INTENTOS) {
+            // Crecimiento exponencial: 1s, 2s, 4s, 8s...
+            const tiempoEspera = DELAY_BASE * Math.pow(2, intento);
+            
+            console.warn(`Intento ${intento + 1} fallido. Reintentando en ${tiempoEspera}ms...`);
+            
+            await sleep(tiempoEspera);
+            return fetchConBackoff(idEmpresa, intento + 1);
+        }
+        
+        // Si agotamos todos los intentos, lanzamos error final
+        throw new Error("SERVICE_UNAVAILABLE");
+    }
+}
+
+
+async function obtenerDatosOptimizados(idEmpresa) {
+    const ahora = Date.now();
+    
+    // Si tenemos datos y no han pasado 60 segundos
+    if (cache.datos && (ahora - cache.ultimaVez < cache.TTL)) {
+        console.log("Datos cargados desde memoria (Caché)");
+        return cache.datos;
+    }
+
+    // Llamamos al fetch, y esperamos la respuesta
+    const data = await fetchConBackoff(idEmpresa);
+    
+    // Guardamos en caché
+    cache.datos = data;
+    cache.ultimaVez = ahora;
+    
+    return data;
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
-    const ID_EMPRESA = 1; 
+    const ID_EMPRESA = 1;
+    renderSkeletonCards();
 
-    dom.tablesGrid.innerHTML = '<p>Cargando información del restaurante...</p>';
+    try {
+        const { mesas, zonas } = await obtenerDatosOptimizados(ID_EMPRESA);
 
-    const [mesasData, zonasData] = await Promise.all([
-        api.obtenerMesas(ID_EMPRESA),
-        api.obtenerZonas(ID_EMPRESA)
-    ]);
+        state.mesas = mesas;
+        state.zonas = zonas;
 
-    state.mesas = mesasData;
-    state.zonas = zonasData;
+        renderStats();
+        renderFilters();
+        renderTables();
 
-    renderStats();
-    renderFilters();
-    renderTables();
+        setInterval(async () => {
+            console.log("Iniciando actualización en segundo plano...");
+            
+            cache.datos = null; 
+            cache.ultimaVez = 0; 
+            
+            try {
+                const { mesas, zonas } = await obtenerDatosOptimizados(ID_EMPRESA);
+                
+                state.mesas = mesas;
+                state.zonas = zonas;
+
+                renderStats();
+                renderTables(); 
+                
+                console.log("Actualización exitosa.");
+            } catch (error) {
+                console.error("El refresco automático falló, pero la UI se mantiene estable:", error);
+            }
+        }, 60000); 
+
+    } catch (error) {
+        console.error("Error final:", error);
+        mostrarError("El servicio no está disponible tras varios intentos. Contacta con el proveedor.");
+    }
 });
+
+
+
+// Función de Esqueletos
+function renderSkeletonCards() {
+    let skeletons = '';
+    for(let i = 0; i < 8; i++) { // Mostramos 8 tarjetas base para que se vea lleno
+        skeletons += `<div class="skeleton skeleton-card"></div>`;
+    }
+    dom.tablesGrid.innerHTML = skeletons;
+}
+
+// Función de Estado de Error
+function mostrarError(mensaje) {
+    dom.dashboardContent.style.display = 'none';
+    dom.errorState.style.display = 'flex';
+    dom.errorMessage.textContent = mensaje;
+}
 
 // 2. RENDERIZAR ESTADÍSTICAS
 function renderStats() {
@@ -51,7 +158,6 @@ function renderStats() {
 // 3. RENDERIZAR FILTROS DINÁMICOS
 function renderFilters() {
     dom.filtersContainer.innerHTML = '';
-
     const filtrosBase = [
         { id: 'todas', texto: 'Todas' },
         { id: 'estado-LIBRE', texto: 'Disponibles' },
@@ -61,22 +167,11 @@ function renderFilters() {
     ];
 
     const botonesHTML = filtrosBase.map(f => crearBotonFiltro(f.id, f.texto));
-    
     state.zonas.forEach(zona => {
         botonesHTML.push(crearBotonFiltro(`zona-${zona.id}`, zona.nombreZona));
     });
 
     dom.filtersContainer.innerHTML = botonesHTML.join('');
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-
-            state.filtroActivo = e.target.dataset.filterId;
-            renderTables();
-        });
-    });
 }
 
 function crearBotonFiltro(id, texto) {
@@ -97,7 +192,7 @@ function renderTables() {
     }
 
     if (mesasFiltradas.length === 0) {
-        dom.tablesGrid.innerHTML = '<p style="color:var(--gray);">No hay mesas en esta categoría.</p>';
+        dom.tablesGrid.innerHTML = '<p style="color:var(--gray); grid-column: 1/-1;">No hay mesas en esta categoría.</p>';
         return;
     }
 
@@ -134,7 +229,7 @@ function renderTables() {
             <div class="table-card">
                 <div class="table-top">
                     <div class="table-number ${colorClass}">${mesa.numeroMesa}</div>
-                    <div class="table-status ${statusClass}">${mesa.estado}</div>
+                    <div class="table-status ${statusClass}">${mesa.estado == 'LIBRE' ? 'Disponible' : mesa.estado == 'OCUPADA' ? 'Ocupada' : mesa.estado == 'RESERVADA' ? 'Reservada' : 'Fuera de Servicio'}</div>
                 </div>
                 <h4>Mesa ${mesa.tipoMesa || 'Estándar'}</h4>
                 <p>${nombreZona} • ${mesa.disponibilidadPersonas} personas</p>
@@ -145,7 +240,7 @@ function renderTables() {
                         <strong>${mesa.disponibilidadPersonas} Personas</strong>
                     </div>
                     <div class="table-info-item">
-                        <span>Ubicación</span>
+                        <span>Ubicación</span> 
                         <strong>${nombreZona}</strong>
                     </div>
                 </div>
@@ -161,8 +256,14 @@ function renderTables() {
             </div>
         `;
     });
-
-    dom.tablesGrid.innerHTML = htmlTarjetas.join('');
+    const divTemporal = document.createElement('div');
+    divTemporal.innerHTML = htmlTarjetas.join('');
+    const fragment = document.createDocumentFragment();
+    while (divTemporal.firstChild) {
+        fragment.appendChild(divTemporal.firstChild);
+    }
+    dom.tablesGrid.innerHTML = '';
+    dom.tablesGrid.appendChild(fragment);
 }
 
 window.showNotification = function() {
@@ -174,3 +275,13 @@ window.showNotification = function() {
         }, 3000);
     }
 };
+dom.filtersContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+
+    dom.filtersContainer.querySelector('.active')?.classList.remove('active');
+    btn.classList.add('active');
+
+    state.filtroActivo = btn.dataset.filterId;
+    renderTables();
+});

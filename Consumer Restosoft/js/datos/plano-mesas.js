@@ -459,11 +459,20 @@ canvas.addEventListener("mousedown", (e) => {
     }
 
     const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
+    
+    // 1. CALCULAR FACTORES DE ESCALA EN TIEMPO REAL
+    // Compara la resolución interna fija (800) con el tamaño real en pantalla (rect.width)
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
+    // 2. CONVERTIR CLIC FÍSICO A COORDENADAS VIRTUALES (Espacio 800x600)
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
+    // La detección de colisión/hitbox ahora usa las coordenadas transformadas
     let mesaClickeada = state.mesas.find(m => {
         if (m.idZona !== idZonaSeleccionada) return false;
+    
         if (m.disponibilidadPersonas > 6) {
             return Math.abs(clickX - m.x) <= 35 && Math.abs(clickY - m.y) <= 23;
         } else {
@@ -492,12 +501,12 @@ canvas.addEventListener("mousedown", (e) => {
             t.originalX = t.x;
             t.originalY = t.y;
         });
-
         renderPropertiesPanel();
     } else {
         isSelecting = true;
         isClickForCreation = true;
-        selStartX = clickX; selStartY = clickY;
+        selStartX = clickX;
+        selStartY = clickY;
         selCurrX = clickX; selCurrY = clickY;
 
         if (!e.ctrlKey) state.selectedTables = [];
@@ -508,8 +517,12 @@ canvas.addEventListener("mousedown", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    const mouseY = (e.clientY - rect.top) * scaleY;
 
     if (isDragging) {
         state.selectedTables.forEach(t => {
@@ -590,7 +603,7 @@ const detenerEventosRaton = () => {
                     y: nuevaY,
                     tipo: 'estándar',
                     disponibilidadPersonas: 4,
-                    estado: 'DISPONIBLE',
+                    estado: 'LIBRE',
                     idZona: idZonaSeleccionada,
                     numero: sugerenciaNumero
                 };
@@ -644,56 +657,78 @@ function drawGourmetTable(ctx, mesa, numeroGlobal, isSelected) {
     const C = parseInt(mesa.disponibilidadPersonas) || 4;
     ctx.save();
 
-    let mainColor = "#6b1e28";
+    // Colores base (DISPONIBLE por defecto)
+    let mainColor = "#22521b"; 
     let strokeColor = "#4a121a";
 
-    if (mesa.estado === 'OCUPADA') { mainColor = "#d32f2f"; strokeColor = "#7f0000"; }
-    else if (mesa.estado === 'INACTIVA') { mainColor = "#757575"; strokeColor = "#424242"; }
+    // Asignación de colores según estado
+    if (mesa.estado === 'OCUPADA') { 
+        mainColor = "#d32f2f"; strokeColor = "#7f0000";
+    } else if (mesa.estado === 'RESERVADA') { 
+        mainColor = "#ff9800"; strokeColor = "#e65100";
+    } else if (mesa.estado === 'FUERA_SERVICIO' || mesa.estado === 'INACTIVA') { 
+        mainColor = "#757575"; strokeColor = "#424242";
+    }
 
+    // Brillo de Selección (Solo para el Editor)
     if (isSelected) {
         ctx.shadowColor = "#ff9800";
         ctx.shadowBlur = 12;
         strokeColor = "#e65100";
     }
 
+    // Dibujo de Mesa Rectangular (Imperial XL)
     if (C > 6) {
-        const width = 64; const height = 36;
-        const xPos = mesa.x - width / 2; const yPos = mesa.y - height / 2;
+        const width = 96;  
+        const height = 54; 
+        const xPos = mesa.x - width / 2; 
+        const yPos = mesa.y - height / 2;
 
-        ctx.fillStyle = "#333333"; ctx.shadowBlur = 0;
+        ctx.fillStyle = "#333333"; 
+        ctx.shadowBlur = 0; // Apagamos la sombra para las sillas
         let sillasPorLado = Math.ceil((C - 2) / 2);
         let gapX = width / (sillasPorLado + 1);
 
         for (let i = 1; i <= sillasPorLado; i++) {
-            ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos - 5, 4, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos + height + 5, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos - 6, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos + height + 6, 6, 0, Math.PI * 2); ctx.fill();
         }
-        ctx.beginPath(); ctx.arc(xPos - 5, mesa.y, 4, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(xPos + width + 5, mesa.y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(xPos - 6, mesa.y, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(xPos + width + 6, mesa.y, 6, 0, Math.PI * 2); ctx.fill();
 
-        if (isSelected) { ctx.shadowBlur = 12; }
-        ctx.fillStyle = mainColor; ctx.strokeStyle = strokeColor; ctx.lineWidth = isSelected ? 3 : 1.5;
-        ctx.beginPath(); ctx.roundRect(xPos, yPos, width, height, 6); ctx.fill(); ctx.stroke();
+        if (isSelected) ctx.shadowBlur = 12; // Encendemos la sombra para la mesa
+        ctx.fillStyle = mainColor; ctx.strokeStyle = strokeColor; ctx.lineWidth = isSelected ? 3 : 2;
+        ctx.beginPath(); ctx.roundRect(xPos, yPos, width, height, 8); ctx.fill(); ctx.stroke();
+        
     } else {
-        const radius = 18;
-        ctx.fillStyle = "#333333"; ctx.shadowBlur = 0;
+        // Dibujo de Mesa Redonda/Cuadrada (XL)
+        const radius = 27; 
+        ctx.fillStyle = "#333333"; 
+        ctx.shadowBlur = 0; // Apagamos la sombra para las sillas
+        
         for (let i = 0; i < C; i++) {
             const angle = (i * 2 * Math.PI) / C;
-            const chairX = mesa.x + (radius + 6) * Math.cos(angle);
-            const chairY = mesa.y + (radius + 6) * Math.sin(angle);
-            ctx.beginPath(); ctx.arc(chairX, chairY, 4, 0, Math.PI * 2); ctx.fill();
+            const chairX = mesa.x + (radius + 8) * Math.cos(angle);
+            const chairY = mesa.y + (radius + 8) * Math.sin(angle);
+            ctx.beginPath(); ctx.arc(chairX, chairY, 6, 0, Math.PI * 2); ctx.fill();
         }
 
-        if (isSelected) { ctx.shadowBlur = 12; }
-        ctx.fillStyle = mainColor; ctx.strokeStyle = strokeColor; ctx.lineWidth = isSelected ? 3 : 1.5;
+        if (isSelected) ctx.shadowBlur = 12; // Encendemos la sombra para la mesa
+        ctx.fillStyle = mainColor; ctx.strokeStyle = strokeColor; ctx.lineWidth = isSelected ? 3 : 2;
         ctx.beginPath();
-        if (mesa.tipo === 'redonda') ctx.arc(mesa.x, mesa.y, radius, 0, Math.PI * 2);
-        else ctx.roundRect(mesa.x - radius, mesa.y - radius, radius * 2, radius * 2, 4);
+        if (mesa.tipo === 'redonda') {
+            ctx.arc(mesa.x, mesa.y, radius, 0, Math.PI * 2);
+        } else {
+            ctx.roundRect(mesa.x - radius, mesa.y - radius, radius * 2, radius * 2, 6);
+        }
         ctx.fill(); ctx.stroke();
     }
 
-    ctx.shadowBlur = 0; ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 11px Inter, Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 14px Inter, Arial"; 
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(numeroGlobal, mesa.x, mesa.y);
     ctx.restore();
 }
@@ -775,9 +810,10 @@ function renderPropertiesPanel() {
             <div>
                 <label style="font-size: 12px; color: var(--gray);">Estado Actual</label>
                 <select id="editEstado" class="custom-input" style="width: 100%; margin-top: 5px;">
-                    <option value="DISPONIBLE" ${refTable.estado === 'DISPONIBLE' ? 'selected' : ''}>Disponible (Borgoña)</option>
+                    <option value="DISPONIBLE" ${refTable.estado === 'DISPONIBLE' || refTable.estado === 'LIBRE' ? 'selected' : ''}>Disponible (Borgoña)</option>
                     <option value="OCUPADA" ${refTable.estado === 'OCUPADA' ? 'selected' : ''}>Ocupada (Rojo)</option>
-                    <option value="INACTIVA" ${refTable.estado === 'INACTIVA' ? 'selected' : ''}>Inactiva (Gris)</option>
+                    <option value="RESERVADA" ${refTable.estado === 'RESERVADA' ? 'selected' : ''}>Reservada (Naranja)</option>
+                    <option value="FUERA_SERVICIO" ${refTable.estado === 'FUERA_SERVICIO' || refTable.estado === 'INACTIVA' ? 'selected' : ''}>Fuera de Servicio (Gris)</option>
                 </select>
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
