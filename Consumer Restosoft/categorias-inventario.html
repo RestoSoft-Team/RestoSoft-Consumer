@@ -5,52 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestSoft — Categorías de Inventario</title>
-
-    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Google Fonts -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/css/sidebar.css">
     <style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
         :root {
-
             --background: #fbfcfb;
-
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-
             --dark: #262f3c;
             --dark-light: #39485c;
-
             --soft: #b09da2;
             --soft-light: #d9d2d4;
-
             --white: #ffffff;
-
             --gray: #6f7782;
-
             --success: #3d8b5c;
             --warning: #d9a441;
             --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
             --radius: 24px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -72,10 +51,6 @@
         .layout {
             display: flex;
         }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
 
         .sidebar {
             width: 280px;
@@ -174,19 +149,11 @@
             margin: 0;
         }
 
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
             padding: 34px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -271,10 +238,6 @@
             font-size: 13px;
         }
 
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
-
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -306,10 +269,6 @@
             color: white;
         }
 
-        /* =========================================================
-           CARDS
-        ========================================================== */
-
         .card-premium {
             background: white;
             border-radius: 28px;
@@ -322,10 +281,6 @@
         .card-premium:hover {
             transform: translateY(-5px);
         }
-
-        /* =========================================================
-           STATS
-        ========================================================== */
 
         .stats-grid {
             display: grid;
@@ -377,9 +332,15 @@
             color: var(--warning);
         }
 
-        /* =========================================================
-           CATEGORY GRID
-        ========================================================== */
+        .danger-soft {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        .info-soft {
+            background: rgba(13, 110, 253, .12);
+            color: #0d6efd;
+        }
 
         .category-grid {
             display: grid;
@@ -432,6 +393,7 @@
             color: var(--gray);
             line-height: 1.7;
             margin-bottom: 24px;
+            min-height: 48px;
         }
 
         .category-meta {
@@ -445,21 +407,23 @@
             border-radius: 14px;
             font-size: 13px;
             font-weight: 600;
+            text-transform: capitalize;
         }
 
-        .badge-success {
+        .badge-activa,
+        .badge-estable {
             background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
-        .badge-warning {
+        .badge-alta-rotacion {
             background: rgba(217, 164, 65, .15);
             color: var(--warning);
         }
 
-        .badge-primary {
-            background: rgba(107, 30, 40, .12);
-            color: var(--primary);
+        .badge-inactiva {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
         }
 
         .category-count {
@@ -467,10 +431,6 @@
             font-size: 14px;
             font-weight: 600;
         }
-
-        /* =========================================================
-           FORM
-        ========================================================== */
 
         .form-card {
             margin-top: 30px;
@@ -490,661 +450,228 @@
             margin: 0;
         }
 
-        .input-premium {
+        .input-premium,
+        .select-premium,
+        .textarea-premium {
             width: 100%;
             background: #f7f8fa;
-            border: none;
+            border: 1px solid transparent;
             border-radius: 16px;
-            min-height: 55px;
             padding: 14px 18px;
             transition: .3s;
             margin-bottom: 20px;
+            font-size: 15px;
+            color: var(--dark);
         }
 
-        .input-premium:focus {
-            border: 1px solid var(--primary);
+        .input-premium:focus,
+        .select-premium:focus,
+        .textarea-premium:focus {
+            border-color: var(--primary);
             outline: none;
             box-shadow: none;
             background: white;
         }
 
-        textarea.input-premium {
-            min-height: 120px;
+        .textarea-premium {
+            min-height: 110px;
             resize: none;
         }
 
-        /* =========================================================
-           UPLOAD
-        ========================================================== */
-
-        .upload-box {
-            border: 2px dashed #d9d9d9;
-            border-radius: 22px;
-            background: #fafafa;
-            padding: 50px 30px;
-            text-align: center;
-            transition: .3s;
-            cursor: pointer;
-            margin-top: 8px;
+        .select-premium {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23262f3c'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 24px;
         }
 
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: white;
+        /* Estilo personalizado para las alertas de SweetAlert acorde al tema */
+        .resto-swal-popup {
+            border-radius: 24px !important;
+            font-family: 'Inter', sans-serif !important;
         }
 
-        .upload-box i {
-            font-size: 40px;
-            color: var(--primary);
-            margin-bottom: 16px;
-        }
-
-        .upload-box h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .upload-box p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
-
-        .notification {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            width: 360px;
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            border-left: 5px solid var(--success);
-            display: flex;
-            gap: 16px;
-            transform: translateX(420px);
-            transition: .3s;
-            z-index: 99999;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, .12);
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .notification h6 {
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .notification p {
-            margin: 0;
-            color: var(--gray);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
-
-        @media(max-width:992px) {
-
-            .sidebar {
-                width: 96px;
-                padding: 28px 16px;
-            }
-
-            .brand-text,
-            .menu-item span,
-            .sidebar-footer {
-                display: none;
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-
-            .main {
-                margin-left: 96px;
-                width: calc(100% - 96px);
-            }
-        }
-
-        @media(max-width:768px) {
-
-            .main {
-                margin-left: 0;
-                width: 100%;
-                padding: 22px;
-            }
-
-            .sidebar {
-                display: none;
-            }
-
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .topbar-right {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .notification {
-                width: calc(100% - 40px);
-                right: 20px;
-                bottom: 20px;
-            }
+        .resto-swal-confirm {
+            background-color: var(--primary) !important;
+            border-radius: 14px !important;
+            padding: 12px 28px !important;
         }
     </style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
 </head>
 
 <body>
 
-    <!-- =========================================================
-         NOTIFICATION
-    ========================================================== -->
-
-    <div class="notification" id="notification">
-
-        <div class="notification-icon">
-            <i class="fa-solid fa-circle-check"></i>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3>RestSoft</h3>
         </div>
-
-        <div>
-            <h6>Categoría creada</h6>
-            <p>
-                La nueva categoría de inventario fue registrada exitosamente.
-            </p>
-        </div>
-
+        <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+            class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class="" href="empleado-crear.html">Crear
+                Empleado</a><a class="" href="empleado-editar.html">Editar Empleado</a><a class=""
+                href="roles-permisos.html">Roles y Permisos</a><a class="" href="horarios-turnos.html">Horarios y
+                Turnos</a><a class="" href="asistencia.html">Asistencia</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="menu-item active" href="inventario.html">Inventario</a><a class=""
+                href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
+                href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                href="categorias-inventario.html">Categorías</a><a class="" href="proveedores.html">Proveedores</a><a
+                class="" href="alertas-stock.html">Alertas Stock</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                href="pedido-cocina.html">Pedido Cocina</a><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+        </div><button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa Mesas</a><a
+                class="" href="transferir-mesa.html">Transferir Mesa</a><a class="" href="dividir-cuenta.html">Dividir
+                Cuenta</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i>
+                Reservas</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class="" href="reserva-crear.html">Crear
+                Reserva</a><a class="" href="reserva-editar.html">Editar Reserva</a><a class=""
+                href="calendario-reservas.html">Calendario</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+            class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class="" href="platillo-crear.html">Crear
+                Platillo</a><a class="" href="platillo-editar.html">Editar Platillo</a><a class=""
+                href="promociones.html">Promociones</a><a class="" href="categorias-menu.html">Categorías Menú</a></div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                href="tiempos-preparacion.html">Tiempos</a><a class=""
+                href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class="" href="cliente-crear.html">Crear
+                Cliente</a><a class="" href="historial-cliente.html">Historial</a><a class=""
+                href="fidelizacion.html">Fidelización</a><a class="" href="promociones-clientes.html">Promociones</a>
+        </div><button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                class="" href="reporte-empleados.html">Empleados</a><a class=""
+                href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a class=""
+                href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a class=""
+                href="backup-restauracion.html">Backup</a></div>
     </div>
 
-    <!-- =========================================================
-         LAYOUT
-    ========================================================== -->
-
-    <div class="layout">
-
-        <!-- =====================================================
-             SIDEBAR
-        ====================================================== -->
-
-        <aside class="sidebar">
-
-            <div>
-
-                <div class="brand">
-
-                    <div class="brand-logo">
-                        <i class="fa-solid fa-utensils"></i>
-                    </div>
-
-                    <div class="brand-text">
-                        <h2>RestSoft</h2>
-                        <span>Premium ERP</span>
-                    </div>
-
-                </div>
-
-                <nav class="sidebar-menu">
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-
-                    <a href="#" class="menu-item active">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span>Inventario</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span>Pedidos</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Clientes</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span>Reportes</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-gear"></i>
-                        <span>Configuración</span>
-                    </a>
-
-                </nav>
-
-            </div>
-
-            <div class="sidebar-footer">
-
-                <h6>Gestión Inteligente</h6>
-
-                <p>
-                    Organiza y administra categorías gastronómicas premium en tiempo real.
-                </p>
-
-            </div>
-
-        </aside>
-
-        <!-- =====================================================
-             MAIN
-        ====================================================== -->
-
         <main class="main">
-
-            <!-- =================================================
-                 TOPBAR
-            ================================================== -->
-
             <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-
+                <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
                 <div class="page-title">
                     <h1>Categorías de Inventario</h1>
-                    <p>
-                        Organiza productos, insumos y recursos gastronómicos del sistema.
-                    </p>
+                    <p>Organiza productos, insumos y recursos gastronómicos del sistema.</p>
                 </div>
-
                 <div class="topbar-right">
-
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" placeholder="Buscar categorías...">
                     </div>
-
                     <div class="profile">
-
                         <img src="https://i.pravatar.cc/100" alt="">
-
                         <div>
                             <h6>Sofía Ramírez</h6>
                             <span>Inventory Manager</span>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- =================================================
-                 STATS
-            ================================================== -->
-
             <div class="stats-grid">
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>24</h3>
+                        <h3 id="txtCategoríasActivas">0</h3>
                         <p>Categorías Activas</p>
                     </div>
-
                     <div class="stat-icon primary-soft">
                         <i class="fa-solid fa-layer-group"></i>
                     </div>
-
                 </div>
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>842</h3>
+                        <h3 id="txtProductosOrganizados">0</h3>
                         <p>Productos Organizados</p>
                     </div>
-
                     <div class="stat-icon success-soft">
                         <i class="fa-solid fa-box-open"></i>
                     </div>
-
                 </div>
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>98%</h3>
-                        <p>Estructura Optimizada</p>
+                        <h3>100%</h3>
+                        <p>Sincronizado Base Datos</p>
                     </div>
-
                     <div class="stat-icon warning-soft">
-                        <i class="fa-solid fa-chart-simple"></i>
+                        <i class="fa-solid fa-database"></i>
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- =================================================
-                 CATEGORY GRID
-            ================================================== -->
-
-            <div class="category-grid">
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon primary-soft">
-                            <i class="fa-solid fa-cheese"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Lácteos</h4>
-
-                    <p>
-                        Gestión de quesos, crema, leche y derivados utilizados en cocina premium.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-primary">
-                            Activa
-                        </span>
-
-                        <span class="category-count">
-                            84 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon success-soft">
-                            <i class="fa-solid fa-wine-bottle"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Bebidas</h4>
-
-                    <p>
-                        Control de vinos, licores, jugos y bebidas utilizadas en bar y restaurante.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-success">
-                            Estable
-                        </span>
-
-                        <span class="category-count">
-                            142 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon warning-soft">
-                            <i class="fa-solid fa-fish"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Mariscos</h4>
-
-                    <p>
-                        Inventario especializado para pescados frescos y productos refrigerados.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-warning">
-                            Alta Rotación
-                        </span>
-
-                        <span class="category-count">
-                            48 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
+            <div class="category-grid" id="categoryGrid">
             </div>
-
-            <!-- =================================================
-                 FORM
-            ================================================== -->
 
             <div class="card-premium form-card">
-
                 <div class="form-title">
-
                     <h4>Crear Nueva Categoría</h4>
-
-                    <p>
-                        Registra nuevas categorías para mantener un inventario organizado.
-                    </p>
-
+                    <p>Registra nuevas categorías para mantener un inventario organizado.</p>
                 </div>
-
-                <div class="row">
-
-                    <div class="col-lg-6">
-
-                        <input type="text" class="input-premium" placeholder="Nombre de la categoría">
-
+                <form id="formCategoria">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold mb-2">Nombre de la Categoría</label>
+                            <input type="text" id="nombreCategoria" class="input-premium"
+                                placeholder="Ej. Carnes, Postres, Verduras..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold mb-2">Estado Operativo</label>
+                            <select id="estadoCategoria" class="select-premium" required>
+                                <option value="activa">Activa</option>
+                                <option value="estable">Estable</option>
+                                <option value="alta-rotacion">Alta Rotación</option>
+                                <option value="inactiva">Inactiva</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold mb-2">Descripción Completa</label>
+                            <textarea id="descripcionCategoria" class="textarea-premium"
+                                placeholder="Describe los insumos o productos que abarca esta categoría..."
+                                required></textarea>
+                        </div>
                     </div>
 
-                    <div class="col-lg-6">
-
-                        <select class="input-premium">
-
-                            <option>Seleccionar estado</option>
-                            <option>Activa</option>
-                            <option>Inactiva</option>
-                            <option>Alta Rotación</option>
-
-                        </select>
-
+                    <div class="d-flex justify-content-end gap-3 mt-2">
+                        <button class="btn-outline-premium" type="button"
+                            onclick="limpiarFormulario()">Cancelar</button>
+                        <button type="submit" id="btnCrearCategoria" class="btn-premium">
+                            <i class="fa-solid fa-plus me-2"></i>Crear Categoría
+                        </button>
                     </div>
-
-                </div>
-
-                <textarea class="input-premium" placeholder="Descripción de la categoría..."></textarea>
-
-                <!-- =================================================
-                     UPLOAD
-                ================================================== -->
-
-                <div class="upload-box">
-
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <h5>Subir Imagen o Ícono</h5>
-
-                    <p>
-                        Arrastra archivos aquí o haz clic para cargar recursos visuales.
-                    </p>
-
-                </div>
-
-                <div class="d-flex justify-content-end gap-3 mt-4">
-
-                    <button class="btn-outline-premium">
-                        Cancelar
-                    </button>
-
-                    <button class="btn-premium">
-                        <i class="fa-solid fa-plus me-2"></i>
-                        Crear Categoría
-                    </button>
-
-                </div>
-
+                </form>
             </div>
-
         </main>
-
     </div>
 
-    <!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
-
-    <script>
-
-        const notification = document.getElementById('notification');
-
-        function showNotification() {
-
-            notification.classList.add('show');
-
-            setTimeout(() => {
-                hideNotification();
-            }, 4000);
-
-        }
-
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
-
-        window.addEventListener('load', () => {
-
-            setTimeout(() => {
-                showNotification();
-            }, 1000);
-
-        });
-
-    </script>
-
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+    <script type="module" src="../../js/consumo/apiCategoria.js"></script>
+    <script type="module" src="../../js/datos/categorias.js"></script>
+    <script src="/js/datos/sidebar.js"></script>
 </body>
 
 </html>

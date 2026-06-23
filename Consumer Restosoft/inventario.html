@@ -1,51 +1,32 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft • Inventario</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft • Inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
         :root {
-
             --background: #fbfcfb;
-
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-
             --dark: #262f3c;
             --dark-light: #39485c;
-
             --soft: #b09da2;
             --soft-light: #d9d2d4;
-
             --white: #ffffff;
-
             --gray: #6f7782;
-
             --success: #3d8b5c;
             --warning: #d9a441;
             --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
             --radius: 24px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -63,10 +44,6 @@
         a {
             text-decoration: none;
         }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
 
         .sidebar {
             position: fixed;
@@ -90,7 +67,7 @@
             width: 58px;
             height: 58px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, .08);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,7 +100,7 @@
             padding: 16px 18px;
             border-radius: 18px;
             color: #c7cfda;
-            transition: 0.3s;
+            transition: .3s;
             font-weight: 500;
         }
 
@@ -133,7 +110,7 @@
         }
 
         .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, .06);
             color: white;
             transform: translateX(4px);
         }
@@ -143,18 +120,10 @@
             color: white;
         }
 
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
         .main {
             margin-left: 280px;
             padding: 34px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -200,7 +169,7 @@
             background: #f4f6f8;
             border-radius: 18px;
             padding: 14px 18px 14px 50px;
-            transition: 0.3s;
+            transition: .3s;
             outline: none;
         }
 
@@ -236,26 +205,18 @@
             font-size: 13px;
         }
 
-        /* =========================================================
-           PREMIUM CARD
-        ========================================================== */
-
         .premium-card {
             background: white;
             border-radius: 28px;
             padding: 30px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            transition: 0.3s;
+            border: 1px solid rgba(0, 0, 0, .03);
+            transition: .3s;
         }
 
         .premium-card:hover {
             transform: translateY(-5px);
         }
-
-        /* =========================================================
-           STATS
-        ========================================================== */
 
         .stat-card {
             display: flex;
@@ -301,10 +262,6 @@
             background: var(--danger);
         }
 
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
-
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -312,7 +269,7 @@
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .btn-premium:hover {
@@ -328,17 +285,13 @@
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .btn-outline-premium:hover {
             background: var(--dark);
             color: white;
         }
-
-        /* =========================================================
-           FILTERS
-        ========================================================== */
 
         .filter-box {
             display: flex;
@@ -353,7 +306,7 @@
             border-radius: 16px;
             min-height: 56px;
             padding: 14px 18px;
-            transition: 0.3s;
+            transition: .3s;
             box-shadow: none !important;
         }
 
@@ -363,137 +316,253 @@
             background: white;
         }
 
-        /* =========================================================
-           TABLE
-        ========================================================== */
-
-        .table-premium {
-            width: 100%;
+        /* ── Expandable Row System ── */
+        .product-row-wrapper {
+            border-bottom: 1px solid #f0f2f5;
         }
 
-        .table-premium thead th {
-            border: none;
-            color: #8d98a5;
-            font-size: 14px;
-            font-weight: 600;
-            padding-bottom: 22px;
+        .product-row-wrapper:last-child {
+            border-bottom: none;
         }
 
-        .table-premium td {
-            border: none;
-            padding: 22px 12px;
-            vertical-align: middle;
+        .product-main-row {
+            display: flex;
+            align-items: center;
+            padding: 16px 10px;
+            cursor: pointer;
+            transition: background .2s;
+            border-radius: 14px;
+            gap: 8px;
         }
 
-        .table-premium tbody tr {
-            transition: 0.3s;
-        }
-
-        .table-premium tbody tr:hover {
+        .product-main-row:hover {
             background: #fafbfc;
         }
 
-        /* =========================================================
-           PRODUCT
-        ========================================================== */
+        .col-toggle {
+            flex: 0 0 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .col-producto {
+            flex: 2.2;
+            min-width: 0;
+        }
+
+        .col-categoria {
+            flex: 1.0;
+        }
+
+        .col-stock {
+            flex: 0.8;
+        }
+
+        .col-estado {
+            flex: 1.1;
+        }
+
+        .col-precio {
+            flex: 1.0;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .col-proveedor {
+            flex: 1.2;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-light);
+        }
+
+        .product-detail-row {
+            display: none;
+            background: #f7f9fb;
+            border-radius: 0 0 16px 16px;
+            padding: 20px 20px 22px 84px;
+            border-top: 1px solid #edf0f4;
+            gap: 28px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .product-detail-row.open {
+            display: flex;
+        }
+
+        .detail-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-field label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca7b4;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .detail-field span {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .detail-description {
+            flex: 1 1 100%;
+            background: white;
+            border-radius: 14px;
+            padding: 14px 18px;
+            border: 1px solid #edf0f4;
+            margin-top: 4px;
+        }
+
+        .detail-description label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9ca7b4;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .detail-description p {
+            font-size: 13.5px;
+            color: var(--dark-light);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .detail-description p.empty-desc {
+            color: #b0b8c4;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .detail-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-edit {
+            background: #edf0f4;
+            color: var(--dark);
+        }
+
+        .btn-edit:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(187, 58, 75, .1);
+            color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .toggle-chevron {
+            width: 28px;
+            height: 28px;
+            border-radius: 9px;
+            background: #edf0f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 11px;
+            transition: .25s;
+            flex-shrink: 0;
+        }
+
+        .toggle-chevron.rotated {
+            transform: rotate(180deg);
+            background: var(--primary);
+            color: white;
+        }
 
         .product-box {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            min-width: 0;
         }
 
         .product-image {
-            width: 62px;
-            height: 62px;
-            border-radius: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
             background: #f5f6f8;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
-            font-size: 22px;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
         .product-box h6 {
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             font-weight: 700;
-        }
-
-        .product-box span {
-            color: var(--gray);
             font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* =========================================================
-           STATUS
-        ========================================================== */
+        .product-box .sub {
+            color: var(--gray);
+            font-size: 12px;
+        }
 
         .status {
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .status-success {
-            background: rgba(61, 139, 92, 0.12);
+            background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
         .status-warning {
-            background: rgba(217, 164, 65, 0.12);
+            background: rgba(217, 164, 65, .12);
             color: var(--warning);
         }
 
         .status-danger {
-            background: rgba(187, 58, 75, 0.12);
+            background: rgba(187, 58, 75, .12);
             color: var(--danger);
         }
-
-        /* =========================================================
-           STOCK BARS
-        ========================================================== */
-
-        .stock-wrapper {
-            width: 100%;
-            max-width: 160px;
-        }
-
-        .stock-bar {
-            height: 10px;
-            border-radius: 20px;
-            background: #edf0f4;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .stock-progress {
-            height: 100%;
-            border-radius: 20px;
-        }
-
-        .stock-high {
-            background: var(--success);
-            width: 88%;
-        }
-
-        .stock-medium {
-            background: var(--warning);
-            width: 52%;
-        }
-
-        .stock-low {
-            background: var(--danger);
-            width: 18%;
-        }
-
-        /* =========================================================
-           ALERT BOX
-        ========================================================== */
 
         .alert-item {
             display: flex;
@@ -503,7 +572,7 @@
             border-radius: 20px;
             background: #fafbfc;
             margin-bottom: 16px;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .alert-item:hover {
@@ -520,11 +589,8 @@
             justify-content: center;
             color: white;
             font-size: 20px;
+            flex-shrink: 0;
         }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
 
         .notification {
             position: fixed;
@@ -538,27 +604,36 @@
             display: flex;
             align-items: flex-start;
             gap: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
             z-index: 9999;
-
             transform: translateX(420px);
-            transition: 0.3s;
+            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.is-error {
+            border-left-color: var(--danger);
+        }
+
         .notification-icon {
             width: 52px;
             height: 52px;
             border-radius: 18px;
-            background: rgba(61, 139, 92, 0.10);
+            background: rgba(61, 139, 92, .10);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--success);
             font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification.is-error .notification-icon {
+            background: rgba(187, 58, 75, .10);
+            color: var(--danger);
         }
 
         .notification h6 {
@@ -572,14 +647,157 @@
             font-size: 14px;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 40px 36px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(38, 47, 60, .22);
+            transform: scale(.88) translateY(24px);
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .confirm-overlay.show .confirm-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 28px;
+            background: rgba(187, 58, 75, .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .confirm-icon-wrap i {
+            font-size: 32px;
+            color: var(--danger);
+        }
+
+        .confirm-modal h4 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .confirm-modal p {
+            color: var(--gray);
+            font-size: 15px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .confirm-product-name {
+            display: inline-block;
+            background: #f7f8fa;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-confirm-cancel {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid #e2e6ea;
+            background: white;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-confirm-cancel:hover {
+            background: #f4f6f8;
+        }
+
+        .btn-confirm-delete {
+            flex: 1.4;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: var(--danger);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm-delete:hover {
+            background: #a8303f;
+            transform: translateY(-1px);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #menuToggle {
+            display: none;
+            background: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
 
         @media(max-width:992px) {
-
             .sidebar {
-                width: 96px;
+                width: 90px;
             }
 
             .sidebar .brand h2,
@@ -593,36 +811,55 @@
             }
 
             .main {
-                margin-left: 96px;
+                margin-left: 90px;
             }
         }
 
         @media(max-width:768px) {
-
             .sidebar {
-                display: none;
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0 !important;
+            }
+
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .sidebar-item span {
+                display: block;
+            }
+
+            .sidebar-item {
+                justify-content: flex-start;
             }
 
             .main {
-                margin-left: 0;
-                padding: 22px;
+                margin-left: 0 !important;
+                padding: 18px !important;
+            }
+
+            #menuToggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 15px;
             }
 
             .topbar-actions {
                 width: 100%;
                 flex-direction: column;
-                align-items: stretch;
             }
 
-            .search-box {
-                width: 100%;
-            }
-
+            .search-box,
             .search-box input {
                 width: 100%;
             }
@@ -631,506 +868,264 @@
                 width: calc(100% - 40px);
                 right: 20px;
             }
+
+            .col-proveedor {
+                display: none;
+            }
+
+            .product-detail-row.open {
+                padding-left: 20px;
+            }
         }
     </style>
 
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
 </head>
+
 <body>
-<!-- =========================================================
-       SIDEBAR
-    ========================================================== -->
-<aside class="sidebar">
-<div class="brand">
-<div class="brand-logo">
-<i class="fa-solid fa-utensils"></i>
-</div>
-<div>
-<h2>RestSoft</h2>
-<span>Enterprise POS</span>
-</div>
-</div>
-<nav class="sidebar-menu">
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="sidebar-item active" href="#">
-<i class="fa-solid fa-boxes-stacked"></i>
-<span>Inventario</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>Pedidos</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-warehouse"></i>
-<span>Proveedores</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Reportes</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</nav>
-</aside>
-<!-- =========================================================
-       MAIN
-    ========================================================== -->
-<main class="main">
-<!-- TOPBAR -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="topbar-title">
-<h1>Inventario General</h1>
-<p>
-                    Controla existencias, alertas y movimientos de productos en tiempo real.
-                </p>
-</div>
-<div class="topbar-actions">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar productos..." type="text"/>
-</div>
-<div class="profile-box">
-<img src="https://i.pravatar.cc/100?img=15"/>
-<div>
-<h6>Valentina Cruz</h6>
-<span>Inventory Manager</span>
-</div>
-</div>
-</div>
-</div>
-<!-- STATS -->
-<div class="row g-4 mb-4">
-<div class="col-xl-3 col-md-6">
-<div class="premium-card stat-card">
-<div class="stat-info">
-<h3>842</h3>
-<p>Productos Totales</p>
-</div>
-<div class="stat-icon bg-primary-soft">
-<i class="fa-solid fa-box-open"></i>
-</div>
-</div>
-</div>
-<div class="col-xl-3 col-md-6">
-<div class="premium-card stat-card">
-<div class="stat-info">
-<h3>128</h3>
-<p>Ingresos Hoy</p>
-</div>
-<div class="stat-icon bg-success-soft">
-<i class="fa-solid fa-arrow-down"></i>
-</div>
-</div>
-</div>
-<div class="col-xl-3 col-md-6">
-<div class="premium-card stat-card">
-<div class="stat-info">
-<h3>16</h3>
-<p>Stock Crítico</p>
-</div>
-<div class="stat-icon bg-danger-soft">
-<i class="fa-solid fa-triangle-exclamation"></i>
-</div>
-</div>
-</div>
-<div class="col-xl-3 col-md-6">
-<div class="premium-card stat-card">
-<div class="stat-info">
-<h3>$18.4K</h3>
-<p>Valor Inventario</p>
-</div>
-<div class="stat-icon bg-warning-soft">
-<i class="fa-solid fa-chart-column"></i>
-</div>
-</div>
-</div>
-</div>
-<!-- FILTERS -->
-<div class="premium-card mb-4">
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-<div>
-<h3 class="fw-bold mb-2">
-                        Gestión de Productos
-                    </h3>
-<p class="text-secondary mb-0">
-                        Filtra y administra el stock operativo del restaurante.
-                    </p>
-</div>
-<button class="btn btn-premium" onclick="showNotification()">
-<i class="fa-solid fa-plus me-2"></i>
-                    Nuevo Producto
+
+
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3>RestSoft</h3>
+        </div>
+        <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+            class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class="" href="empleado-crear.html">Crear
+                Empleado</a><a class="" href="empleado-editar.html">Editar Empleado</a><a class=""
+                href="roles-permisos.html">Roles y Permisos</a><a class="" href="horarios-turnos.html">Horarios y
+                Turnos</a><a class="" href="asistencia.html">Asistencia</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="menu-item active" href="inventario.html">Inventario</a><a class=""
+                href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
+                href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                href="categorias-inventario.html">Categorías</a><a class="" href="proveedores.html">Proveedores</a><a
+                class="" href="alertas-stock.html">Alertas Stock</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                href="pedido-cocina.html">Pedido Cocina</a><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+        </div><button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa Mesas</a><a
+                class="" href="transferir-mesa.html">Transferir Mesa</a><a class="" href="dividir-cuenta.html">Dividir
+                Cuenta</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i>
+                Reservas</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class="" href="reserva-crear.html">Crear
+                Reserva</a><a class="" href="reserva-editar.html">Editar Reserva</a><a class=""
+                href="calendario-reservas.html">Calendario</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+            class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class="" href="platillo-crear.html">Crear
+                Platillo</a><a class="" href="platillo-editar.html">Editar Platillo</a><a class=""
+                href="promociones.html">Promociones</a><a class="" href="categorias-menu.html">Categorías Menú</a></div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                href="tiempos-preparacion.html">Tiempos</a><a class=""
+                href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class="" href="cliente-crear.html">Crear
+                Cliente</a><a class="" href="historial-cliente.html">Historial</a><a class=""
+                href="fidelizacion.html">Fidelización</a><a class="" href="promociones-clientes.html">Promociones</a>
+        </div><button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                class="" href="reporte-empleados.html">Empleados</a><a class=""
+                href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button class="menu-group-btn"><span><i
+                    class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a class=""
+                href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a class=""
+                href="backup-restauracion.html">Backup</a></div>
+    </div>
+
+    <main class="main">
+        <div class="topbar">
+            <button id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-title">
+                <h1>Inventario General</h1>
+                <p>Controla existencias, alertas y movimientos de productos en tiempo real.</p>
+            </div>
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="inputBusqueda" placeholder="Buscar por nombre, ID o proveedor..." type="text" />
+                </div>
+                <div class="profile-box">
+                    <img src="https://i.pravatar.cc/100?img=15" alt="Avatar" />
+                    <div>
+                        <h6>Valentina Cruz</h6><span>Inventory Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="premium-card stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalProductos">—</h3>
+                        <p>Productos Totales</p>
+                    </div>
+                    <div class="stat-icon bg-primary-soft"><i class="fa-solid fa-box-open"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="premium-card stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalStockGeneral">—</h3>
+                        <p>Existencias Totales</p>
+                    </div>
+                    <div class="stat-icon bg-success-soft"><i class="fa-solid fa-layer-group"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="premium-card stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalCritico">—</h3>
+                        <p>Stock Crítico</p>
+                    </div>
+                    <div class="stat-icon bg-danger-soft"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="premium-card stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalValor">—</h3>
+                        <p>Valor Inventario</p>
+                    </div>
+                    <div class="stat-icon bg-warning-soft"><i class="fa-solid fa-chart-column"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-card mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-2">Gestión de Productos</h3>
+                    <p class="text-secondary mb-0">Filtra y administra el stock operativo del restaurante.</p>
+                </div>
+                <a href="insumos-crear.html" class="btn btn-premium" style="display:inline-flex;align-items:center;">
+                    <i class="fa-solid fa-plus me-2"></i>Nuevo Producto
+                </a>
+            </div>
+            <div class="filter-box">
+                <select id="filtroCategoria" class="form-select">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <select id="filtroEstado" class="form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="ACTIVO">Disponible</option>
+                    <option value="STOCK_BAJO">Stock Bajo</option>
+                    <option value="AGOTADO">Agotado</option>
+                </select>
+                <input class="form-control" type="date" id="filtroFecha" style="max-width:200px;" />
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <div class="premium-card" style="padding: 24px 20px;">
+                    <div
+                        style="display:flex; align-items:center; padding: 0 10px 14px 10px; border-bottom: 2px solid #f0f2f5; margin-bottom: 4px; gap:8px;">
+                        <div style="flex:0 0 34px;"></div>
+                        <div
+                            style="flex:2.2; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Producto</div>
+                        <div
+                            style="flex:1.0; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Categoría</div>
+                        <div
+                            style="flex:0.8; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Stock</div>
+                        <div
+                            style="flex:1.1; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Estado</div>
+                        <div
+                            style="flex:1.0; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Costo Unit.</div>
+                        <div
+                            style="flex:1.2; font-size:12px; font-weight:600; color:#8d98a5; text-transform:uppercase; letter-spacing:.5px;">
+                            Proveedor</div>
+                    </div>
+                    <div id="tablaProductos">
+                        <div class="p-4 text-center text-secondary">
+                            <i class="fa-solid fa-spinner fa-spin me-2"></i> Cargando inventario...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4">
+                <div class="premium-card mb-4">
+                    <h4 class="fw-bold mb-2">Alertas Inteligentes</h4>
+                    <p class="text-secondary mb-4">Productos que requieren atención inmediata.</p>
+                    <div id="panelAlertas">
+                        <div class="alert-item">
+                            <div class="alert-icon bg-warning-soft" style="color:white;"><i
+                                    class="fa-solid fa-spinner fa-spin"></i></div>
+                            <div>
+                                <p class="text-secondary mb-0">Cargando alertas...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="premium-card">
+                    <h4 class="fw-bold mb-4">Acciones Rápidas</h4>
+                    <div class="d-grid gap-3">
+                        <button class="btn btn-premium" data-accion="entrada"><i
+                                class="fa-solid fa-arrow-down me-2"></i>Registrar Entrada</button>
+                        <button class="btn btn-outline-premium" data-accion="salida"><i
+                                class="fa-solid fa-arrow-up me-2"></i>Registrar Salida</button>
+                        <button class="btn btn-outline-premium" data-accion="exportar"><i
+                                class="fa-solid fa-file-export me-2"></i>Exportar Inventario</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="notification" id="notification">
+        <div class="notification-icon"><i class="fa-solid fa-check" id="notificationIcon"></i></div>
+        <div>
+            <h6 id="notificationTitle">Operación Realizada</h6>
+            <p id="notificationText">El inventario se ha actualizado correctamente.</p>
+        </div>
+    </div>
+
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-icon-wrap"><i class="fa-solid fa-trash-can"></i></div>
+            <h4>¿Eliminar producto?</h4>
+            <p>Esta acción es permanente y no se puede deshacer. Se eliminará:</p>
+            <div class="confirm-product-name" id="confirmProductName">—</div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="btnConfirmCancel">Cancelar</button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
                 </button>
-</div>
-<div class="filter-box">
-<select class="form-select">
-<option>Todas las categorías</option>
-<option>Bebidas</option>
-<option>Carnes</option>
-<option>Vegetales</option>
-<option>Postres</option>
-</select>
-<select class="form-select">
-<option>Todos los estados</option>
-<option>Disponible</option>
-<option>Stock Bajo</option>
-<option>Agotado</option>
-</select>
-<input class="form-control" type="date"/>
-</div>
-</div>
-<!-- CONTENT -->
-<div class="row g-4">
-<!-- TABLE -->
-<div class="col-xl-8">
-<div class="premium-card">
-<div class="table-responsive">
-<table class="table table-premium">
-<thead>
-<tr>
-<th>Producto</th>
-<th>Categoría</th>
-<th>Stock</th>
-<th>Estado</th>
-<th>Precio</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Producto">
-<div class="product-box">
-<div class="product-image">
-<i class="fa-solid fa-wine-bottle"></i>
-</div>
-<div>
-<h6>Vino Reserva Premium</h6>
-<span>Código #INV-204</span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Bebidas</td>
-<td data-label="Stock">
-<div class="stock-wrapper">
-
-                                            84 unidades
-
-                                            <div class="stock-bar">
-<div class="stock-progress stock-high"></div>
-</div>
-</div>
-</td>
-<td data-label="Estado">
-<span class="status status-success">
-<i class="fa-solid fa-circle-check"></i>
-                                            Disponible
-                                        </span>
-</td>
-<td data-label="Precio">$45.00</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product-box">
-<div class="product-image">
-<i class="fa-solid fa-drumstick-bite"></i>
-</div>
-<div>
-<h6>Pechuga de Pollo</h6>
-<span>Código #INV-128</span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Carnes</td>
-<td data-label="Stock">
-<div class="stock-wrapper">
-
-                                            28 unidades
-
-                                            <div class="stock-bar">
-<div class="stock-progress stock-medium"></div>
-</div>
-</div>
-</td>
-<td data-label="Estado">
-<span class="status status-warning">
-<i class="fa-solid fa-clock"></i>
-                                            Stock Bajo
-                                        </span>
-</td>
-<td data-label="Precio">$18.00</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product-box">
-<div class="product-image">
-<i class="fa-solid fa-cheese"></i>
-</div>
-<div>
-<h6>Queso Parmesano</h6>
-<span>Código #INV-054</span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Lácteos</td>
-<td data-label="Stock">
-<div class="stock-wrapper">
-
-                                            4 unidades
-
-                                            <div class="stock-bar">
-<div class="stock-progress stock-low"></div>
-</div>
-</div>
-</td>
-<td data-label="Estado">
-<span class="status status-danger">
-<i class="fa-solid fa-triangle-exclamation"></i>
-                                            Crítico
-                                        </span>
-</td>
-<td data-label="Precio">$12.00</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- ALERTS -->
-<div class="col-xl-4">
-<div class="premium-card mb-4">
-<div class="d-flex justify-content-between align-items-center mb-4">
-<div>
-<h4 class="fw-bold mb-2">
-                                Alertas Inteligentes
-                            </h4>
-<p class="text-secondary mb-0">
-                                Productos que requieren atención inmediata.
-                            </p>
-</div>
-</div>
-<div class="alert-item">
-<div class="alert-icon bg-danger-soft">
-<i class="fa-solid fa-triangle-exclamation"></i>
-</div>
-<div>
-<h6 class="fw-bold mb-1">
-                                Queso Parmesano
-                            </h6>
-<p class="text-secondary mb-0">
-                                Stock crítico • 4 unidades restantes.
-                            </p>
-</div>
-</div>
-<div class="alert-item">
-<div class="alert-icon bg-warning-soft">
-<i class="fa-solid fa-clock"></i>
-</div>
-<div>
-<h6 class="fw-bold mb-1">
-                                Salsa BBQ
-                            </h6>
-<p class="text-secondary mb-0">
-                                Inventario por debajo del límite mínimo.
-                            </p>
-</div>
-</div>
-<div class="alert-item">
-<div class="alert-icon bg-success-soft">
-<i class="fa-solid fa-truck"></i>
-</div>
-<div>
-<h6 class="fw-bold mb-1">
-                                Pedido Recibido
-                            </h6>
-<p class="text-secondary mb-0">
-                                Nuevo ingreso de bebidas confirmado.
-                            </p>
-</div>
-</div>
-</div>
-<!-- QUICK ACTIONS -->
-<div class="premium-card">
-<h4 class="fw-bold mb-4">
-                        Acciones Rápidas
-                    </h4>
-<div class="d-grid gap-3">
-<button class="btn btn-premium">
-<i class="fa-solid fa-arrow-down me-2"></i>
-                            Registrar Entrada
-                        </button>
-<button class="btn btn-outline-premium">
-<i class="fa-solid fa-arrow-up me-2"></i>
-                            Registrar Salida
-                        </button>
-<button class="btn btn-outline-premium">
-<i class="fa-solid fa-file-export me-2"></i>
-                            Exportar Inventario
-                        </button>
-</div>
-</div>
-</div>
-</div>
-</main>
-<!-- =========================================================
-       NOTIFICATION
-    ========================================================== -->
-<div class="notification" id="notification">
-<div class="notification-icon">
-<i class="fa-solid fa-check"></i>
-</div>
-<div>
-<h6>Producto Creado</h6>
-<p>
-                El nuevo producto fue agregado correctamente al inventario.
-            </p>
-</div>
-</div>
-<!-- =========================================================
-       JAVASCRIPT
-    ========================================================== -->
-<script>
-
-        const notification = document.getElementById('notification');
-
-        function showNotification() {
-
-            notification.classList.add('show');
-
-            setTimeout(() => {
-                hideNotification();
-            }, 3500);
-
-        }
-
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
-
-    </script>
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
+            </div>
+        </div>
+    </div>
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="js/datos/inventario2.js"></script>
 
 </body>
+
 </html>

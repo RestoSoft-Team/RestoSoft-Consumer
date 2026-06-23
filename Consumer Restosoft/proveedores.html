@@ -1,51 +1,34 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft — Proveedores</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft — Proveedores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
         /* =========================================================
-           ROOT
+           ROOT & GLOBAL
         ========================================================== */
-
         :root {
-
             --background: #fbfcfb;
-
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-
             --dark: #262f3c;
             --dark-light: #39485c;
-
             --soft: #b09da2;
             --soft-light: #d9d2d4;
-
             --white: #ffffff;
-
             --gray: #6f7782;
-
             --success: #3d8b5c;
             --warning: #d9a441;
             --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
             --radius: 24px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -78,7 +61,6 @@
         /* =========================================================
            SIDEBAR
         ========================================================== */
-
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -177,18 +159,13 @@
         }
 
         /* =========================================================
-           MAIN
+           MAIN & TOPBAR
         ========================================================== */
-
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
             padding: 34px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -273,9 +250,8 @@
         }
 
         /* =========================================================
-           BUTTONS
+           BUTTONS & CARDS
         ========================================================== */
-
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -305,10 +281,6 @@
             color: white;
         }
 
-        /* =========================================================
-           CARD
-        ========================================================== */
-
         .card-premium {
             background: white;
             border-radius: 28px;
@@ -325,7 +297,6 @@
         /* =========================================================
            STATS
         ========================================================== */
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -377,9 +348,8 @@
         }
 
         /* =========================================================
-           FILTERS
+           FILTERS & INPUTS
         ========================================================== */
-
         .filters {
             margin-bottom: 28px;
         }
@@ -404,7 +374,6 @@
         /* =========================================================
            TABLE
         ========================================================== */
-
         .table-responsive {
             overflow-x: auto;
         }
@@ -421,6 +390,7 @@
             font-weight: 700;
             color: #96a0ad;
             text-transform: uppercase;
+            text-align: left;
         }
 
         tbody tr {
@@ -455,50 +425,26 @@
         }
 
         .supplier-logo {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             background: #f5f6f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 18px;
             color: var(--primary);
         }
 
         .supplier h6 {
-            margin: 0 0 6px;
+            margin: 0 0 4px;
             font-weight: 700;
+            font-size: 15px;
         }
 
         .supplier span {
             color: var(--gray);
-            font-size: 13px;
-        }
-
-        .status {
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-success {
-            background: rgba(61, 139, 92, .12);
-            color: var(--success);
-        }
-
-        .status-warning {
-            background: rgba(217, 164, 65, .15);
-            color: var(--warning);
-        }
-
-        .status-danger {
-            background: rgba(187, 58, 75, .12);
-            color: var(--danger);
+            font-size: 12px;
         }
 
         .action-btn {
@@ -516,9 +462,8 @@
         }
 
         /* =========================================================
-           FORM
+           FORM & NOTIFICATION
         ========================================================== */
-
         .form-section {
             margin-top: 30px;
         }
@@ -536,51 +481,6 @@
             margin: 0;
             color: var(--gray);
         }
-
-        textarea.input-premium {
-            min-height: 120px;
-            resize: none;
-        }
-
-        /* =========================================================
-           UPLOAD
-        ========================================================== */
-
-        .upload-box {
-            border: 2px dashed #d9d9d9;
-            border-radius: 22px;
-            background: #fafafa;
-            padding: 50px 30px;
-            text-align: center;
-            transition: .3s;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: white;
-        }
-
-        .upload-box i {
-            font-size: 42px;
-            color: var(--primary);
-            margin-bottom: 18px;
-        }
-
-        .upload-box h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .upload-box p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
 
         .notification {
             position: fixed;
@@ -627,12 +527,8 @@
             line-height: 1.6;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
-
+        /* RESPONSIVE */
         @media(max-width:992px) {
-
             .sidebar {
                 width: 96px;
                 padding: 28px 16px;
@@ -655,9 +551,21 @@
         }
 
         @media(max-width:768px) {
-
             .sidebar {
-                display: none;
+                left: -280px;
+                transition: .3s;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0;
+                width: 280px;
+            }
+
+            .brand-text,
+            .menu-item span,
+            .sidebar-footer {
+                display: block;
             }
 
             .main {
@@ -686,510 +594,170 @@
                 right: 20px;
                 bottom: 20px;
             }
+
+            .mobile-menu-btn {
+                display: flex;
+                border: none;
+                background: var(--primary);
+                color: #fff;
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+                font-size: 20px;
+                align-items: center;
+                justify-content: center;
+            }
         }
     </style>
-
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
 </head>
+
 <body>
-<!-- =========================================================
-         NOTIFICATION
-    ========================================================== -->
-<div class="notification" id="notification">
-<div class="notification-icon">
-<i class="fa-solid fa-circle-check"></i>
-</div>
-<div>
-<h6>Proveedor registrado</h6>
-<p>
-                El nuevo proveedor fue agregado correctamente al sistema.
-            </p>
-</div>
-</div>
-<!-- =========================================================
-         LAYOUT
-    ========================================================== -->
-<div class="layout">
-<!-- =====================================================
-             SIDEBAR
-        ====================================================== -->
-<aside class="sidebar">
-<div>
-<div class="brand">
-<div class="brand-logo">
-<i class="fa-solid fa-utensils"></i>
-</div>
-<div class="brand-text">
-<h2>RestSoft</h2>
-<span>Enterprise ERP</span>
-</div>
-</div>
-<nav class="menu">
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="menu-item active" href="#">
-<i class="fa-solid fa-truck"></i>
-<span>Proveedores</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-boxes-stacked"></i>
-<span>Inventario</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>Pedidos</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Reportes</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</nav>
-</div>
-<div class="sidebar-footer">
-<h6>Supply Chain Premium</h6>
-<p>
-                    Controla proveedores gastronómicos, entregas y abastecimiento inteligente.
-                </p>
-</div>
-</aside>
-<!-- =====================================================
-             MAIN
-        ====================================================== -->
-<main class="main">
-<!-- =================================================
-                 TOPBAR
-            ================================================== -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="page-title">
-<h1>Gestión de Proveedores</h1>
-<p>
-                        Administra distribuidores, abastecimiento y relaciones comerciales.
-                    </p>
-</div>
-<div class="topbar-actions">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar proveedores..." type="text"/>
-</div>
-<div class="profile">
-<img alt="" src="https://i.pravatar.cc/100"/>
-<div>
-<h6>Valentina Ruiz</h6>
-<span>Supply Manager</span>
-</div>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 STATS
-            ================================================== -->
-<div class="stats-grid">
-<div class="card-premium stat-card">
-<div>
-<h3>48</h3>
-<p>Proveedores Activos</p>
-</div>
-<div class="stat-icon primary-soft">
-<i class="fa-solid fa-truck-fast"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div>
-<h3>12</h3>
-<p>Entregas Pendientes</p>
-</div>
-<div class="stat-icon warning-soft">
-<i class="fa-solid fa-clock"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div>
-<h3>96%</h3>
-<p>Cumplimiento Logístico</p>
-</div>
-<div class="stat-icon success-soft">
-<i class="fa-solid fa-shield-check"></i>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 FILTERS
-            ================================================== -->
-<div class="card-premium filters">
-<div class="row g-4">
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Tipo de proveedor
-                        </label>
-<select class="input-premium">
-<option>Todos</option>
-<option>Alimentos</option>
-<option>Bebidas</option>
-<option>Insumos</option>
-</select>
-</div>
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Estado
-                        </label>
-<select class="input-premium">
-<option>Todos</option>
-<option>Activo</option>
-<option>Pendiente</option>
-<option>Inactivo</option>
-</select>
-</div>
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Ciudad
-                        </label>
-<input class="input-premium" placeholder="Bogotá" type="text"/>
-</div>
-<div class="col-lg-3 d-flex align-items-end">
-<button class="btn-premium w-100">
-<i class="fa-solid fa-filter me-2"></i>
-                            Filtrar
-                        </button>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 TABLE
-            ================================================== -->
-<div class="card-premium">
-<div class="d-flex justify-content-between align-items-center mb-4">
-<div>
-<h4 class="fw-bold mb-1">
-                            Lista de Proveedores
-                        </h4>
-<p class="text-secondary mb-0">
-                            Empresas registradas para abastecimiento gastronómico.
-                        </p>
-</div>
-<button class="btn-outline-premium">
-<i class="fa-solid fa-file-export me-2"></i>
-                        Exportar
-                    </button>
-</div>
-<div class="table-responsive">
-<table>
-<thead>
-<tr>
-<th>Proveedor</th>
-<th>Categoría</th>
-<th>Contacto</th>
-<th>Ciudad</th>
-<th>Estado</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<div class="supplier-logo">
-<i class="fa-solid fa-cheese"></i>
-</div>
-<div>
-<h6>Lácteos Premium SAS</h6>
-<span>
-                                                Distribución Gourmet
-                                            </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Lácteos</td>
-<td data-label="Contacto">
-                                    +57 300 845 2281
-                                </td>
-<td data-label="Ciudad">Bogotá</td>
-<td data-label="Estado">
-<span class="status status-success">
-<i class="fa-solid fa-circle"></i>
-                                        Activo
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<div class="supplier-logo">
-<i class="fa-solid fa-wine-bottle"></i>
-</div>
-<div>
-<h6>Wine Distribution Group</h6>
-<span>
-                                                Importadora
-                                            </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Bebidas</td>
-<td data-label="Contacto">
-                                    +57 310 227 9814
-                                </td>
-<td data-label="Ciudad">Medellín</td>
-<td data-label="Estado">
-<span class="status status-warning">
-<i class="fa-solid fa-circle"></i>
-                                        Pendiente
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<div class="supplier-logo">
-<i class="fa-solid fa-fish"></i>
-</div>
-<div>
-<h6>Fresh Ocean Foods</h6>
-<span>
-                                                Mariscos &amp; Congelados
-                                            </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Mariscos</td>
-<td data-label="Contacto">
-                                    +57 320 112 0084
-                                </td>
-<td data-label="Ciudad">Cartagena</td>
-<td data-label="Estado">
-<span class="status status-danger">
-<i class="fa-solid fa-circle"></i>
-                                        Inactivo
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- =================================================
-                 FORM
-            ================================================== -->
-<div class="card-premium form-section">
-<div class="form-title">
-<h4>Registrar Nuevo Proveedor</h4>
-<p>
-                        Agrega distribuidores y empresas asociadas al ecosistema gastronómico.
-                    </p>
-</div>
-<div class="row">
-<div class="col-lg-6">
-<input class="input-premium" placeholder="Nombre del proveedor" type="text"/>
-</div>
-<div class="col-lg-6">
-<input class="input-premium" placeholder="Correo electrónico" type="text"/>
-</div>
-<div class="col-lg-6">
-<input class="input-premium" placeholder="Teléfono" type="text"/>
-</div>
-<div class="col-lg-6">
-<select class="input-premium">
-<option>Categoría</option>
-<option>Lácteos</option>
-<option>Bebidas</option>
-<option>Mariscos</option>
-</select>
-</div>
-</div>
-<textarea class="input-premium" placeholder="Notas internas o descripción..."></textarea>
-<!-- =================================================
-                     UPLOAD
-                ================================================== -->
-<div class="upload-box">
-<i class="fa-solid fa-cloud-arrow-up"></i>
-<h5>Subir Documentos</h5>
-<p>
-                        Arrastra contratos, certificados o archivos comerciales aquí.
-                    </p>
-</div>
-<div class="d-flex justify-content-end gap-3 mt-4">
-<button class="btn-outline-premium">
-                        Cancelar
-                    </button>
-<button class="btn-premium">
-<i class="fa-solid fa-plus me-2"></i>
-                        Guardar Proveedor
-                    </button>
-</div>
-</div>
-</main>
-</div>
-<!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
-<script>
 
-        const notification = document.getElementById('notification');
+    <div class="notification" id="notification">
+        <div class="notification-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+            <h6>Proveedor registrado</h6>
+            <p>El nuevo proveedor fue agregado correctamente al sistema.</p>
+        </div>
+    </div>
 
-        function showNotification() {
+    <div class="layout">
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="brand-logo"><i class="fa-solid fa-utensils"></i></div>
+                    <div class="brand-text">
+                        <h2>RestSoft</h2><span>Enterprise ERP</span>
+                    </div>
+                </div>
+                <nav class="menu">
+                    <a class="menu-item" href="#"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
+                    <a class="menu-item active" href="#"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a>
+                    <a class="menu-item" href="#"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a>
+                    <a class="menu-item" href="#"><i class="fa-solid fa-cart-shopping"></i><span>Pedidos</span></a>
+                    <a class="menu-item" href="#"><i class="fa-solid fa-chart-pie"></i><span>Reportes</span></a>
+                    <a class="menu-item" href="#"><i class="fa-solid fa-gear"></i><span>Configuración</span></a>
+                </nav>
+            </div>
+            <div class="sidebar-footer">
+                <h6>Supply Chain Premium</h6>
+                <p>Controla proveedores gastronómicos, entregas y abastecimiento inteligente.</p>
+            </div>
+        </aside>
 
-            notification.classList.add('show');
+        <main class="main">
+            <div class="topbar">
+                <button id="menuToggle" class="mobile-menu-btn d-md-none"><i class="fa-solid fa-bars"></i></button>
+                <div class="page-title">
+                    <h1>Gestión de Proveedores</h1>
+                    <p>Administra distribuidores, abastecimiento y relaciones comerciales.</p>
+                </div>
+                <div class="topbar-actions">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input placeholder="Buscar proveedores..." type="text" />
+                    </div>
+                    <div class="profile">
+                        <img alt="" src="https://i.pravatar.cc/100" />
+                        <div>
+                            <h6>Valentina Ruiz</h6><span>Supply Manager</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            setTimeout(() => {
-                hideNotification();
-            }, 4000);
+            <div class="stats-grid">
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="stat-total-proveedores">0</h3>
+                        <p>Proveedores Registrados</p>
+                    </div>
+                    <div class="stat-icon primary-soft"><i class="fa-solid fa-truck-fast"></i></div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="stat-total-empresas">0</h3>
+                        <p>Empresas Asociadas</p>
+                    </div>
+                    <div class="stat-icon warning-soft"><i class="fa-solid fa-building"></i></div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3>96%</h3>
+                        <p>Cumplimiento Logístico</p>
+                    </div>
+                    <div class="stat-icon success-soft"><i class="fa-solid fa-shield-check"></i></div>
+                </div>
+            </div>
 
-        }
+            <div class="card-premium">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1">Lista de Proveedores</h4>
+                        <p class="text-secondary mb-0">Empresas registradas para abastecimiento.</p>
+                    </div>
+                    <button class="btn-outline-premium"><i class="fa-solid fa-file-export me-2"></i> Exportar</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Empresa</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-proveedores">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
+            <div class="card-premium form-section">
+                <div class="form-title">
+                    <h4>Registrar Nuevo Proveedor</h4>
+                    <p>Agrega distribuidores vinculándolos a una empresa registrada.</p>
+                </div>
+                <form id="form-proveedor">
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <input class="input-premium" id="input-nombre" placeholder="Nombre" type="text" required />
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="input-premium" id="input-email" placeholder="Correo electrónico" type="email"
+                                required />
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="input-premium" id="input-telefono" placeholder="Teléfono" type="text"
+                                required />
+                        </div>
+                        <div class="col-lg-6">
+                            <input class="input-premium" id="input-direccion" placeholder="Dirección" type="text"
+                                required />
+                        </div>
+                        <div class="col-lg-12">
+                            <select class="input-premium" id="select-empresa" required>
+                                <option value="" disabled selected>Seleccione una empresa asociada...</option>
+                            </select>
+                        </div>
+                    </div>
 
-        window.addEventListener('load', () => {
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <button type="button" class="btn-outline-premium"
+                            onclick="document.getElementById('form-proveedor').reset()">Cancelar</button>
+                        <button type="submit" class="btn-premium"><i class="fa-solid fa-plus me-2"></i> Guardar
+                            Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
 
-            setTimeout(() => {
-                showNotification();
-            }, 1000);
-
-        });
-
-    </script>
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+    <script type="module" src="js/consumo/apiProveedores.js"></script>
+    <script type="module" src="js/datos/proveedores.js"></script>
 </body>
+
 </html>
