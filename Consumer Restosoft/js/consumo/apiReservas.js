@@ -4,7 +4,6 @@ export const apiReserva = {
 
     listarPorReservaId: async (idReserva) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/reserva/${idReserva}`
@@ -16,17 +15,11 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
+      
     },
 
     listarPorEmpresaDiario: async (idEmpresa) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/empresa/${idEmpresa}/hoy`
@@ -38,17 +31,11 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
+       
     },
 
     listarPorEmpresaGeneral: async (idEmpresa) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/empresa/${idEmpresa}`
@@ -60,17 +47,12 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
 
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
+      
     },
 
     listarPorMesaId: async (idMesa) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/mesa/${idMesa}`
@@ -82,12 +64,7 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
+       
     },
 
     guardarReserva: async (
@@ -95,7 +72,6 @@ export const apiReserva = {
         idsMesa
     ) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva`,
@@ -117,12 +93,7 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            throw error;
-
-        }
+        
     },
 
     actualizarReserva: async (
@@ -131,7 +102,6 @@ export const apiReserva = {
         idsMesa
     ) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva/${idReserva}`,
@@ -153,17 +123,11 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            throw error;
-
-        }
+        
     },
 
     eliminarReserva: async (idReserva) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva/${idReserva}`,
@@ -174,12 +138,7 @@ export const apiReserva = {
 
             return response.ok;
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
+        
     },
 
     eliminarPorReservaYMesa: async (
@@ -187,7 +146,6 @@ export const apiReserva = {
         idMesa
     ) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/reserva/${idReserva}/mesa/${idMesa}`,
@@ -198,17 +156,11 @@ export const apiReserva = {
 
             return response.ok;
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
+        
     },
 
     eliminarPorReserva: async (idReserva) => {
 
-        try {
 
             const response = await fetch(
                 `${API_BASE}/reserva-mesa/reserva/${idReserva}`,
@@ -219,16 +171,10 @@ export const apiReserva = {
 
             return response.ok;
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
+       
     },
 
     listarClientes: async () => {
-        try {
 
             const response = await fetch(
                 `${API_BASE}/usuarios/clientes`
@@ -240,12 +186,7 @@ export const apiReserva = {
 
             return await response.json();
 
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
-        }
+       
     }
 
     }

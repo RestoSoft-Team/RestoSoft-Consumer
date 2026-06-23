@@ -272,8 +272,8 @@ function renderListaReservas() {
     const res = agrupada.reserva;
     const mesasNum = agrupada.mesas.map((m) => m.numeroMesa).join(", ");
     const iniciales =
-      res.idusuario?.nombre?.substring(0, 2).toUpperCase() || "CL";
-    const nombreCliente = res.idusuario?.nombre || "Cliente Desconocido";
+      res.usuario?.nombres?.substring(0, 2).toUpperCase() || "CL";
+    const nombreCliente = res.usuario?.nombres || "Cliente Desconocido";
 
     let badgeClass = "booking-pending";
 
@@ -445,12 +445,12 @@ window.abrirOpcionesReserva = async function (idReserva) {
   state.reservaEnEdicion = idReserva;
   state.mesasSeleccionadas = agrupada.mesas.map((m) => m.id);
   state.clienteSeleccionado = {
-    id: agrupada.reserva.idusuario.id,
-    nombre: agrupada.reserva.idusuario.nombre,
+    id: agrupada.reserva.usuario.id,
+    nombre: agrupada.reserva.usuario.nombres,
   };
 
-  dom.idCliente.value = agrupada.reserva.idusuario.id;
-  dom.clienteSeleccionado.textContent = agrupada.reserva.idusuario.nombre;
+  dom.idCliente.value = agrupada.reserva.usuario.id;
+  dom.clienteSeleccionado.textContent = agrupada.reserva.usuario.nombres;
   dom.clienteSeleccionado.style.color = "var(--dark)";
   dom.fechaReserva.value = agrupada.reserva.fecha;
   dom.horaReserva.value = agrupada.reserva.hora.substring(0, 5);
@@ -487,7 +487,7 @@ window.abrirOpcionesReserva = async function (idReserva) {
     dom.btnCancelarEdicion.style.display = "block";
 
     dom.infoEliminarContenedor.innerHTML = `
-          <div class="info-row"><span>Cliente</span><strong>${agrupada.reserva.idusuario.nombre}</strong></div>
+          <div class="info-row"><span>Cliente</span><strong>${agrupada.reserva.usuario.nombre}</strong></div>
           <div class="info-row"><span>Fecha y Hora</span><strong>${agrupada.reserva.fecha} a las ${agrupada.reserva.hora.substring(0, 5)}</strong></div>
           <div class="info-row"><span>Mesas</span><strong>${agrupada.mesas.map((m) => m.numeroMesa).join(", ")}</strong></div>
       `;
@@ -572,7 +572,7 @@ async function procesarGuardado() {
     hora:
       dom.horaReserva.value +
       (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
-    idusuario: parseInt(state.clienteSeleccionado.id),
+    usuario: parseInt(state.clienteSeleccionado.id),
     cantidadPersonas: state.cantidadPersonasCalculada,
     idempresa: ID_EMPRESA,
     estado:
@@ -584,6 +584,11 @@ async function procesarGuardado() {
       await apiReserva.guardarReserva(requestData, state.mesasSeleccionadas);
       showNotification("La reserva se ha registrado correctamente.", "success");
     } else {
+      console.log('DATAAAA???');
+      console.log(state.reservaEnEdicion);
+      console.log(requestData);
+      console.log(state.mesasSeleccionadas);
+
       await apiReserva.actualizarReserva(
         state.reservaEnEdicion,
         requestData,
@@ -594,6 +599,8 @@ async function procesarGuardado() {
         "success",
       );
     }
+
+   
 
     const reservasDiariasRaw =
       await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
