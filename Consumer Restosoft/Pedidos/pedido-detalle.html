@@ -17,6 +17,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="../css/sidebar.css">
+    
 
     <style>
         :root {
@@ -63,84 +65,6 @@
             text-decoration: none;
         }
 
-        /* ====================================
-           SIDEBAR
-        ==================================== */
-
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background: var(--dark);
-            padding: 28px 22px;
-            overflow: auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-
-        .logo-box {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, .08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-        }
-
-        .logo h3 {
-            color: white;
-            margin: 0;
-            font-weight: 800;
-        }
-
-        .logo p {
-            color: #b9c2d0;
-            margin: 0;
-            font-size: 13px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            color: #d9dee8;
-            transition: .3s;
-            font-weight: 500;
-        }
-
-        .menu-link:hover {
-            background: rgba(255, 255, 255, .06);
-            transform: translateX(4px);
-            color: white;
-        }
-
-        .menu-link.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .menu-link i {
-            width: 22px;
-            text-align: center;
-        }
 
         /* ====================================
            MAIN
@@ -518,26 +442,7 @@
            RESPONSIVE
         ==================================== */
 
-        @media(max-width:992px) {
-
-            .sidebar {
-                width: 95px;
-            }
-
-            .sidebar .logo-text,
-            .sidebar .menu-link span {
-                display: none;
-            }
-
-            .main {
-                margin-left: 95px;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
+     
 
         @media(max-width:768px) {
 
@@ -573,119 +478,147 @@
         }
     </style>
 
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
+   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <aside class="sidebar">
-
-        <div>
-
-            <div class="logo">
-
-                <div class="logo-box">
-                    <i class="fa-solid fa-utensils"></i>
-                </div>
-
-                <div class="logo-text">
-                    <h3>RestSoft</h3>
-                    <p>Enterprise POS</p>
-                </div>
-
-            </div>
-
-            <div class="menu">
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="#" class="menu-link active">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span>Pedidos</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-box"></i>
-                    <span>Inventario</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Clientes</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Configuración</span>
-                </a>
-
-            </div>
-
-        </div>
-
-    </aside>
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3>RestSoft</h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="active" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="configuracion-general.html">General</a
+        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
+    </div>
 
     <!-- MAIN -->
 
@@ -1046,6 +979,8 @@
         </div>
 
     </div>
+    <script type="module" src="../js/datos/sidebar.js"></script>
+
 
     <!-- JS -->
 
@@ -1068,21 +1003,6 @@
     </script>
 
 
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
 
 </body>
 
