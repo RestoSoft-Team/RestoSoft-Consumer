@@ -60,38 +60,59 @@ const dom = {
 
 // =========================================
 // UTILIDADES UI / ALERTAS / VALIDACIONES
-// =========================================
 window.showNotification = (text, type = "success") => {
   const notification = document.getElementById("notification");
   const notificationText = document.getElementById("notificationText");
   const notificationIcon = document.getElementById("notificationIcon");
   const notificationTitle = document.getElementById("notificationTitle");
 
-  if (notification && notificationText) {
-    notificationText.textContent = text;
-    notification.className = "notification";
-    notificationIcon.className = "";
-
-    if (type === "success") {
-      notification.classList.add("success");
-      notificationIcon.className = "fa-solid fa-circle-check";
-      notificationTitle.textContent = "Operación Exitosa";
-    } else if (type === "warning") {
-      notification.classList.add("warning");
-      notificationIcon.className = "fa-solid fa-triangle-exclamation";
-      notificationTitle.textContent = "Aviso";
-    } else if (type === "error") {
-      notification.classList.add("error");
-      notificationIcon.className = "fa-solid fa-circle-xmark";
-      notificationTitle.textContent = "Error";
-    }
-
-    notification.classList.add("show");
-    setTimeout(() => notification.classList.remove("show"), 6000);
-  } else {
-    // Fallback en caso de que no existan los contenedores en el DOM
+  if (!notification || !notificationText) {
     console.warn(text);
+    return;
   }
+
+  if (window.notificationTimeout) {
+    clearTimeout(window.notificationTimeout);
+  }
+
+  notification.style.transition = "none";
+  notification.classList.remove("show");
+  void notification.offsetWidth;
+  notification.style.transition = "";
+
+  // 3. Asignar textos e iconos
+  notificationText.textContent = text;
+  notification.className = "notification";
+
+  if (type === "success") {
+    notification.classList.add("success");
+    notificationIcon.className = "fa-solid fa-circle-check";
+    notificationTitle.textContent = "Operación Exitosa";
+  } else if (type === "warning") {
+    notification.classList.add("warning");
+    notificationIcon.className = "fa-solid fa-triangle-exclamation";
+    notificationTitle.textContent = "Aviso";
+  } else if (type === "error") {
+    notification.classList.add("error");
+    notificationIcon.className = "fa-solid fa-circle-xmark";
+    notificationTitle.textContent = "Error";
+  }
+
+  // 4. Mostrar (se desliza desde la derecha)
+  notification.classList.add("show");
+
+  // 5. Ocultar tras 6 segundos
+  window.notificationTimeout = setTimeout(() => {
+    notification.classList.remove("show");
+    
+    
+    setTimeout(() => {
+      notification.style.display = "none";
+      setTimeout(() => {
+        notification.style.display = "";
+      }, 50);
+    }, 500); 
+  }, 3000);
 };
 
 function esFechaPasada(fechaStr) {
@@ -188,30 +209,7 @@ async function cargarDatosIniciales() {
         apiReserva.listarPorEmpresaDiario(ID_EMPRESA),
       ]);
 
-    // 1. Validar que la información no sea null, undefined, ni tenga un tamaño inválido
-    const validarDato = (dato) => {
-      // Si el dato no existe, es nulo, o es indefinido -> es inválido
-      if (dato === null || dato === undefined) return false;
-      
-      // En JavaScript, el length de un array nunca es < 0, pero si por error de la 
-      // API llega como un número negativo o no es un objeto/array válido, lo bloqueamos.
-      if (Array.isArray(dato) && dato.length < 1) return false;
-      
-      return true;
-    };
-
-    // Evaluamos cada respuesta
-    if (
-      !validarDato(mesasData) ||
-      !validarDato(zonasData) ||
-      !validarDato(clientesData) ||
-      !validarDato(reservasDiariasRaw)
-    ) {
-      // Lanzamos un error forzado para que el catch lo atrape
-      throw new Error("Datos nulos o inválidos recibidos");
-    }
-
-    // 2. Si todo está correcto, asignamos al estado global
+    
     state.mesas = mesasData;
     state.zonas = zonasData;
     state.clientes = clientesData;
@@ -272,8 +270,8 @@ function renderListaReservas() {
     const res = agrupada.reserva;
     const mesasNum = agrupada.mesas.map((m) => m.numeroMesa).join(", ");
     const iniciales =
-      res.idusuario?.nombre?.substring(0, 2).toUpperCase() || "CL";
-    const nombreCliente = res.idusuario?.nombre || "Cliente Desconocido";
+      res.usuario?.nombres?.substring(0, 2).toUpperCase() || "CL";
+    const nombreCliente = res.usuario?.nombres || "Cliente Desconocido";
 
     let badgeClass = "booking-pending";
 
@@ -445,12 +443,12 @@ window.abrirOpcionesReserva = async function (idReserva) {
   state.reservaEnEdicion = idReserva;
   state.mesasSeleccionadas = agrupada.mesas.map((m) => m.id);
   state.clienteSeleccionado = {
-    id: agrupada.reserva.idusuario.id,
-    nombre: agrupada.reserva.idusuario.nombre,
+    id: agrupada.reserva.usuario.id,
+    nombre: agrupada.reserva.usuario.nombres,
   };
 
-  dom.idCliente.value = agrupada.reserva.idusuario.id;
-  dom.clienteSeleccionado.textContent = agrupada.reserva.idusuario.nombre;
+  dom.idCliente.value = agrupada.reserva.usuario.id;
+  dom.clienteSeleccionado.textContent = agrupada.reserva.usuario.nombres;
   dom.clienteSeleccionado.style.color = "var(--dark)";
   dom.fechaReserva.value = agrupada.reserva.fecha;
   dom.horaReserva.value = agrupada.reserva.hora.substring(0, 5);
@@ -487,7 +485,7 @@ window.abrirOpcionesReserva = async function (idReserva) {
     dom.btnCancelarEdicion.style.display = "block";
 
     dom.infoEliminarContenedor.innerHTML = `
-          <div class="info-row"><span>Cliente</span><strong>${agrupada.reserva.idusuario.nombre}</strong></div>
+          <div class="info-row"><span>Cliente</span><strong>${agrupada.reserva.usuario.nombre}</strong></div>
           <div class="info-row"><span>Fecha y Hora</span><strong>${agrupada.reserva.fecha} a las ${agrupada.reserva.hora.substring(0, 5)}</strong></div>
           <div class="info-row"><span>Mesas</span><strong>${agrupada.mesas.map((m) => m.numeroMesa).join(", ")}</strong></div>
       `;
@@ -551,32 +549,18 @@ window.resetearFormulario = resetearFormulario;
 // CONTROL DE FLUJO Y API
 // =========================================
 async function procesarGuardado() {
-  if (!state.clienteSeleccionado || !state.clienteSeleccionado.id) {
-    showNotification("Debes seleccionar un cliente para continuar.", "warning");
-    return;
-  }
-  if (state.mesasSeleccionadas.length === 0) {
-    showNotification("Debes seleccionar una mesa para continuar.", "warning");
-    return;
-  }
-  if (!dom.fechaReserva.value || !dom.horaReserva.value) {
-    showNotification(
-      "Debes seleccionar una fecha y hora para continuar.",
-      "warning",
-    );
-    return;
-  }
+  // ... (tus validaciones iniciales del frontend aquí) ...
+  
+  // Limpiamos errores de intentos anteriores
+  limpiarErroresFormulario(); 
 
   const requestData = {
     fecha: dom.fechaReserva.value,
-    hora:
-      dom.horaReserva.value +
-      (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
+    hora: dom.horaReserva.value + (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
     idusuario: parseInt(state.clienteSeleccionado.id),
     cantidadPersonas: state.cantidadPersonasCalculada,
     idempresa: ID_EMPRESA,
-    estado:
-      state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
+    estado: state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
   };
 
   try {
@@ -589,22 +573,26 @@ async function procesarGuardado() {
         requestData,
         state.mesasSeleccionadas,
       );
-      showNotification(
-        "La reserva se ha actualizado correctamente.",
-        "success",
-      );
+      showNotification("La reserva se ha actualizado correctamente.", "success");
     }
 
-    const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
+    const reservasDiariasRaw = await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
     agruparReservas(reservasDiariasRaw);
     renderListaReservas();
     resetearFormulario();
+
   } catch (e) {
-    showNotification(
-      "No se pudo guardar la reserva, intenta de nuevo.",
-      "error",
-    );
+    // --- CAMBIO PRINCIPAL AQUÍ ---
+    // Si el error tiene la propiedad 'validations', usamos nuestra nueva función
+    if (e.validations) {
+      manejarErroresDeValidacion(e);
+    } else if (e.message) {
+      // Si es un error personalizado tuyo (como RecursoNoEncontradoException)
+      showNotification(e.message, "error");
+    } else {
+      // Fallback por si la respuesta no es JSON (ej. caída de red)
+      showNotification("No se pudo guardar la reserva. Verifique su conexión e intente de nuevo.", "error");
+    }
   }
 }
 
@@ -725,4 +713,116 @@ function renderClientesModal(lista) {
       dom.modalClientes.classList.remove("show");
     });
   });
+  
+  // Función para limpiar los errores previos antes de un nuevo intento
+function limpiarErroresFormulario() {
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
+}
+
+// Función para agregar el mensaje de error debajo del input
+function agregarMensajeErrorBajoInput(inputEl, mensaje) {
+  // Evitar duplicados si ya existe un error allí
+  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
+  
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'error-message-text';
+  errorSpan.textContent = mensaje;
+  
+  // Insertar justo después del input
+  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
+}
+
+// Función principal que procesa el objeto ErrorResponse
+function manejarErroresDeValidacion(errorResponse) {
+  limpiarErroresFormulario();
+
+  // Verificamos si existe el mapa de validaciones enviado por @ExceptionHandler
+  if (errorResponse.validations) {
+    let mensajes = [];
+    
+    // Mapeamos los campos del DTO de Java hacia los IDs del HTML
+    const mapeoCampos = {
+      "reserva.fecha": "fechaReserva",
+      "reserva.hora": "horaReserva",
+      "reserva.idusuario": "idCliente",
+      "reserva.cantidadPersonas": "infoComensales"
+    };
+
+    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
+      mensajes.push(mensaje);
+      
+      const idInput = mapeoCampos[campoBackend];
+      if (idInput) {
+        const inputEl = document.getElementById(idInput);
+        if (inputEl) {
+          inputEl.classList.add("input-error");
+          agregarMensajeErrorBajoInput(inputEl, mensaje);
+        }
+      }
+    }
+
+    // Mostramos notificación general uniendo los mensajes
+    showNotification(mensajes.join(" | "), "error");
+  } else {
+    // Si es otro tipo de error (ej. 404, 500) mostramos el message general del ErrorResponse
+    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
+  }
+}
+}
+
+// Función para limpiar los errores previos antes de un nuevo intento
+function limpiarErroresFormulario() {
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
+}
+
+// Función para agregar el mensaje de error debajo del input
+function agregarMensajeErrorBajoInput(inputEl, mensaje) {
+  // Evitar duplicados si ya existe un error allí
+  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
+  
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'error-message-text';
+  errorSpan.textContent = mensaje;
+  
+  // Insertar justo después del input
+  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
+}
+
+// Función principal que procesa el objeto ErrorResponse
+function manejarErroresDeValidacion(errorResponse) {
+  limpiarErroresFormulario();
+
+  // Verificamos si existe el mapa de validaciones enviado por @ExceptionHandler
+  if (errorResponse.validations) {
+    let mensajes = [];
+    
+    // Mapeamos los campos del DTO de Java hacia los IDs del HTML
+    const mapeoCampos = {
+      "reserva.fecha": "fechaReserva",
+      "reserva.hora": "horaReserva",
+      "reserva.idusuario": "idCliente",
+      "reserva.cantidadPersonas": "infoComensales"
+    };
+
+    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
+      mensajes.push(mensaje);
+      
+      const idInput = mapeoCampos[campoBackend];
+      if (idInput) {
+        const inputEl = document.getElementById(idInput);
+        if (inputEl) {
+          inputEl.classList.add("input-error");
+          agregarMensajeErrorBajoInput(inputEl, mensaje);
+        }
+      }
+    }
+
+    // Mostramos notificación general uniendo los mensajes
+    showNotification(mensajes.join(" | "), "error");
+  } else {
+    // Si es otro tipo de error (ej. 404, 500) mostramos el message general del ErrorResponse
+    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
+  }
 }

@@ -4,182 +4,129 @@ export const apiReserva = {
 
     listarPorReservaId: async (idReserva) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/reserva/${idReserva}`
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/reserva/${idReserva}`
+        );
 
-            if (!response.ok) {
-                throw new Error("Error al listar por reserva");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
+        if (!response.ok) {
+            throw new Error("Error al listar por reserva");
         }
+
+        return await response.json();
+
+
     },
 
     listarPorEmpresaDiario: async (idEmpresa) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/empresa/${idEmpresa}/hoy`
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/empresa/${idEmpresa}/hoy`
+        );
 
-            if (!response.ok) {
-                throw new Error("Error al listar reservas diarias");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
+        if (!response.ok) {
+            throw new Error("Error al listar reservas diarias");
         }
+
+        return await response.json();
+
+
     },
 
     listarPorEmpresaGeneral: async (idEmpresa) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/empresa/${idEmpresa}`
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/empresa/${idEmpresa}`
+        );
 
-            if (!response.ok) {
-                throw new Error("Error al listar reservas");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
+        if (!response.ok) {
+            throw new Error("Error al listar reservas");
         }
+
+        return await response.json();
+
+
+
     },
 
     listarPorMesaId: async (idMesa) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/mesa/${idMesa}`
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/mesa/${idMesa}`
+        );
 
-            if (!response.ok) {
-                throw new Error("Error al listar reservas de la mesa");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
+        if (!response.ok) {
+            throw new Error("Error al listar reservas de la mesa");
         }
+
+        return await response.json();
+
+
+    },
+    guardarReserva: async (reserva, idsMesa) => {
+        const response = await fetch(
+            `${API_BASE}/reserva`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    reserva,
+                    idsMesa
+                })
+            }
+        );
+
+        if (!response.ok) {
+            // Intentamos leer el error estructurado que envía Spring Boot
+            const errorData = await response.json().catch(() => ({}));
+            throw errorData; // Lanzamos el objeto completo (que contiene 'validations')
+        }
+
+        return await response.json();
     },
 
-    guardarReserva: async (
-        reserva,
-        idsMesa
-    ) => {
-
-        try {
-
-            const response = await fetch(
-                `${API_BASE}/reserva`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        reserva,
-                        idsMesa
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al guardar reserva");
+    actualizarReserva: async (idReserva, reserva, idsMesa) => {
+        const response = await fetch(
+            `${API_BASE}/reserva/${idReserva}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    reserva,
+                    idsMesa
+                })
             }
+        );
 
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            throw error;
-
+        if (!response.ok) {
+            // Intentamos leer el error estructurado que envía Spring Boot
+            const errorData = await response.json().catch(() => ({}));
+            throw errorData; // Lanzamos el objeto completo
         }
-    },
 
-    actualizarReserva: async (
-        idReserva,
-        reserva,
-        idsMesa
-    ) => {
-
-        try {
-
-            const response = await fetch(
-                `${API_BASE}/reserva/${idReserva}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        reserva,
-                        idsMesa
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("Error al actualizar reserva");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            throw error;
-
-        }
+        return await response.json();
     },
 
     eliminarReserva: async (idReserva) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva/${idReserva}`,
-                {
-                    method: "DELETE"
-                }
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva/${idReserva}`,
+            {
+                method: "DELETE"
+            }
+        );
 
-            return response.ok;
+        return response.ok;
 
-        } catch (error) {
 
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
     },
 
     eliminarPorReservaYMesa: async (
@@ -187,65 +134,47 @@ export const apiReserva = {
         idMesa
     ) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/reserva/${idReserva}/mesa/${idMesa}`,
-                {
-                    method: "DELETE"
-                }
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/reserva/${idReserva}/mesa/${idMesa}`,
+            {
+                method: "DELETE"
+            }
+        );
 
-            return response.ok;
+        return response.ok;
 
-        } catch (error) {
 
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
     },
 
     eliminarPorReserva: async (idReserva) => {
 
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/reserva-mesa/reserva/${idReserva}`,
-                {
-                    method: "DELETE"
-                }
-            );
+        const response = await fetch(
+            `${API_BASE}/reserva-mesa/reserva/${idReserva}`,
+            {
+                method: "DELETE"
+            }
+        );
 
-            return response.ok;
+        return response.ok;
 
-        } catch (error) {
 
-            console.error("Fallo de API:", error);
-            return false;
-
-        }
     },
 
     listarClientes: async () => {
-        try {
 
-            const response = await fetch(
-                `${API_BASE}/usuarios/clientes`
-            );
+        const response = await fetch(
+            `${API_BASE}/usuarios/clientes`
+        );
 
-            if (!response.ok) {
-                throw new Error("Error al listar clientes");
-            }
-
-            return await response.json();
-
-        } catch (error) {
-
-            console.error("Fallo de API:", error);
-            return [];
-
+        if (!response.ok) {
+            throw new Error("Error al listar clientes");
         }
-    }
+
+        return await response.json();
+
 
     }
+
+}
