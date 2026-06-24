@@ -13,79 +13,146 @@
 </head>
 <body>
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="sidebar">
-        <div class="logo">
-            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-            <h3>RestSoft</h3>
-        </div>
-        <div class="menu-title">Navegación</div><a class="menu-item " href="../../Dashboard-example.html"><i
-                class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
-            class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../empleados.html">Empleados</a><a class="" href="../../empleado-crear.html">Crear
-                Empleado</a><a class="" href="../../empleado-editar.html">Editar Empleado</a><a class=""
-                href="../../roles-permisos.html">Roles y Permisos</a><a class="" href="../../horarios-turnos.html">Horarios y
-                Turnos</a><a class="" href="../../asistencia.html">Asistencia</a></div><button class="menu-group-btn"><span><i
-                    class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../inventario.html">Inventario</a><a class=""
-                href="../../producto-crear.html">Crear Producto</a><a class="" href="../../producto-editar.html">Editar
-                Producto</a><a class="" href="../../entradas-mercancia.html">Entradas Mercancía</a><a class=""
-                href="../../salidas-mermas.html">Salidas/Mermas</a><a class=""
-                href="../../categorias-inventario.html">Categorías</a><a class="" href="../../proveedores.html">Proveedores</a><a
-                class="" href="../../alertas-stock.html">Alertas Stock</a></div><button class="menu-group-btn"><span><i
-                    class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../pedidos.html">Pedidos</a><a class="" href="../../pedido-crear.html">Crear
-                Pedido</a><a class="" href="../../pedido-detalle.html">Detalle Pedido</a><a class=""
-                href="../../pedido-cocina.html">Pedido Cocina</a><a class="" href="../../seguimiento-pedidos.html">Seguimiento</a>
-        </div><button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="menu-item active" href="mesas.html">Mesas</a><a class=""
-                href="mapa-mesas.html">Mapa Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a
-                class="" href="../../dividir-cuenta.html">Dividir
-                Cuenta</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i>
-                Reservas</span><i class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../reservas.html">Reservas</a><a class="" href="../../reserva-crear.html">Crear
-                Reserva</a><a class="" href="../../reserva-editar.html">Editar Reserva</a><a class=""
-                href="../../calendario-reservas.html">Calendario</a></div><button class="menu-group-btn"><span><i
-                    class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../facturacion.html">Facturación</a><a class=""
-                href="../../generar-factura.html">Generar Factura</a><a class="" href="../../pagos.html">Pagos</a><a class=""
-                href="../../propinas.html">Propinas</a><a class="" href="../../cierre-caja.html">Cierre Caja</a></div><button
-            class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../menu-productos.html">Menú</a><a class="" href="../../platillo-crear.html">Crear
-                Platillo</a><a class="" href="../../platillo-editar.html">Editar Platillo</a><a class=""
-                href="../../promociones.html">Promociones</a><a class="" href="../../categorias-menu.html">Categorías Menú</a></div>
-        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../cocina-dashboard.html">Dashboard Cocina</a><a class=""
-                href="../../pedidos-preparacion.html">Pedidos Preparación</a><a class=""
-                href="../../tiempos-preparacion.html">Tiempos</a><a class=""
-                href="../../notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
-                    class="fa-solid fa-user-group"></i> Clientes</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../clientes.html">Clientes</a><a class="" href="../../cliente-crear.html">Crear
-                Cliente</a><a class="" href="../../historial-cliente.html">Historial</a><a class=""
-                href="../../fidelizacion.html">Fidelización</a><a class="" href="../../promociones-clientes.html">Promociones</a>
-        </div><button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../reportes.html">Reportes</a><a class=""
-                href="../../reporte-ventas.html">Ventas</a><a class="" href="../../reporte-inventario.html">Inventario</a><a
-                class="" href="../../reporte-empleados.html">Empleados</a><a class=""
-                href="../../reporte-financiero.html">Financiero</a><a class="" href="../../reporte-reservas.html">Reservas</a><a
-                class="" href="../../estadisticas-ocupacion.html">Ocupación</a></div><button class="menu-group-btn"><span><i
-                    class="fa-solid fa-gear"></i> Configuración</span><i
-                class="fa-solid fa-chevron-right chevron"></i></button>
-        <div class="submenu"><a class="" href="../../configuracion-general.html">General</a><a class=""
-                href="../../usuarios-sistema.html">Usuarios</a><a class="" href="../../impresoras.html">Impresoras</a><a class=""
-                href="../../metodos-pago.html">Métodos Pago</a><a class="" href="../../alertas.html">Alertas</a><a class=""
-                href="../../backup-restauracion.html">Backup</a></div>
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3>RestSoft</h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="active" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="configuracion-general.html">General</a
+        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
     </div>
 
-    <main class="main">
+     <main class="main">
         <div class="topbar">
             <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
             <div class="page-title">
@@ -95,85 +162,58 @@
             <div class="topbar-right">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Buscar por número o zona...">
+                    <!-- Se añade ID para el buscador empresarial -->
+                    <input type="text" id="searchInput" placeholder="Buscar por número o zona...">
                 </div>
                 <div class="profile">
                     <img src="https://i.pravatar.cc/100?img=45" alt="Perfil">
-                    <div>
-                        <strong>Valentina Ruiz</strong>
-                    </div>
+                    <div><strong>Valentina Ruiz</strong></div>
                 </div>
             </div>
         </div>
 
+        <!-- Estado de Error -->
         <div id="error-state" class="error-container" style="display: none;">
             <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <h3>Error de Conexión</h3>
             <p id="error-message">No se pudo conectar con la base de datos.</p>
             <div class="error-actions">
                 <button class="btn-primary-custom" onclick="location.reload()">
-                    <i class="fa-solid fa-rotate-right"></i> Reintentar Conexión
+                    <i class="fa-solid fa-rotate-right"></i> Reintentar
                 </button>
                 <a href="mailto:soporte@restosoft.com" class="btn-outline-custom">
-                    <i class="fa-solid fa-headset"></i> Contactar a Soporte RestSoft
+                    <i class="fa-solid fa-headset"></i> Soporte
                 </a>
             </div>
         </div>
 
+        <!-- Dashboard Content -->
         <div id="dashboard-content">
-            
             <div class="stats-grid row g-4">
-                <div class="col-xl-3 col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-top">
-                            <div class="stats-icon success-icon"><i class="fa-solid fa-circle-check"></i></div>
-                        </div>
-                        <h2 id="stat-disponibles"><div class="skeleton skeleton-text"></div></h2>
-                        <p>Disponibles</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-top">
-                            <div class="stats-icon danger-icon"><i class="fa-solid fa-users"></i></div>
-                        </div>
-                        <h2 id="stat-ocupadas"><div class="skeleton skeleton-text"></div></h2>
-                        <p>Ocupadas</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-top">
-                            <div class="stats-icon warning-icon"><i class="fa-solid fa-calendar-check"></i></div>
-                        </div>
-                        <h2 id="stat-reservadas"><div class="skeleton skeleton-text"></div></h2>
-                        <p>Reservadas</p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="stats-card">
-                        <div class="stats-top">
-                            <div class="stats-icon" style="background:var(--gray);"><i class="fa-solid fa-ban"></i></div>
-                        </div>
-                        <h2 id="stat-fuera-servicio"><div class="skeleton skeleton-text"></div></h2>
-                        <p>Inactivas</p>
-                    </div>
-                </div>
+                <div class="col-xl-3 col-md-6"><div class="stats-card"><div class="stats-top"><div class="stats-icon success-icon"><i class="fa-solid fa-circle-check"></i></div></div><h2 id="stat-disponibles"><div class="skeleton skeleton-text"></div></h2><p>Disponibles</p></div></div>
+                <div class="col-xl-3 col-md-6"><div class="stats-card"><div class="stats-top"><div class="stats-icon danger-icon"><i class="fa-solid fa-users"></i></div></div><h2 id="stat-ocupadas"><div class="skeleton skeleton-text"></div></h2><p>Ocupadas</p></div></div>
+                <div class="col-xl-3 col-md-6"><div class="stats-card"><div class="stats-top"><div class="stats-icon warning-icon"><i class="fa-solid fa-calendar-check"></i></div></div><h2 id="stat-reservadas"><div class="skeleton skeleton-text"></div></h2><p>Reservadas</p></div></div>
+                <div class="col-xl-3 col-md-6"><div class="stats-card"><div class="stats-top"><div class="stats-icon" style="background:var(--gray);"><i class="fa-solid fa-ban"></i></div></div><h2 id="stat-fuera-servicio"><div class="skeleton skeleton-text"></div></h2><p>Inactivas</p></div></div>
             </div>
 
             <div class="filters" id="filtersContainer">
-                <div class="skeleton skeleton-btn"></div>
-                <div class="skeleton skeleton-btn"></div>
-                <div class="skeleton skeleton-btn"></div>
+                <div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div><div class="skeleton skeleton-btn"></div>
             </div>
 
-            <div class="tables-grid" id="tablesGrid">
-                </div>
+            <div class="tables-grid" id="tablesGrid"></div>
         </div>
-
     </main>
-    <script src="../js/datos/sidebar.js"></script>
+    <script type="module" src="../js/datos/sidebar.js"></script>
 
+
+    <!-- Modales Empresariales -->
+    <div id="modalGenerico" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modalTitle"></h3>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
 
     <div id="notification" class="notification">
         <div class="notification-icon"><i class="fa-solid fa-circle-check"></i></div>
@@ -183,24 +223,7 @@
         </div>
     </div>
 
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
-    <script type="module" src="../js//datos/mesas.js"></script>
-    <script>
-        // Lógica sencilla para el menú móvil
-        const menuToggle = document.getElementById("menuToggle");
-        const sidebar = document.querySelector(".sidebar");
-        const overlay = document.getElementById("sidebarOverlay");
-
-        menuToggle?.addEventListener("click", () => {
-            sidebar?.classList.toggle("open");
-            overlay?.classList.toggle("show");
-        });
-
-        overlay?.addEventListener("click", () => {
-            sidebar?.classList.remove("open");
-            overlay?.classList.remove("show");
-        });
-    </script>
+    <script type="module" src="../js/datos/mesas.js"></script>
+    <
 </body>
 </html>
