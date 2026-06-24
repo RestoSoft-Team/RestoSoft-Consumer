@@ -205,3 +205,50 @@ a {
     .profile { align-self: flex-start; }
     .notification { width: 90%; right: 5%; }
 }
+/* =========================================
+   OPTIMIZACIÓN DE RENDERIZADO (GPU)
+========================================= */
+.table-card, .stats-card, .filter-btn, .modal-box {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* =========================================
+   MODALES EMPRESARIALES
+========================================= */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(38, 47, 60, 0.6);
+    backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9998; padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+.modal-overlay.show { display: flex; }
+
+.modal-box {
+    background: var(--white); width: 100%; max-width: 500px;
+    border-radius: var(--radius); padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    position: relative; animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-close {
+    position: absolute; top: 15px; right: 15px;
+    border: none; background: var(--gray-light);
+    width: 36px; height: 36px; border-radius: 12px;
+    color: var(--dark); cursor: pointer; transition: .3s;
+}
+.modal-close:hover { background: var(--danger); color: white; }
+
+.modal-box h3 { font-size: 22px; font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+.modal-body { display: flex; flex-direction: column; gap: 20px; }
+
+.detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-light); }
+.detail-row:last-child { border-bottom: none; }
+.detail-row span { color: var(--gray); }
+.detail-row strong { color: var(--dark); font-size: 16px; }
+
+.modal-actions { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+.modal-actions a, .modal-actions button { flex: 1; min-width: 180px; justify-content: center; }
