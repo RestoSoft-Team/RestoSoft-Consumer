@@ -9,11 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/pedidoCrear.css">
     <link rel="stylesheet" href="../css/sidebar.css">
-
 </head>
 <body>
 
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar">
       <div class="logo">
@@ -55,6 +54,7 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu open">
+        
         <a class="" href="pedidos.html">Pedidos</a
         ><a class="active" href="pedido-crear.html">Crear Pedido</a
         ><a class="" href="pedido-detalle.html">Detalle Pedido</a
@@ -66,7 +66,7 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu">
-        <a class="" href="mesas.html">Mesas</a
+        <a class="active" href="mesas.html">Mesas</a
         ><a class="" href="mapa-mesas.html">Mapa Mesas</a
         ><a class="" href="transferir-mesa.html">Transferir Mesa</a
         ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
@@ -75,7 +75,7 @@
         <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
-      <div class="submenu open">
+      <div class="submenu">
         <a class="" href="reservas.html">Reservas</a
         ><a class="" href="calendario-reservas.html">Calendario</a>
       </div>
@@ -151,8 +151,6 @@
       </div>
     </div>
 
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
     <main class="main">
         <div class="topbar">
             <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
@@ -176,93 +174,82 @@
         </div>
 
         <div class="row">
+            <!-- COLUMNA IZQUIERDA: INFO Y PRODUCTOS -->
             <div class="col-lg-8">
                 <div class="card-custom">
                     <div class="section-title">
                         <h3>Información del Pedido</h3>
                     </div>
-                    <div class="row g-4">
-                        <div class="col-md-4">
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
                             <label>Zona</label>
-                            <select class="form-select" id="selectZona" disabled>
+                            <select class="form-select" id="selectZona">
                                 <option value="">Cargando...</option>
                             </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Mesa</label>
-                                <select class="form-select" id="selectMesa" disabled>
-                                    <option value="">Cargando...</option>
-                                </select>
-                                <button class="btn btn-link p-0 mt-2" id="btnCambiarManual"
-                                    style="display: none; font-size: 13px; color: var(--primary);">
-                                    <i class="fa-solid fa-rotate"></i> Cambiar a selección manual
-                                </button>
-                            </div>
-                        <div class="col-md-4">
-                            <label>Mesero</label>
-                            <select class="form-select" id="selectMesero">
-                                <option value="1">Daniel Mora (Admin)</option>
-                            </select>
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="mb-0">Mesa Principal</label>
+                                <button class="btn-sm-custom" id="btnUnirMesa"><i class="fa-solid fa-link"></i> Unir Mesa</button>
+                            </div>
+                            <select class="form-select" id="selectMesa">
+                                <option value="">Cargando...</option>
+                            </select>
+                            <div id="tagsMesasUnidas" class="tags-container mt-2">
+                                <span class="empty-tags">No hay mesas unidas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="mb-0">Meseros Asignados</label>
+                                <button class="btn-sm-custom" id="btnAgregarMesero"><i class="fa-solid fa-user-plus"></i> Agregar</button>
+                            </div>
+                            <div id="tagsMeseros" class="tags-container" style="min-height: 55px;">
+                                <span class="empty-tags">Asigna los meseros...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
                             <label>Observaciones</label>
-                            <textarea class="form-control" id="txtObservaciones" placeholder="Agregar observaciones para cocina..."></textarea>
+                            <textarea class="form-control" id="txtObservaciones" placeholder="Ej: Sin cebolla, término medio..."></textarea>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="card-custom">
                     <div class="section-title">
-                        <h3>Productos</h3>
-                        <button class="btn-primary-custom"><i class="fa-solid fa-plus"></i> Agregar Producto</button>
+                        <h3>Productos del Pedido</h3>
+                        <button class="btn-primary-custom" id="btnAbrirModalProductos">
+                            <i class="fa-solid fa-plus"></i> Agregar Producto
+                        </button>
                     </div>
-                    <div class="product-item">
-                        <div class="product-info">
-                            <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
-                            <div>
-                                <h5>Hamburguesa Gourmet</h5>
-                                <span>$42.000</span>
-                            </div>
-                        </div>
-                        <div class="product-actions">
-                            <input type="number" class="form-control qty-box" value="1">
-                            <button class="btn-outline-custom"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <div class="product-item">
-                        <div class="product-info">
-                            <div class="product-icon"><i class="fa-solid fa-martini-glass"></i></div>
-                            <div>
-                                <h5>Cóctel Premium</h5>
-                                <span>$28.000</span>
-                            </div>
-                        </div>
-                        <div class="product-actions">
-                            <input type="number" class="form-control qty-box" value="2">
-                            <button class="btn-outline-custom"><i class="fa-solid fa-trash"></i></button>
-                        </div>
+                    <div id="listaProductosPedido" class="products-list">
+                        <div class="empty-state" style="grid-column: 1/-1;"><i class="fa-solid fa-cart-shopping"></i><p>No hay productos. Haz clic en "Agregar Producto".</p></div>
                     </div>
                 </div>
             </div>
 
-        <div class="col-lg-4">
-            <div class="card-custom">
-                <div class="section-title">
-                    <h3>Resumen</h3>
-                </div>
-                <div class="total-box">
-                    <div class="total-line"><span>Subtotal</span><strong>$98.000</strong></div>
-                    <div class="total-line"><span>Impuestos</span><strong>$12.000</strong></div>
-                    <div class="total-line"><span>Servicio</span><strong>$5.000</strong></div>
-                    <div class="grand-total"><span>Total</span><span>$115.000</span></div>
-                </div>
-                <div class="d-grid mt-4 gap-2">
-                    <button class="btn-primary-custom" id="btnConfirmarPedido">Confirmar Pedido</button>
-                    <button class="btn-outline-custom" id="btnCancelarAsignacion" style="display: none;">Cancelar y Cambiar
-                        Mesa</button>
+            <!-- COLUMNA DERECHA: RESUMEN STICKY -->
+            <div class="col-lg-4">
+                <div class="summary-sticky">
+                    <div class="card-custom">
+                        <div class="section-title">
+                            <h3>Resumen</h3>
+                        </div>
+                        <div class="total-box">
+                            <div class="total-line"><span>Subtotal</span><strong id="stat-subtotal">$0</strong></div>
+                            <div class="total-line"><span>Impuestos (19%)</span><strong id="stat-impuestos">$0</strong></div>
+                            <div class="total-line"><span>Servicio (10%)</span><strong id="stat-servicio">$0</strong></div>
+                            <div class="grand-total"><span>Total</span><span id="stat-total">$0</span></div>
+                        </div>
+                        <div class="d-grid mt-4 gap-2">
+                            <button class="btn-primary-custom" id="btnConfirmarPedido">Confirmar Pedido</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </main>
 
@@ -276,8 +263,39 @@
         </div>
     </div>
 
-    <script type="module" src="../js/datos/sidebar.js"></script>
+    <!-- MODAL AGREGAR PRODUCTOS -->
+    <div id="modalProductos" class="modal-overlay">
+        <div class="modal-box modal-lg">
+            <button class="modal-close" id="modalProductosCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h3><i class="fa-solid fa-utensils"></i> Menú del Restaurante</h3>
+            <div class="categorias-container" id="categoriasContainer"></div>
+            <div class="platos-grid" id="platosContainer"></div>
+        </div>
+    </div>
 
+    <!-- MODAL UNIR MESAS -->
+    <div id="modalUnirMesas" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="modalUnirCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h3><i class="fa-solid fa-link"></i> Unir Mesas Disponibles</h3>
+            <p style="color:var(--gray); margin-bottom:20px; font-size:14px;">Selecciona las mesas libres que deseas unir a este pedido.</p>
+            <div id="listaMesasUnir" class="lista-selector"></div>
+            <button class="btn-primary-custom w-100 mt-3" id="btnConfirmarUnion">Confirmar Selección</button>
+        </div>
+    </div>
+
+    <!-- MODAL AGREGAR MESERO -->
+    <div id="modalMeseros" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" id="modalMeserosCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            <h3><i class="fa-solid fa-user-plus"></i> Asignar Meseros</h3>
+            <p style="color:var(--gray); margin-bottom:20px; font-size:14px;">Selecciona los trabajadores que atenderán esta mesa.</p>
+            <div id="listaMeserosAsignar" class="lista-selector"></div>
+            <button class="btn-primary-custom w-100 mt-3" id="btnConfirmarMeseros">Confirmar Asignación</button>
+        </div>
+    </div>
+
+    <script type="module" src="../js/datos/sidebar.js"></script>
     <script type="module" src="../js/datos/pedidoCrear.js"></script>
 </body>
 </html>
