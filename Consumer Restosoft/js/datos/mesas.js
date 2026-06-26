@@ -1,10 +1,12 @@
 import { api } from '../consumo/apiMesas.js';
+import { apiPedido } from '../consumo/apiCrearPedido.js';
 
 // =========================================
 // 1. ESTADO Y CONFIGURACIÓN GLOBAL
 // =========================================
 const state = {
     mesas: [],
+    // ... resto de tu código
     zonas: [],
     filtroActivo: 'todas',
     busqueda: '',
@@ -325,7 +327,7 @@ function handleGestionarMesa(idMesa) {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--danger)">Ocupada</strong>. Selecciona una acción:</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-outline-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-outline-custom btn-redirect" data-url="../Pedidos/pedido-detalle.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-utensils"></i> Agregar Producto
                 </button>
                 <button class="btn-premium btn-primary-custom btn-redirect" data-url="../pagos.html" data-id="${mesa.id}">
@@ -350,32 +352,15 @@ function handleGestionarMesa(idMesa) {
     openModal();
 }
 
-// Función para comunicarse con el backend y redirigir sin exponer el ID
 async function navegarSeguroBackend(idMesa, urlDestino) {
     try {
-        // 1. Avisar al backend que este usuario va a trabajar en esta mesa.
-        // Usamos el header X-User-Id simulando que el usuario logueado es el ID 1.
-        const response = await fetch(`http://localhost:8080/api/sesion/mesa-activa/${idMesa}`, {
-            method: 'POST',
-            headers: {
-                'X-User-Id': 1, // En producción: 'Authorization': `Bearer ${token}`
-                'Content-Type': 'application/json'
-            }
-        });
+        // 1. Avisar al backend (Puntero no bloqueante)
+        await apiPedido.abrirMesa(1, idMesa); // 1 = ID del usuario logueado simulado
 
-        if (response.status === 423) {
-            alert("Esta mesa acaba de ser bloqueada por otro mesero.");
-            return;
-        }
-
-        if (!response.ok) throw new Error("Error al asignar la mesa");
-
-        // 2. El backend confirmó. Redirigimos a la URL 100% limpia.
+        // 2. Redirigir a la URL 100% limpia
         window.location.href = urlDestino;
-
     } catch (error) {
-        console.error("Error de seguridad al asignar mesa:", error);
-        alert("No se pudo bloquear la mesa. Inténtalo de nuevo.");
+        alert("No se pudo abrir la página de pedidos.");
     }
 }
 // Dentro de setupEventListeners() o al final de tu JS
@@ -386,7 +371,6 @@ dom.modalBody.addEventListener('click', async (e) => {
         const url = btnRedirect.dataset.url;
         const idMesa = parseInt(btnRedirect.dataset.id);
         
-        // Llamamos a la función segura
         await navegarSeguroBackend(idMesa, url);
     }
 });
