@@ -8,8 +8,8 @@ const state = {
   zonas: [],
   clientes: [],
   reservasAgrupadas: [],
+  mesasOcupadas: [],
 
-  // Estado del formulario
   modoActivo: "CREAR",
   reservaEnEdicion: null,
   clienteSeleccionado: null,
@@ -19,7 +19,6 @@ const state = {
 };
 
 const dom = {
-  // Layout principal
   listaReservasContainer: document.getElementById("listaReservasContainer"),
   panelFormulario: document.getElementById("panelFormulario"),
   panelEliminar: document.getElementById("panelEliminar"),
@@ -30,7 +29,6 @@ const dom = {
   layoutMesas: document.getElementById("layoutMesas"),
   zonaTitulo: document.getElementById("zonaTitulo"),
 
-  // Formulario
   formTitulo: document.getElementById("formTitulo"),
   formSubtitulo: document.getElementById("formSubtitulo"),
   fechaReserva: document.getElementById("fechaReserva"),
@@ -39,7 +37,6 @@ const dom = {
   contenedorEstado: document.getElementById("contenedorEstado"),
   infoComensales: document.getElementById("infoComensales"),
 
-  // Clientes
   selectorCliente: document.getElementById("selectorCliente"),
   clienteSeleccionado: document.getElementById("clienteSeleccionado"),
   idCliente: document.getElementById("idCliente"),
@@ -48,7 +45,6 @@ const dom = {
   buscarCliente: document.getElementById("buscarCliente"),
   clientesList: document.getElementById("clientesList"),
 
-  // Botones
   volverBtn: document.getElementById("volverBtn"),
   btnConfirmarMesas: document.getElementById("btnConfirmarMesas"),
   btnGuardarReserva: document.getElementById("btnGuardarReserva"),
@@ -60,6 +56,7 @@ const dom = {
 
 // =========================================
 // UTILIDADES UI / ALERTAS / VALIDACIONES
+// =========================================
 window.showNotification = (text, type = "success") => {
   const notification = document.getElementById("notification");
   const notificationText = document.getElementById("notificationText");
@@ -80,7 +77,6 @@ window.showNotification = (text, type = "success") => {
   void notification.offsetWidth;
   notification.style.transition = "";
 
-  // 3. Asignar textos e iconos
   notificationText.textContent = text;
   notification.className = "notification";
 
@@ -98,14 +94,10 @@ window.showNotification = (text, type = "success") => {
     notificationTitle.textContent = "Error";
   }
 
-  // 4. Mostrar (se desliza desde la derecha)
   notification.classList.add("show");
 
-  // 5. Ocultar tras 6 segundos
   window.notificationTimeout = setTimeout(() => {
     notification.classList.remove("show");
-    
-    
     setTimeout(() => {
       notification.style.display = "none";
       setTimeout(() => {
@@ -115,14 +107,52 @@ window.showNotification = (text, type = "success") => {
   }, 3000);
 };
 
+function limpiarErroresFormulario() {
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
+}
+
+function agregarMensajeErrorBajoInput(inputEl, mensaje) {
+  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'error-message-text';
+  errorSpan.textContent = mensaje;
+  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
+}
+
+function manejarErroresDeValidacion(errorResponse) {
+  limpiarErroresFormulario();
+  if (errorResponse.validations) {
+    let mensajes = [];
+    const mapeoCampos = {
+      "reserva.fecha": "fechaReserva",
+      "reserva.hora": "horaReserva",
+      "reserva.idusuario": "idCliente",
+      "reserva.cantidadPersonas": "infoComensales"
+    };
+    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
+      mensajes.push(mensaje);
+      const idInput = mapeoCampos[campoBackend];
+      if (idInput) {
+        const inputEl = document.getElementById(idInput);
+        if (inputEl) {
+          inputEl.classList.add("input-error");
+          agregarMensajeErrorBajoInput(inputEl, mensaje);
+        }
+      }
+    }
+    showNotification(mensajes.join(" | "), "error");
+  } else {
+    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
+  }
+}
+
 function esFechaPasada(fechaStr) {
   if (!fechaStr) return false;
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
-
   const partes = fechaStr.split("-");
   const fechaSeleccionada = new Date(partes[0], partes[1] - 1, partes[2]);
-
   return fechaSeleccionada < hoy;
 }
 
@@ -149,7 +179,6 @@ function mostrarConfirmacion(
   return new Promise((resolve) => {
     const modal = document.createElement("div");
     modal.className = "modal-confirmacion";
-
     modal.innerHTML = `
       <div class="modal-confirmacion-card">
          <div class="modal-confirmacion-icon">
@@ -163,19 +192,15 @@ function mostrarConfirmacion(
           </div>
       </div>
     `;
-
     document.body.appendChild(modal);
-
     modal.querySelector(".modal-confirmacion-cancelar").onclick = () => {
       modal.remove();
       resolve(false);
     };
-
     modal.querySelector(".modal-confirmacion-confirmar").onclick = () => {
       modal.remove();
       resolve(true);
     };
-
     modal.onclick = (e) => {
       if (e.target === modal) {
         modal.remove();
@@ -194,13 +219,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function cargarDatosIniciales() {
-  // 1. Seleccionamos el loader
   const loader = document.getElementById("pantalla-carga");
-
   try {
-    // 2. Mostramos el loader quitando la clase 'oculto'
     if (loader) loader.classList.remove("oculto");
-
     const [mesasData, zonasData, clientesData, reservasDiariasRaw] =
       await Promise.all([
         apiMesas.obtenerMesas(ID_EMPRESA),
@@ -209,31 +230,21 @@ async function cargarDatosIniciales() {
         apiReserva.listarPorEmpresaDiario(ID_EMPRESA),
       ]);
 
-    
     state.mesas = mesasData;
     state.zonas = zonasData;
     state.clientes = clientesData;
 
     agruparReservas(reservasDiariasRaw);
-
     renderListaReservas();
     renderZonas();
 
     dom.fechaReserva.value = new Date().toISOString().split("T")[0];
-
   } catch (error) {
-    // 3. Manejo de Errores (API caída, error de red, o datos nulos)
     console.error("Error crítico al cargar la aplicación:", error);
-
-    // Definimos el código y el mensaje para la pantalla de error
-    const codigo = "503"; // Código HTTP 503: Service Unavailable
+    const codigo = "503";
     const mensaje = encodeURIComponent("El sistema está caído o no se pudieron cargar los datos. Por favor, consulta a los administradores.");
-
-    // Redirigimos a la plantilla que creamos construyendo la URL
     window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
-    
   } finally {
-    // 4. Ocultamos el loader al terminar (ya sea con éxito o error)
     if (loader) loader.classList.add("oculto");
   }
 }
@@ -243,7 +254,6 @@ async function cargarDatosIniciales() {
 // =========================================
 function agruparReservas(reservaMesasRaw) {
   const mapa = new Map();
-
   reservaMesasRaw.forEach((rm) => {
     const idRes = rm.reserva.id;
     if (!mapa.has(idRes)) {
@@ -251,7 +261,6 @@ function agruparReservas(reservaMesasRaw) {
     }
     mapa.get(idRes).mesas.push(rm.mesa);
   });
-
   state.reservasAgrupadas = Array.from(mapa.values());
 }
 
@@ -260,7 +269,6 @@ function agruparReservas(reservaMesasRaw) {
 // =========================================
 function renderListaReservas() {
   dom.listaReservasContainer.innerHTML = "";
-
   if (state.reservasAgrupadas.length === 0) {
     dom.listaReservasContainer.innerHTML = `<p style="color:var(--gray); text-align:center;">No hay reservas para hoy.</p>`;
     return;
@@ -269,25 +277,18 @@ function renderListaReservas() {
   const html = state.reservasAgrupadas.map((agrupada) => {
     const res = agrupada.reserva;
     const mesasNum = agrupada.mesas.map((m) => m.numeroMesa).join(", ");
-    const iniciales =
-      res.usuario?.nombres?.substring(0, 2).toUpperCase() || "CL";
-    const nombreCliente = res.usuario?.nombres || "Cliente Desconocido";
+    
+    const nombres = res.usuario?.nombres || "";
+    const apellidos = res.usuario?.apellidos || "";
+    const nombreCliente = `${nombres} ${apellidos}`.trim() || "Cliente Desconocido";
+    const iniciales = (nombres.substring(0, 1) + (apellidos.substring(0, 1) || "")).toUpperCase() || "CL";
 
     let badgeClass = "booking-pending";
-
     switch (res.estado) {
-      case "CONFIRMADA":
-        badgeClass = "booking-confirmed";
-        break;
-      case "ACTIVA":
-        badgeClass = "booking-active";
-        break;
-      case "CANCELADA":
-        badgeClass = "booking-cancelled";
-        break;
-      case "FINALIZADA":
-        badgeClass = "booking-finalized";
-        break;
+      case "CONFIRMADA": badgeClass = "booking-confirmed"; break;
+      case "ACTIVA": badgeClass = "booking-active"; break;
+      case "CANCELADA": badgeClass = "booking-cancelled"; break;
+      case "FINALIZADA": badgeClass = "booking-finalized"; break;
     }
 
     return `
@@ -306,7 +307,6 @@ function renderListaReservas() {
       </div>
     `;
   });
-
   dom.listaReservasContainer.innerHTML = html.join("");
 }
 
@@ -320,12 +320,8 @@ function renderZonas() {
       state.mesasSeleccionadas.includes(m.id),
     ).length;
 
-    let badgeHtml =
-      seleccionadasEnZona > 0
-        ? `<div style="position: absolute; top: 12px; right: 12px;" class="zona-badge">${seleccionadasEnZona}</div>`
-        : "";
-    let borderStyle =
-      seleccionadasEnZona > 0 ? "border: 2px solid var(--primary);" : "";
+    let badgeHtml = seleccionadasEnZona > 0 ? `<div style="position: absolute; top: 12px; right: 12px;" class="zona-badge">${seleccionadasEnZona}</div>` : "";
+    let borderStyle = seleccionadasEnZona > 0 ? "border: 2px solid var(--primary);" : "";
 
     return `
       <div class="zona-card" style="${borderStyle}" onclick="abrirZona(${zona.id})">
@@ -336,7 +332,6 @@ function renderZonas() {
       </div>
     `;
   });
-
   dom.tablesGrid.innerHTML = html.join("");
 }
 
@@ -357,27 +352,59 @@ window.abrirZona = function (idZona) {
   state.zonaActiva = idZona;
   const zona = state.zonas.find((z) => z.id === idZona);
   dom.zonaTitulo.textContent = zona.nombreZona;
-
   dom.vistaPrincipalForm.style.display = "none";
   dom.mesasView.style.display = "block";
-
   renderPlanoZona(idZona);
 };
+
+function actualizarDisponibilidadMesas() {
+  const fecha = dom.fechaReserva.value;
+  const hora = dom.horaReserva.value;
+  
+  if (!fecha || !hora) {
+    state.mesasOcupadas = [];
+    if (state.zonaActiva) renderPlanoZona(state.zonaActiva);
+    return;
+  }
+
+  const [hSel, mSel] = hora.split(":").map(Number);
+  const minutosSeleccionados = hSel * 60 + mSel;
+  state.mesasOcupadas = [];
+
+  state.reservasAgrupadas.forEach((agrupada) => {
+    const res = agrupada.reserva;
+    if (state.reservaEnEdicion && res.id === state.reservaEnEdicion) return;
+    if (res.estado === "CANCELADA" || res.estado === "FINALIZADA") return;
+    if (res.fecha !== fecha) return;
+
+    const [hRes, mRes] = res.hora.substring(0, 5).split(":").map(Number);
+    const minutosReserva = hRes * 60 + mRes;
+
+    if (Math.abs(minutosSeleccionados - minutosReserva) <= 90) {
+      agrupada.mesas.forEach(mesa => {
+        if (!state.mesasOcupadas.includes(mesa.id)) {
+          state.mesasOcupadas.push(mesa.id);
+        }
+      });
+    }
+  });
+
+  state.mesasSeleccionadas = state.mesasSeleccionadas.filter(idMesa => !state.mesasOcupadas.includes(idMesa));
+  
+  if (state.zonaActiva) {
+    renderPlanoZona(state.zonaActiva);
+  }
+  calcularComensalesActuales();
+}
 
 function renderPlanoZona(idZona) {
   dom.layoutMesas.innerHTML = "";
   const mesasZona = state.mesas.filter((m) => m.idZona === idZona);
-
   const esModoSoloLectura = state.modoActivo === "VER" || esFechaPasada(dom.fechaReserva.value);
 
   mesasZona.forEach((mesa) => {
     const el = document.createElement("div");
-
-    const ocupadaPorOtra = state.reservasAgrupadas.some(
-      (ag) =>
-        ag.reserva.id !== state.reservaEnEdicion &&
-        ag.mesas.some((m) => m.id === mesa.id),
-    );
+    const ocupadaPorOtra = state.mesasOcupadas.includes(mesa.id);
 
     let estadoClase = mesa.estado.toLowerCase();
     if (ocupadaPorOtra) estadoClase = "ocupada";
@@ -389,7 +416,6 @@ function renderPlanoZona(idZona) {
 
     el.style.left = mesa.posicionX + "px";
     el.style.top = mesa.posicionY + "px";
-
     el.innerHTML = `
       <strong>${mesa.numeroMesa}</strong>
       <small>${mesa.disponibilidadPersonas} pax</small>
@@ -401,13 +427,12 @@ function renderPlanoZona(idZona) {
         if (el.classList.contains("selected")) {
           state.mesasSeleccionadas.push(mesa.id);
         } else {
-          state.mesasSeleccionadas = state.mesasSeleccionadas.filter(
-            (id) => id !== mesa.id,
-          );
+          state.mesasSeleccionadas = state.mesasSeleccionadas.filter((id) => id !== mesa.id);
         }
+        calcularComensalesActuales();
       });
     } else {
-        el.style.cursor = "not-allowed";
+      el.style.cursor = "not-allowed";
     }
     
     dom.layoutMesas.appendChild(el);
@@ -418,7 +443,6 @@ function renderPlanoZona(idZona) {
 // WIZARD: TRANSICIONES DE ESTADO
 // =========================================
 window.abrirOpcionesReserva = async function (idReserva) {
-  // Verificamos si hay cambios sin guardar y si el ID no es el mismo que se está editando ya
   if (tieneCambiosSinGuardar() && state.reservaEnEdicion !== idReserva) {
     const confirmar = await mostrarConfirmacion(
       "¿Abrir reserva?",
@@ -429,12 +453,9 @@ window.abrirOpcionesReserva = async function (idReserva) {
     if (!confirmar) return;
   }
 
-  const agrupada = state.reservasAgrupadas.find(
-    (r) => r.reserva.id === idReserva,
-  );
+  const agrupada = state.reservasAgrupadas.find((r) => r.reserva.id === idReserva);
   if (!agrupada) return;
 
-  // Evaluamos bloqueos por vista (Fecha Pasada o estado FINALIZADA)
   const esPasada = esFechaPasada(agrupada.reserva.fecha);
   const estaFinalizada = agrupada.reserva.estado === "FINALIZADA";
   const esSoloLectura = esPasada || estaFinalizada;
@@ -442,13 +463,18 @@ window.abrirOpcionesReserva = async function (idReserva) {
   state.modoActivo = esSoloLectura ? "VER" : "EDITAR";
   state.reservaEnEdicion = idReserva;
   state.mesasSeleccionadas = agrupada.mesas.map((m) => m.id);
+  
+  const nombres = agrupada.reserva.usuario?.nombres || "";
+  const apellidos = agrupada.reserva.usuario?.apellidos || "";
+  const nombreCompleto = `${nombres} ${apellidos}`.trim();
+
   state.clienteSeleccionado = {
     id: agrupada.reserva.usuario.id,
-    nombre: agrupada.reserva.usuario.nombres,
+    nombre: nombreCompleto,
   };
 
   dom.idCliente.value = agrupada.reserva.usuario.id;
-  dom.clienteSeleccionado.textContent = agrupada.reserva.usuario.nombres;
+  dom.clienteSeleccionado.textContent = nombreCompleto;
   dom.clienteSeleccionado.style.color = "var(--dark)";
   dom.fechaReserva.value = agrupada.reserva.fecha;
   dom.horaReserva.value = agrupada.reserva.hora.substring(0, 5);
@@ -456,7 +482,6 @@ window.abrirOpcionesReserva = async function (idReserva) {
   dom.estadoReserva.value = agrupada.reserva.estado;
   dom.contenedorEstado.style.display = "block";
 
-  // Controlar accesibilidad a los inputs si está bloqueado
   dom.horaReserva.disabled = esSoloLectura;
   dom.estadoReserva.disabled = esSoloLectura;
   dom.selectorCliente.style.pointerEvents = esSoloLectura ? "none" : "auto";
@@ -465,11 +490,9 @@ window.abrirOpcionesReserva = async function (idReserva) {
 
   if (esSoloLectura) {
     dom.formTitulo.textContent = `Reserva #${idReserva} (Solo Lectura)`;
-    
     dom.formSubtitulo.textContent = estaFinalizada 
         ? "Esta reserva ya se encuentra finalizada." 
         : "Esta reserva pertenece a una fecha pasada.";
-        
     dom.btnCancelarEdicion.style.display = "none";
     
     contenedorBotones.innerHTML = `
@@ -477,7 +500,6 @@ window.abrirOpcionesReserva = async function (idReserva) {
             Nueva Reserva / Cerrar
         </button>
     `;
-    
     document.getElementById("btnCerrarDetalles").addEventListener("click", resetearFormulario);
   } else {
     dom.formTitulo.textContent = `Editar Reserva #${idReserva}`;
@@ -485,7 +507,7 @@ window.abrirOpcionesReserva = async function (idReserva) {
     dom.btnCancelarEdicion.style.display = "block";
 
     dom.infoEliminarContenedor.innerHTML = `
-          <div class="info-row"><span>Cliente</span><strong>${agrupada.reserva.usuario.nombre}</strong></div>
+          <div class="info-row"><span>Cliente</span><strong>${nombreCompleto}</strong></div>
           <div class="info-row"><span>Fecha y Hora</span><strong>${agrupada.reserva.fecha} a las ${agrupada.reserva.hora.substring(0, 5)}</strong></div>
           <div class="info-row"><span>Mesas</span><strong>${agrupada.mesas.map((m) => m.numeroMesa).join(", ")}</strong></div>
       `;
@@ -495,17 +517,14 @@ window.abrirOpcionesReserva = async function (idReserva) {
           <button id="btnAbrirEliminar" class="btn-danger" style="margin-left: 10px;"><i class="fa-solid fa-trash"></i></button>
       `;
 
-    document
-      .getElementById("btnActualizarReserva")
-      .addEventListener("click", procesarGuardado);
-      
+    document.getElementById("btnActualizarReserva").addEventListener("click", procesarGuardado);
     document.getElementById("btnAbrirEliminar").addEventListener("click", () => {
       dom.panelFormulario.classList.remove("active");
       dom.panelEliminar.classList.add("active");
     });
   }
 
-  renderZonas();
+  actualizarDisponibilidadMesas();
   mostrarPanelPrincipal();
 };
 
@@ -515,6 +534,7 @@ function resetearFormulario() {
   state.mesasSeleccionadas = [];
   state.clienteSeleccionado = null;
   state.cantidadPersonasCalculada = 0;
+  state.mesasOcupadas = [];
 
   dom.idCliente.value = "";
   dom.clienteSeleccionado.textContent = "Seleccionar cliente";
@@ -523,7 +543,6 @@ function resetearFormulario() {
   dom.horaReserva.value = "";
   dom.contenedorEstado.style.display = "none";
 
-  // Volver a habilitar en caso de que venga de una vista bloqueada
   dom.horaReserva.disabled = false;
   dom.estadoReserva.disabled = false;
   dom.selectorCliente.style.pointerEvents = "auto";
@@ -534,25 +553,42 @@ function resetearFormulario() {
 
   const contenedorBotones = document.querySelector("#panelFormulario .actions");
   contenedorBotones.innerHTML = `<button id="btnGuardarReserva" class="btn-primary">Crear Reserva</button>`;
-  document
-    .getElementById("btnGuardarReserva")
-    .addEventListener("click", procesarGuardado);
+  document.getElementById("btnGuardarReserva").addEventListener("click", procesarGuardado);
 
-  renderZonas();
+  actualizarDisponibilidadMesas();
   mostrarPanelPrincipal();
 }
 
-// Hacemos el resetear global por si llegase a ser llamado en algún otro flujo del módulo
 window.resetearFormulario = resetearFormulario; 
 
 // =========================================
 // CONTROL DE FLUJO Y API
 // =========================================
 async function procesarGuardado() {
-  // ... (tus validaciones iniciales del frontend aquí) ...
-  
-  // Limpiamos errores de intentos anteriores
   limpiarErroresFormulario(); 
+
+  if (state.modoActivo === "CREAR") {
+    if (!state.clienteSeleccionado || !state.clienteSeleccionado.id) {
+      showNotification("Debes seleccionar un cliente para la reserva.", "warning");
+      return;
+    }
+    if (!dom.fechaReserva.value || dom.fechaReserva.value.trim() === "") {
+      showNotification("Debes seleccionar la fecha de la reserva.", "warning");
+      return;
+    }
+    if (!dom.horaReserva.value || dom.horaReserva.value.trim() === "") {
+      showNotification("Debes seleccionar la hora de la reserva.", "warning");
+      return;
+    }
+    if (!state.mesasSeleccionadas || state.mesasSeleccionadas.length === 0) {
+      showNotification("Debes seleccionar al menos una mesa para la reserva.", "warning");
+      return;
+    }
+    if (state.cantidadPersonasCalculada <= 0) {
+      showNotification("La capacidad de comensales debe ser mayor a 0. Selecciona mesas válidas.", "warning");
+      return;
+    }
+  }
 
   const requestData = {
     fecha: dom.fechaReserva.value,
@@ -568,11 +604,7 @@ async function procesarGuardado() {
       await apiReserva.guardarReserva(requestData, state.mesasSeleccionadas);
       showNotification("La reserva se ha registrado correctamente.", "success");
     } else {
-      await apiReserva.actualizarReserva(
-        state.reservaEnEdicion,
-        requestData,
-        state.mesasSeleccionadas,
-      );
+      await apiReserva.actualizarReserva(state.reservaEnEdicion, requestData, state.mesasSeleccionadas);
       showNotification("La reserva se ha actualizado correctamente.", "success");
     }
 
@@ -582,15 +614,11 @@ async function procesarGuardado() {
     resetearFormulario();
 
   } catch (e) {
-    // --- CAMBIO PRINCIPAL AQUÍ ---
-    // Si el error tiene la propiedad 'validations', usamos nuestra nueva función
     if (e.validations) {
       manejarErroresDeValidacion(e);
     } else if (e.message) {
-      // Si es un error personalizado tuyo (como RecursoNoEncontradoException)
       showNotification(e.message, "error");
     } else {
-      // Fallback por si la respuesta no es JSON (ej. caída de red)
       showNotification("No se pudo guardar la reserva. Verifique su conexión e intente de nuevo.", "error");
     }
   }
@@ -600,18 +628,14 @@ async function procesarEliminado() {
   if (!state.reservaEnEdicion) return;
   try {
     await apiReserva.eliminarReserva(state.reservaEnEdicion);
-    const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
+    const reservasDiariasRaw = await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
     agruparReservas(reservasDiariasRaw);
     renderListaReservas();
 
     dom.panelEliminar.classList.remove("active");
     resetearFormulario();
   } catch (e) {
-    showNotification(
-      "No se pudo eliminar la reserva, intenta de nuevo.",
-      "error",
-    );
+    showNotification("No se pudo eliminar la reserva, intenta de nuevo.", "error");
   }
 }
 
@@ -669,18 +693,16 @@ function configurarEventosGenerales() {
   dom.buscarCliente.addEventListener("input", () => {
     const texto = dom.buscarCliente.value.toLowerCase();
     const filtrados = state.clientes.filter((c) => {
-      const nombre = (
-        c.nombre ||
-        c.nombreCompleto ||
-        c.nombres ||
-        ""
-      ).toLowerCase();
+      const nombre = (`${c.usuario.nombres} ${c.usuario.apellidos}`).toLowerCase();
       return nombre.includes(texto);
     });
     renderClientesModal(filtrados);
   });
 
   dom.btnGuardarReserva.addEventListener("click", procesarGuardado);
+  
+  dom.fechaReserva.addEventListener("change", actualizarDisponibilidadMesas);
+  dom.horaReserva.addEventListener("change", actualizarDisponibilidadMesas);
 }
 
 function renderClientesModal(lista) {
@@ -692,12 +714,8 @@ function renderClientesModal(lista) {
 
   dom.clientesList.innerHTML = lista
     .map((cliente) => {
-      const nombre =
-        cliente.nombre ||
-        cliente.nombreCompleto ||
-        cliente.nombres ||
-        "Cliente";
-      return `<div class="cliente-item" data-id="${cliente.id}" data-nombre="${nombre}">${nombre}</div>`;
+      const nombre = `${cliente.usuario.nombres} ${cliente.usuario.apellidos}`;
+      return `<div class="cliente-item" data-id="${cliente.usuario.id}" data-nombre="${nombre}">${nombre}</div>`;
     })
     .join("");
 
@@ -713,116 +731,4 @@ function renderClientesModal(lista) {
       dom.modalClientes.classList.remove("show");
     });
   });
-  
-  // Función para limpiar los errores previos antes de un nuevo intento
-function limpiarErroresFormulario() {
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
-}
-
-// Función para agregar el mensaje de error debajo del input
-function agregarMensajeErrorBajoInput(inputEl, mensaje) {
-  // Evitar duplicados si ya existe un error allí
-  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
-  
-  const errorSpan = document.createElement('span');
-  errorSpan.className = 'error-message-text';
-  errorSpan.textContent = mensaje;
-  
-  // Insertar justo después del input
-  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
-}
-
-// Función principal que procesa el objeto ErrorResponse
-function manejarErroresDeValidacion(errorResponse) {
-  limpiarErroresFormulario();
-
-  // Verificamos si existe el mapa de validaciones enviado por @ExceptionHandler
-  if (errorResponse.validations) {
-    let mensajes = [];
-    
-    // Mapeamos los campos del DTO de Java hacia los IDs del HTML
-    const mapeoCampos = {
-      "reserva.fecha": "fechaReserva",
-      "reserva.hora": "horaReserva",
-      "reserva.idusuario": "idCliente",
-      "reserva.cantidadPersonas": "infoComensales"
-    };
-
-    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
-      mensajes.push(mensaje);
-      
-      const idInput = mapeoCampos[campoBackend];
-      if (idInput) {
-        const inputEl = document.getElementById(idInput);
-        if (inputEl) {
-          inputEl.classList.add("input-error");
-          agregarMensajeErrorBajoInput(inputEl, mensaje);
-        }
-      }
-    }
-
-    // Mostramos notificación general uniendo los mensajes
-    showNotification(mensajes.join(" | "), "error");
-  } else {
-    // Si es otro tipo de error (ej. 404, 500) mostramos el message general del ErrorResponse
-    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
-  }
-}
-}
-
-// Función para limpiar los errores previos antes de un nuevo intento
-function limpiarErroresFormulario() {
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
-}
-
-// Función para agregar el mensaje de error debajo del input
-function agregarMensajeErrorBajoInput(inputEl, mensaje) {
-  // Evitar duplicados si ya existe un error allí
-  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
-  
-  const errorSpan = document.createElement('span');
-  errorSpan.className = 'error-message-text';
-  errorSpan.textContent = mensaje;
-  
-  // Insertar justo después del input
-  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
-}
-
-// Función principal que procesa el objeto ErrorResponse
-function manejarErroresDeValidacion(errorResponse) {
-  limpiarErroresFormulario();
-
-  // Verificamos si existe el mapa de validaciones enviado por @ExceptionHandler
-  if (errorResponse.validations) {
-    let mensajes = [];
-    
-    // Mapeamos los campos del DTO de Java hacia los IDs del HTML
-    const mapeoCampos = {
-      "reserva.fecha": "fechaReserva",
-      "reserva.hora": "horaReserva",
-      "reserva.idusuario": "idCliente",
-      "reserva.cantidadPersonas": "infoComensales"
-    };
-
-    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
-      mensajes.push(mensaje);
-      
-      const idInput = mapeoCampos[campoBackend];
-      if (idInput) {
-        const inputEl = document.getElementById(idInput);
-        if (inputEl) {
-          inputEl.classList.add("input-error");
-          agregarMensajeErrorBajoInput(inputEl, mensaje);
-        }
-      }
-    }
-
-    // Mostramos notificación general uniendo los mensajes
-    showNotification(mensajes.join(" | "), "error");
-  } else {
-    // Si es otro tipo de error (ej. 404, 500) mostramos el message general del ErrorResponse
-    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
-  }
 }

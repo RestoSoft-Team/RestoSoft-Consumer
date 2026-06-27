@@ -468,6 +468,37 @@
     pointer-events: auto;
 }
 
+.notification {
+    position: fixed;
+    top: 30px;               /* Separación desde arriba */
+    right: 30px;              /* Pegada a la derecha */
+    left: auto;               /* Importante: evitar que se estire hacia la izquierda */
+    width: 380px;             /* Ancho fijo para que no se deforme */
+    max-width: calc(100vw - 40px);
+    
+    /* La empujamos un 120% hacia la derecha para asegurar que desaparezca del todo */
+    transform: translateX(calc(100% + 50px)); 
+    opacity: 0;
+    
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efecto de rebote suave */
+    z-index: 10000;
+    pointer-events: none; 
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    background: white;
+}
+
+/* ESTADO ACTIVO (VISIBLE) */
+.notification.show {
+    transform: translateX(0); /* La colocamos en su posición natural (right: 30px) */
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* --- COLORES POR ESTADO --- */
 .notification.success { border-left: 5px solid #2ecc71; }
 .notification.success #notificationIcon { color: #2ecc71; }
