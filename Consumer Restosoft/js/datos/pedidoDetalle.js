@@ -16,13 +16,11 @@ const dom = {
     statServicio: document.getElementById('stat-servicio'),
     statTotal: document.getElementById('stat-total'),
     btnMarcarListo: document.getElementById('btnMarcarListo'),
-    // Modal
     btnAbrirModal: document.getElementById('btnAbrirModalProductos'),
     modalProductos: document.getElementById('modalProductos'),
     modalCloseBtn: document.getElementById('modalProductosCloseBtn'),
     categoriasContainer: document.getElementById('categoriasContainer'),
     platosContainer: document.getElementById('platosContainer'),
-    // Notificación
     notification: document.getElementById('notification')
 };
 
@@ -53,59 +51,62 @@ async function initDetallePage() {
         categorias = cats;
         todosLosPlatos = platos;
 
-        // Cargar selector de mesas ocupadas
-        cargarMesasOcupadas();
+        // Cargar dropdown de pedidos (agrupando mesas)
+        cargarPedidosDropdown();
 
-        // Verificar si venimos de la pantalla de mesas con un ID específico
+        // Verificar si venimos de la pantalla de mesas
         const idMesaSeleccionada = sessionStorage.getItem('mesaDetalleId');
         if (idMesaSeleccionada) {
-            dom.selectMesaPedido.value = idMesaSeleccionada;
-            sessionStorage.removeItem('mesaDetalleId'); // Limpiar
+            const ped = await api.getPedidoActivoByMesa(idMesaSeleccionada);
+            if (ped) dom.selectMesaPedido.value = ped.id;
+            sessionStorage.removeItem('mesaDetalleId');
         }
-        
-        // Cargar pedido inicial
-        cargarPedidoDeMesa();
 
-        // Listeners
-        dom.selectMesaPedido.addEventListener('change', cargarPedidoDeMesa);
+        cargarPedidoSeleccionado();
+
+        dom.selectMesaPedido.addEventListener('change', cargarPedidoSeleccionado);
         dom.btnAbrirModal.addEventListener('click', abrirModalProductos);
         dom.modalCloseBtn.addEventListener('click', () => dom.modalProductos.classList.remove('show'));
         dom.modalProductos.addEventListener('click', (e) => { if (e.target === dom.modalProductos) dom.modalProductos.classList.remove('show'); });
         dom.btnMarcarListo.addEventListener('click', () => showNotification("Pedido Actualizado", "El pedido fue marcado como listo.", "success"));
-        
+
         dom.categoriasContainer.addEventListener('click', handleCategoriasClick);
         dom.platosContainer.addEventListener('click', handlePlatosClick);
+        dom.listaProductos.addEventListener('click', handleAccordionClick); // Acordeón
+
+        // Cronómetros en vivo
+        setInterval(actualizarTiemposDOM, 1000);
 
     } catch (error) {
         console.error("Error inicial:", error);
     }
 }
 
-function cargarMesasOcupadas() {
-    const mesasOcupadas = todasLasMesas.filter(m => m.estado === 'OCUPADA');
-    if (mesasOcupadas.length === 0) {
-        dom.selectMesaPedido.innerHTML = '<option value="">No hay mesas ocupadas</option>';
+function cargarPedidosDropdown() {
+    if (pedidosActivos.length === 0) {
+        dom.selectMesaPedido.innerHTML = '<option value="">No hay pedidos activos</option>';
         return;
     }
-    dom.selectMesaPedido.innerHTML = '<option value="">Seleccione una mesa...</option>' + 
-        mesasOcupadas.map(m => `<option value="${m.id}">Mesa ${m.numeroMesa}</option>`).join('');
+    // Agrupamos las mesas unidas en una sola opción por pedido
+    dom.selectMesaPedido.innerHTML = '<option value="">Seleccione un pedido...</option>' +
+        pedidosActivos.map(p => {
+            const mesasTxt = p.numerosMesas && p.numerosMesas.length > 0 ? p.numerosMesas.join(' + ') : 'Sin mesa';
+            return `<option value="${p.id}">Pedido #${p.id} (${mesasTxt})</option>`;
+        }).join('');
 }
 
-async function cargarPedidoDeMesa() {
-    const idMesa = parseInt(dom.selectMesaPedido.value);
-    if (!idMesa) {
+async function cargarPedidoSeleccionado() {
+    const idPedido = parseInt(dom.selectMesaPedido.value);
+    if (!idPedido) {
         limpiarVistaPedido();
         return;
     }
 
-    try {
-        pedidoActual = await api.getPedidoActivoByMesa(idMesa);
-    } catch (error) {
-        pedidoActual = null;
-    }
+    // Buscamos el pedido en el array que ya tenemos cargado
+    pedidoActual = pedidosActivos.find(p => p.id === idPedido);
 
     if (!pedidoActual) {
-        showNotification("Sin pedido", "Esta mesa no tiene un pedido activo registrado.", "warning");
+        showNotification("Sin pedido", "No se encontró el pedido.", "warning");
         limpiarVistaPedido();
         return;
     }
@@ -113,62 +114,111 @@ async function cargarPedidoDeMesa() {
     dom.txtPedidoId.textContent = `Pedido #RS-${pedidoActual.id}`;
     dom.txtPedidoFecha.textContent = `Orden creada el ${new Date(pedidoActual.fecha).toLocaleString('es-CO')}`;
     dom.txtEstadoPedido.innerHTML = `<i class="fa-solid fa-clock"></i> ${pedidoActual.estado}`;
-    
     dom.txtMesero.textContent = pedidoActual.nombresMeseros?.join(', ') || 'Sin asignar';
-    dom.txtMesasUnidas.textContent = pedidoActual.mesasUnidasInfo || 'Mesa Principal';
+
+    if (pedidoActual.numerosMesas && pedidoActual.numerosMesas.length > 0) {
+        dom.txtMesasUnidas.innerHTML = pedidoActual.numerosMesas.map(n =>
+            `<span class="tag-badge mesa" style="display:inline-block; margin: 2px;">${n}</span>`
+        ).join('');
+    } else {
+        dom.txtMesasUnidas.textContent = 'Ninguna';
+    }
 
     const detalles = await api.getDetallesPedido(pedidoActual.id);
     renderProductosPedido(detalles);
 }
+
 function limpiarVistaPedido() {
     dom.txtPedidoId.textContent = 'Pedido #RS-0000';
-    dom.txtPedidoFecha.textContent = 'Seleccione una mesa para ver el pedido';
-    dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos en este pedido.</p></div>';
+    dom.txtPedidoFecha.textContent = 'Seleccione un pedido para ver el detalle';
+    dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos para mostrar.</p></div>';
     actualizarEstadisticas([]);
 }
 
 function renderProductosPedido(detalles) {
-    if (detalles.length === 0) {
+    if (!detalles || detalles.length === 0) {
         dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos en este pedido.</p></div>';
-    } else {
-        dom.listaProductos.innerHTML = detalles.map(item => {
-            const total = item.cantidad;
-            const listos = item.cantidadPreparada || 0;
-            const estadoTxt = item.estado || 'PENDIENTE';
-            
-            const nombrePlato = item.nombrePlato || 'Producto';
-            const tipoPlato = item.categoriaPlato || 'General';
-            
-            let estadoClass = 'state-pending';
-            if (estadoTxt === 'PREPARANDO') estadoClass = 'state-preparing';
-            if (estadoTxt === 'LISTO') estadoClass = 'state-ready';
+        actualizarEstadisticas([]);
+        return;
+    }
 
-            return `
+    dom.listaProductos.innerHTML = detalles.map(det => {
+        const unidades = det.unidades || [];
+        const totalUnidades = unidades.length || det.cantidad;
+        const precioTotal = det.precioUnitario * totalUnidades;
+        const nombrePlato = det.nombrePlato || 'Producto';
+        const tipoPlato = det.categoriaPlato || 'General';
+
+        // Construir el HTML de las unidades (Acordeón)
+        let unidadesHTML = '';
+        if (unidades.length > 0) {
+            unidadesHTML = `
+                <div class="units-accordion">
+                    ${unidades.map((u, i) => {
+                        const estadoTxt = u.estado || 'PENDIENTE';
+                        let estadoClass = 'state-pending';
+                        if (estadoTxt === 'PREPARANDO') estadoClass = 'state-preparing';
+                        if (estadoTxt === 'LISTO') estadoClass = 'state-ready';
+
+                        const start = u.fechaInicio ? new Date(u.fechaInicio).getTime() : 0;
+                        const end = u.fechaListo ? new Date(u.fechaListo).getTime() : 0;
+                        let timerHTML = `<span class="unit-time-static">--:--</span>`;
+                        if (start > 0) {
+                            timerHTML = `<span class="unit-timer" data-start="${start}" data-end="${end}">00:00</span>`;
+                        }
+
+                        return `
+                            <div class="unit-row ${estadoTxt}">
+                                <div class="unit-info">
+                                    <span class="unit-label">Unidad ${i + 1}</span>
+                                    <span class="item-status ${estadoClass}">${estadoTxt}</span>
+                                </div>
+                                <div class="unit-time-box">${timerHTML}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Si hay 1 sola unidad, no mostramos el icono de desplegar
+        const toggleIcon = unidades.length > 1 ? '<i class="fa-solid fa-chevron-down toggle-icon"></i>' : '';
+
+        return `
+            <div class="product-accordion-item ${unidades.length > 1 ? 'clickable' : ''}">
                 <div class="product-item">
                     <div class="product-left">
                         <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
                         <div>
-                            <div class="product-name">${nombrePlato}</div>
+                            <div class="product-name">
+                                ${nombrePlato} 
+                                ${unidades.length > 1 ? `<span class="qty-badge">x${unidades.length}</span>` : ''}
+                            </div>
                             <div class="product-desc">
-                                <span style="color: var(--primary); font-weight: 600;">${tipoPlato}</span> | 
-                                Total: ${total} • Listos: <strong>${listos}</strong>
+                                <span style="color: var(--primary); font-weight: 600;">${tipoPlato}</span>
                             </div>
                         </div>
                     </div>
                     <div class="product-right">
-                        <div class="qty">Cantidad: ${total}</div>
-                        <span class="item-status ${estadoClass}">${estadoTxt}</span>
-                        <div class="price">${fmtCOP.format(item.precioUnitario * total)}</div>
+                        <div class="price">${fmtCOP.format(precioTotal)}</div>
+                        ${toggleIcon}
                     </div>
                 </div>
-            `;
-        }).join('');
-    }
+                ${unidadesHTML}
+            </div>
+        `;
+    }).join('');
+
     actualizarEstadisticas(detalles);
+    actualizarTiemposDOM();
 }
 
 function actualizarEstadisticas(detalles) {
-    const subtotal = detalles.reduce((acc, item) => acc + (item.precioUnitario * item.cantidad), 0);
+    const subtotal = detalles.reduce((acc, item) => {
+        const cant = item.unidades ? item.unidades.length : item.cantidad;
+        return acc + (item.precioUnitario * cant);
+    }, 0);
+    
     const impuestos = subtotal * 0.19;
     const servicio = subtotal * 0.10;
     const total = subtotal + impuestos + servicio;
@@ -179,9 +229,20 @@ function actualizarEstadisticas(detalles) {
     dom.statTotal.textContent = fmtCOP.format(total);
 }
 
+// Lógica para abrir/cerrar el acordeón al hacer clic
+function handleAccordionClick(e) {
+    const item = e.target.closest('.product-accordion-item');
+    if (!item || !item.classList.contains('clickable')) return;
+
+    // Evitar que se cierre si seleccionan texto
+    if (e.target.closest('.btn-add-cart') || e.target.closest('button')) return;
+
+    item.classList.toggle('active');
+}
+
 // --- LÓGICA MODAL PRODUCTOS ---
 function abrirModalProductos() {
-    if (!pedidoActual) { showNotification("Atención", "Selecciona una mesa con pedido activo primero.", "warning"); return; }
+    if (!pedidoActual) { showNotification("Atención", "Selecciona un pedido activo primero.", "warning"); return; }
     renderCategorias();
     renderPlatos();
     dom.modalProductos.classList.add('show');
@@ -259,7 +320,6 @@ async function handlePlatosClick(e) {
         const precio = parseFloat(addBtn.dataset.precio);
 
         try {
-            // Guardar en backend
             await api.addDetallePedido({
                 idpedido: pedidoActual.id,
                 idplato: idPlato,
@@ -269,12 +329,35 @@ async function handlePlatosClick(e) {
 
             showNotification("Producto Agregado", `Se agregaron ${cantidad} unidades al pedido #RS-${pedidoActual.id}.`, "success");
             
-            // Recargar la vista del pedido para mostrar el nuevo producto
-            cargarPedidoDeMesa();
+            // Recargamos los detalles del pedido
+            // También actualizamos el array de pedidosActivos por si cambió el estado
+            pedidosActivos = await api.getPedidosActivos(ID_EMPRESA);
+            cargarPedidoSeleccionado();
         } catch (error) {
             showNotification("Error", "No se pudo agregar el producto.", "danger");
         }
     }
+}
+
+// Cronómetro en tiempo real para las unidades desplegadas
+function actualizarTiemposDOM() {
+    document.querySelectorAll('.unit-timer').forEach(el => {
+        const start = parseInt(el.dataset.start);
+        const end = parseInt(el.dataset.end);
+        if (start === 0) return;
+
+        const endTime = end !== 0 ? end : Date.now();
+        const diff = Math.floor((endTime - start) / 1000);
+        const m = Math.floor(diff / 60).toString().padStart(2, '0');
+        const s = (diff % 60).toString().padStart(2, '0');
+        el.textContent = `${m}:${s}`;
+
+        if (end === 0) {
+            el.className = 'unit-timer running';
+        } else {
+            el.className = 'unit-timer finished';
+        }
+    });
 }
 
 function showNotification(titulo, mensaje, tipo = 'success') {

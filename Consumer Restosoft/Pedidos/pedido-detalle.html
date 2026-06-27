@@ -14,14 +14,13 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <div class="sidebar">
-        <!-- (Tu sidebar actual se mantiene igual) -->
-        <div class="logo">
-            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-            <h3>RestSoft</h3>
-        </div>
-        <div class="menu-title">Navegación</div>
-        <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a>
-        <!-- ... (resto de tu menú) ... -->
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3>RestSoft</h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a>
+      <!-- ... (resto de tu menú) ... -->
     </div>
 
     <main class="main">
@@ -42,7 +41,7 @@
             </div>
         </div>
 
-        <!-- Información del Pedido y Selector de Mesa -->
+        <!-- Información del Pedido y Selector -->
         <div class="card-premium">
             <div class="card-header-custom">
                 <div>
@@ -56,9 +55,9 @@
 
             <div class="row g-4 align-items-end">
                 <div class="col-md-4">
-                    <label>Mesa del Pedido (Ocupadas)</label>
+                    <label>Seleccionar Pedido (Mesas)</label>
                     <select class="form-select" id="selectMesaPedido">
-                        <option value="">Cargando mesas...</option>
+                        <option value="">Cargando pedidos...</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -69,7 +68,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="info-box">
-                        <span>Mesas Unidas</span>
+                        <span>Mesas Asignadas</span>
                         <h5 id="txtMesasUnidas">-</h5>
                     </div>
                 </div>
@@ -83,7 +82,7 @@
                     <div class="card-header-custom">
                         <div>
                             <h4>Productos Ordenados</h4>
-                            <p>Resumen completo del pedido actual</p>
+                            <p>Click sobre un producto para ver el detalle de las unidades</p>
                         </div>
                         <button class="btn-premium" id="btnAbrirModalProductos">
                             <i class="fa-solid fa-plus"></i> Agregar Producto
