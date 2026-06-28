@@ -1,163 +1,167 @@
 import { api } from '../consumo/apiMesas.js';
+import { apiPedido } from '../consumo/apiCrearPedido.js';
 
+// =========================================
+// 1. ESTADO Y CONFIGURACIÓN GLOBAL
+// =========================================
 const state = {
     mesas: [],
+    // ... resto de tu código
     zonas: [],
-    filtroActivo: 'todas' 
+    filtroActivo: 'todas',
+    busqueda: '',
+    intervalId: null
 };
+
 const cache = {
     datos: null,
     ultimaVez: 0,
-    TTL: 60000 // 60 segundos de validez
+    TTL: 60000 // 60 segundos
 };
 
-// Referencias al DOM
 const dom = {
     dashboardContent: document.getElementById('dashboard-content'),
     errorState: document.getElementById('error-state'),
     errorMessage: document.getElementById('error-message'),
-
     statDisponibles: document.getElementById('stat-disponibles'),
     statOcupadas: document.getElementById('stat-ocupadas'),
     statReservadas: document.getElementById('stat-reservadas'),
     statFueraServicio: document.getElementById('stat-fuera-servicio'),
     filtersContainer: document.getElementById('filtersContainer'),
-    tablesGrid: document.getElementById('tablesGrid')
+    tablesGrid: document.getElementById('tablesGrid'),
+    searchInput: document.getElementById('searchInput'),
+    // Modales
+    modalOverlay: document.getElementById('modalGenerico'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalBody: document.getElementById('modalBody'),
+    modalCloseBtn: document.getElementById('modalCloseBtn')
 };
 
-// 1. Función única y robusta de reintento
+// =========================================
+// 2. UTILIDADES (Seguridad y Render)
+// =========================================
+
+// Evita inyecciones XSS (Cross-Site Scripting)
+const escapeHTML = (str) => {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+};
+
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
+// Mapeo limpio de estados
+const ESTADOS_MESA = {
+    LIBRE: { text: 'Disponible', color: 'table-free', status: 'status-success' },
+    OCUPADA: { text: 'Ocupada', color: 'table-busy', status: 'status-danger' },
+    RESERVADA: { text: 'Reservada', color: 'table-reserved', status: 'status-warning' },
+    FUERA_SERVICIO: { text: 'Fuera de Servicio', color: 'table-fuera-servicio', status: 'status-gray' }
+};
+
+// =========================================
+// 3. CAPA DE DATOS (Caché y Backoff)
+// =========================================
 async function fetchConBackoff(idEmpresa, intento = 0) {
     const MAX_INTENTOS = 5;
-    const DELAY_BASE = 1000; // 1 segundo base
+    const DELAY_BASE = 1000;
     
     try {
-        console.log(`Intento de conexión: ${intento + 1}`);
-        
         const [mesas, zonas] = await Promise.all([
             api.obtenerMesas(idEmpresa),
             api.obtenerZonas(idEmpresa)
         ]);
-
-        // Si recibimos datos, terminamos
         if (mesas && mesas.length > 0) return { mesas, zonas };
-
-        // Si están vacíos, forzamos el catch para reintentar
         throw new Error("EMPTY_DATA");
-
     } catch (error) {
         if (intento < MAX_INTENTOS) {
-            // Crecimiento exponencial: 1s, 2s, 4s, 8s...
-            const tiempoEspera = DELAY_BASE * Math.pow(2, intento);
-            
-            console.warn(`Intento ${intento + 1} fallido. Reintentando en ${tiempoEspera}ms...`);
-            
-            await sleep(tiempoEspera);
+            await sleep(DELAY_BASE * Math.pow(2, intento));
             return fetchConBackoff(idEmpresa, intento + 1);
         }
-        
-        // Si agotamos todos los intentos, lanzamos error final
         throw new Error("SERVICE_UNAVAILABLE");
     }
 }
 
-
 async function obtenerDatosOptimizados(idEmpresa) {
     const ahora = Date.now();
-    
-    // Si tenemos datos y no han pasado 60 segundos
     if (cache.datos && (ahora - cache.ultimaVez < cache.TTL)) {
-        console.log("Datos cargados desde memoria (Caché)");
         return cache.datos;
     }
-
-    // Llamamos al fetch, y esperamos la respuesta
     const data = await fetchConBackoff(idEmpresa);
-    
-    // Guardamos en caché
     cache.datos = data;
     cache.ultimaVez = ahora;
-    
     return data;
 }
 
+// =========================================
+// 4. INICIALIZACIÓN Y POLLING INTELIGENTE
+// =========================================
+document.addEventListener('DOMContentLoaded', initApp);
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const ID_EMPRESA = 1;
+async function initApp() {
+    const ID_EMPRESA = 1; // En producción: obtener de sesión/JWT
     renderSkeletonCards();
+    setupEventListeners();
 
     try {
-        const { mesas, zonas } = await obtenerDatosOptimizados(ID_EMPRESA);
+        await cargarYRenderizarDatos(ID_EMPRESA);
+        
+        // Iniciar actualización automática (Polling)
+        state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
+        
+        // Pausar polling si el usuario sale de la pestaña (Ahorro de recursos)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && state.intervalId) {
+                clearInterval(state.intervalId);
+                state.intervalId = null;
+            } else if (!document.hidden && !state.intervalId) {
+                state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
+            }
+        });
 
+    } catch (error) {
+        mostrarError("El servicio no está disponible tras varios intentos. Contacta con el proveedor.");
+    }
+}
+
+async function cargarYRenderizarDatos(idEmpresa, isBackgroundUpdate = false) {
+    try {
+        if (!isBackgroundUpdate) cache.datos = null; // Forzar fetch fresco en carga inicial
+        
+        const { mesas, zonas } = await obtenerDatosOptimizados(idEmpresa);
         state.mesas = mesas;
         state.zonas = zonas;
 
         renderStats();
         renderFilters();
         renderTables();
-
-        setInterval(async () => {
-            console.log("Iniciando actualización en segundo plano...");
-            
-            cache.datos = null; 
-            cache.ultimaVez = 0; 
-            
-            try {
-                const { mesas, zonas } = await obtenerDatosOptimizados(ID_EMPRESA);
-                
-                state.mesas = mesas;
-                state.zonas = zonas;
-
-                renderStats();
-                renderTables(); 
-                
-                console.log("Actualización exitosa.");
-            } catch (error) {
-                console.error("El refresco automático falló, pero la UI se mantiene estable:", error);
-            }
-        }, 60000); 
-
     } catch (error) {
-        console.error("Error final:", error);
-        mostrarError("El servicio no está disponible tras varios intentos. Contacta con el proveedor.");
+        if (!isBackgroundUpdate) throw error; // Si es carga inicial, mostrar pantalla de error
+        console.error("El refresco automático falló, pero la UI se mantiene estable:", error);
     }
-});
+}
 
-
-
-// Función de Esqueletos
+// =========================================
+// 5. RENDERIZADO (DOM)
+// =========================================
 function renderSkeletonCards() {
     let skeletons = '';
-    for(let i = 0; i < 8; i++) { // Mostramos 8 tarjetas base para que se vea lleno
-        skeletons += `<div class="skeleton skeleton-card"></div>`;
-    }
+    for(let i = 0; i < 8; i++) skeletons += `<div class="skeleton skeleton-card"></div>`;
     dom.tablesGrid.innerHTML = skeletons;
 }
 
-// Función de Estado de Error
-function mostrarError(mensaje) {
-    dom.dashboardContent.style.display = 'none';
-    dom.errorState.style.display = 'flex';
-    dom.errorMessage.textContent = mensaje;
-}
-
-// 2. RENDERIZAR ESTADÍSTICAS
 function renderStats() {
-    const disponibles = state.mesas.filter(m => m.estado === 'LIBRE').length;
-    const ocupadas = state.mesas.filter(m => m.estado === 'OCUPADA').length;
-    const reservadas = state.mesas.filter(m => m.estado === 'RESERVADA').length;
-    const fueraServicio = state.mesas.filter(m => m.estado === 'FUERA_SERVICIO').length;
-
-    dom.statDisponibles.textContent = disponibles;
-    dom.statOcupadas.textContent = ocupadas;
-    dom.statReservadas.textContent = reservadas;
-    dom.statFueraServicio.textContent = fueraServicio;
+    const count = (estado) => state.mesas.filter(m => m.estado === estado).length;
+    dom.statDisponibles.textContent = count('LIBRE');
+    dom.statOcupadas.textContent = count('OCUPADA');
+    dom.statReservadas.textContent = count('RESERVADA');
+    dom.statFueraServicio.textContent = count('FUERA_SERVICIO');
 }
 
-// 3. RENDERIZAR FILTROS DINÁMICOS
 function renderFilters() {
-    dom.filtersContainer.innerHTML = '';
     const filtrosBase = [
         { id: 'todas', texto: 'Todas' },
         { id: 'estado-LIBRE', texto: 'Disponibles' },
@@ -166,122 +170,210 @@ function renderFilters() {
         { id: 'estado-FUERA_SERVICIO', texto: 'Fuera de Servicio' }
     ];
 
-    const botonesHTML = filtrosBase.map(f => crearBotonFiltro(f.id, f.texto));
-    state.zonas.forEach(zona => {
-        botonesHTML.push(crearBotonFiltro(`zona-${zona.id}`, zona.nombreZona));
-    });
-
-    dom.filtersContainer.innerHTML = botonesHTML.join('');
+    const botonesHTML = filtrosBase.map(f => crearBotonFiltro(f.id, f.texto)).join('');
+    const zonasHTML = state.zonas.map(zona => crearBotonFiltro(`zona-${zona.id}`, zona.nombreZona)).join('');
+    dom.filtersContainer.innerHTML = botonesHTML + zonasHTML;
 }
 
 function crearBotonFiltro(id, texto) {
     const isActive = state.filtroActivo === id ? 'active' : '';
-    return `<button class="filter-btn ${isActive}" data-filter-id="${id}">${texto}</button>`;
+    return `<button class="filter-btn ${isActive}" data-filter-id="${escapeHTML(id)}">${escapeHTML(texto)}</button>`;
 }
 
-// 4. RENDERIZAR MESAS
 function renderTables() {
     let mesasFiltradas = state.mesas;
 
+    // Filtro por Estado o Zona
     if (state.filtroActivo.startsWith('estado-')) {
-        const estadoDeseado = state.filtroActivo.split('-')[1];
-        mesasFiltradas = state.mesas.filter(m => m.estado === estadoDeseado);
+        mesasFiltradas = mesasFiltradas.filter(m => m.estado === state.filtroActivo.split('-')[1]);
     } else if (state.filtroActivo.startsWith('zona-')) {
-        const idZonaDeseada = parseInt(state.filtroActivo.split('-')[1]);
-        mesasFiltradas = state.mesas.filter(m => m.idZona === idZonaDeseada);
+        const idZona = parseInt(state.filtroActivo.split('-')[1]);
+        mesasFiltradas = mesasFiltradas.filter(m => m.idZona === idZona);
+    }
+
+    // Filtro por Búsqueda (Input)
+    if (state.busqueda) {
+        const query = state.busqueda.toLowerCase();
+        mesasFiltradas = mesasFiltradas.filter(m => {
+            const zona = state.zonas.find(z => z.id === m.idZona);
+            const nombreZona = zona ? zona.nombreZona.toLowerCase() : '';
+            return m.numeroMesa.toLowerCase().includes(query) || nombreZona.includes(query);
+        });
     }
 
     if (mesasFiltradas.length === 0) {
-        dom.tablesGrid.innerHTML = '<p style="color:var(--gray); grid-column: 1/-1;">No hay mesas en esta categoría.</p>';
+        dom.tablesGrid.innerHTML = '<p style="color:var(--gray); grid-column: 1/-1; text-align:center;">No hay mesas que coincidan con la búsqueda.</p>';
         return;
     }
 
-    const htmlTarjetas = mesasFiltradas.map(mesa => {
-        const zonaAsignada = state.zonas.find(z => z.id === mesa.idZona);
-        const nombreZona = zonaAsignada ? zonaAsignada.nombreZona : 'Sin Zona';
+    // Uso de DocumentFragment para rendimiento
+    const fragment = document.createDocumentFragment();
+    const wrapper = document.createElement('div');
 
-        let colorClass = '';
-        let statusClass = '';
-        
-        switch (mesa.estado) {
-            case 'LIBRE':
-                colorClass = 'table-free';
-                statusClass = 'status-success';
-                break;
-            case 'OCUPADA':
-                colorClass = 'table-busy';
-                statusClass = 'status-danger';
-                break;
-            case 'RESERVADA':
-                colorClass = 'table-reserved';
-                statusClass = 'status-warning';
-                break;
-            case 'FUERA_SERVICIO':
-                colorClass = 'table-fuera-servicio';
-                statusClass = 'status-gray';
-                break;    
-            default:
-                colorClass = 'table-free';
-                statusClass = 'status-success';
-        }
+    wrapper.innerHTML = mesasFiltradas.map(mesa => {
+        const zona = state.zonas.find(z => z.id === mesa.idZona);
+        const nombreZona = zona ? zona.nombreZona : 'Sin Zona';
+        const config = ESTADOS_MESA[mesa.estado] || ESTADOS_MESA.LIBRE;
 
         return `
             <div class="table-card">
                 <div class="table-top">
-                    <div class="table-number ${colorClass}">${mesa.numeroMesa}</div>
-                    <div class="table-status ${statusClass}">${mesa.estado == 'LIBRE' ? 'Disponible' : mesa.estado == 'OCUPADA' ? 'Ocupada' : mesa.estado == 'RESERVADA' ? 'Reservada' : 'Fuera de Servicio'}</div>
+                    <div class="table-number ${config.color}">${escapeHTML(mesa.numeroMesa)}</div>
+                    <div class="table-status ${config.status}">${config.text}</div>
                 </div>
-                <h4>Mesa ${mesa.tipoMesa || 'Estándar'}</h4>
-                <p>${nombreZona} • ${mesa.disponibilidadPersonas} personas</p>
+                <h4>Mesa ${escapeHTML(mesa.tipoMesa) || 'Estándar'}</h4>
+                <p>${escapeHTML(nombreZona)} • ${escapeHTML(mesa.disponibilidadPersonas)} personas</p>
                 
                 <div class="table-info">
-                    <div class="table-info-item">
-                        <span>Capacidad</span>
-                        <strong>${mesa.disponibilidadPersonas} Personas</strong>
-                    </div>
-                    <div class="table-info-item">
-                        <span>Ubicación</span> 
-                        <strong>${nombreZona}</strong>
-                    </div>
+                    <div class="table-info-item"><span>Capacidad</span><strong>${escapeHTML(mesa.disponibilidadPersonas)} Personas</strong></div>
+                    <div class="table-info-item"><span>Ubicación</span><strong>${escapeHTML(nombreZona)}</strong></div>
                 </div>
                 
                 <div class="table-actions">
-                    <button class="btn-premium btn-primary-custom" onclick="window.showNotification()">
-                        Gestionar
-                    </button>
-                    <button class="btn-premium btn-outline-custom">
-                        Ver
-                    </button>
+                    <button class="btn-premium btn-primary-custom btn-gestionar" data-id="${mesa.id}">Gestionar</button>
+                    <button class="btn-premium btn-outline-custom btn-ver" data-id="${mesa.id}">Ver</button>
                 </div>
             </div>
         `;
-    });
-    const divTemporal = document.createElement('div');
-    divTemporal.innerHTML = htmlTarjetas.join('');
-    const fragment = document.createDocumentFragment();
-    while (divTemporal.firstChild) {
-        fragment.appendChild(divTemporal.firstChild);
+    }).join('');
+
+    while (wrapper.firstChild) {
+        fragment.appendChild(wrapper.firstChild);
     }
+
     dom.tablesGrid.innerHTML = '';
     dom.tablesGrid.appendChild(fragment);
 }
 
-window.showNotification = function() {
-    const notification = document.getElementById('notification');
-    if(notification) {
-        notification.classList.add('show');
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
+// =========================================
+// 6. EVENTOS Y DELEGACIÓN (Patrón Empresarial)
+// =========================================
+function setupEventListeners() {
+    // Delegación para Filtros
+    dom.filtersContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        dom.filtersContainer.querySelector('.active')?.classList.remove('active');
+        btn.classList.add('active');
+        state.filtroActivo = btn.dataset.filterId;
+        renderTables();
+    });
+
+    // Delegación para Acciones de Mesas (Gestionar / Ver)
+    dom.tablesGrid.addEventListener('click', (e) => {
+        const btnVer = e.target.closest('.btn-ver');
+        const btnGestionar = e.target.closest('.btn-gestionar');
+
+        if (btnVer) handleVerMesa(parseInt(btnVer.dataset.id));
+        if (btnGestionar) handleGestionarMesa(parseInt(btnGestionar.dataset.id));
+    });
+
+    // Buscador con debounce básico
+    let searchTimeout;
+    dom.searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            state.busqueda = e.target.value.trim();
+            renderTables();
+        }, 300); // Espera 300ms después de que el usuario deja de escribir
+    });
+
+    // Cerrar Modal
+    dom.modalCloseBtn.addEventListener('click', closeModal);
+    dom.modalOverlay.addEventListener('click', (e) => {
+        if (e.target === dom.modalOverlay) closeModal();
+    });
+}
+
+// =========================================
+// 7. LÓGICA DE MODALES (Acciones 100% Seguras)
+// =========================================
+function handleVerMesa(idMesa) {
+    const mesa = state.mesas.find(m => m.id === idMesa);
+    if (!mesa) return;
+
+    const zona = state.zonas.find(z => z.id === mesa.idZona);
+    const config = ESTADOS_MESA[mesa.estado] || ESTADOS_MESA.LIBRE;
+
+    dom.modalTitle.innerHTML = `<i class="fa-solid fa-eye"></i> Detalles de la Mesa`;
+    dom.modalBody.innerHTML = `
+        <div class="detail-row"><span>Número de Mesa</span><strong>${escapeHTML(mesa.numeroMesa)}</strong></div>
+        <div class="detail-row"><span>Tipo de Mesa</span><strong>${escapeHTML(mesa.tipoMesa) || 'Estándar'}</strong></div>
+        <div class="detail-row"><span>Ubicación (Zona)</span><strong>${escapeHTML(zona?.nombreZona || 'Sin Zona')}</strong></div>
+        <div class="detail-row"><span>Capacidad Máxima</span><strong>${escapeHTML(mesa.disponibilidadPersonas)} Personas</strong></div>
+        <div class="detail-row"><span>Estado Actual</span><strong>${config.text}</strong></div>
+    `;
+    openModal();
+}
+
+function handleGestionarMesa(idMesa) {
+    const mesa = state.mesas.find(m => m.id === idMesa);
+    if (!mesa) return;
+
+    dom.modalTitle.innerHTML = `<i class="fa-solid fa-gear"></i> Gestionar Mesa ${escapeHTML(mesa.numeroMesa)}`;
+    let actionsHTML = '';
+
+    // Usamos botones, NO enlaces con URLs. El ID no se expone.
+    if (mesa.estado === 'LIBRE') {
+        actionsHTML = `
+            <p>La mesa está <strong style="color:var(--success)">Disponible</strong>. ¿Deseas iniciar un nuevo pedido?</p>
+            <div class="modal-actions">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                    <i class="fa-solid fa-plus"></i> Crear Nuevo Pedido
+                </button>
+            </div>
+        `;
+    } else if (mesa.estado === 'OCUPADA') {
+        actionsHTML = `
+            <p>La mesa está <strong style="color:var(--danger)">Ocupada</strong>. Selecciona una acción:</p>
+            <div class="modal-actions">
+                <button class="btn-premium btn-outline-custom btn-redirect" data-url="../Pedidos/pedido-detalle.html" data-id="${mesa.id}">
+                    <i class="fa-solid fa-utensils"></i> Agregar Producto
+                </button>
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../pagos.html" data-id="${mesa.id}">
+                    <i class="fa-solid fa-cash-register"></i> Cobrar Cuenta
+                </button>
+            </div>
+        `;
+    } else if (mesa.estado === 'RESERVADA') {
+        actionsHTML = `
+            <p>La mesa está <strong style="color:var(--warning)">Reservada</strong>. Esperando la llegada del cliente.</p>
+            <div class="modal-actions">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                    <i class="fa-solid fa-bell-concierge"></i> Iniciar Pedido de Reserva
+                </button>
+            </div>
+        `;
+    } else {
+        actionsHTML = `<p>La mesa está <strong style="color:var(--gray)">Fuera de Servicio</strong>. No se pueden realizar acciones.</p>`;
     }
-};
-dom.filtersContainer.addEventListener('click', (e) => {
-    const btn = e.target.closest('.filter-btn');
-    if (!btn) return;
 
-    dom.filtersContainer.querySelector('.active')?.classList.remove('active');
-    btn.classList.add('active');
+    dom.modalBody.innerHTML = actionsHTML;
+    openModal();
+}
 
-    state.filtroActivo = btn.dataset.filterId;
-    renderTables();
+async function navegarSeguroBackend(idMesa, urlDestino) {
+    try {
+        // 1. Avisar al backend (Puntero no bloqueante)
+        await apiPedido.abrirMesa(1, idMesa); // 1 = ID del usuario logueado simulado
+
+        // 2. Redirigir a la URL 100% limpia
+        window.location.href = urlDestino;
+    } catch (error) {
+        alert("No se pudo abrir la página de pedidos.");
+    }
+}
+// Dentro de setupEventListeners() o al final de tu JS
+dom.modalBody.addEventListener('click', async (e) => {
+    const btnRedirect = e.target.closest('.btn-redirect');
+    if (btnRedirect) {
+        e.preventDefault();
+        const url = btnRedirect.dataset.url;
+        const idMesa = parseInt(btnRedirect.dataset.id);
+        
+        await navegarSeguroBackend(idMesa, url);
+    }
 });
+
+function openModal() { dom.modalOverlay.classList.add('show'); }
+function closeModal() { dom.modalOverlay.classList.remove('show'); }

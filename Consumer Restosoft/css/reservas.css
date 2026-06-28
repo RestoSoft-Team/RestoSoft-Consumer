@@ -632,62 +632,64 @@
         }
       }
 
-      /* NOTIFICACIONES */
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: -400px; /* Oculto fuera de pantalla */
-        z-index: 9999;
-        background: white;
-        padding: 16px 20px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        min-width: 320px;
-        border-left: 6px solid transparent;
-      }
+   /* ESTADO BASE (OCULTA HACIA LA DERECHA) */
+.notification {
+    position: fixed;
+    top: 30px;               /* Separación desde arriba */
+    right: 30px;              /* Pegada a la derecha */
+    left: auto;               /* Importante: evitar que se estire hacia la izquierda */
+    width: 380px;             /* Ancho fijo para que no se deforme */
+    max-width: calc(100vw - 40px);
+    
+    /* La empujamos un 120% hacia la derecha para asegurar que desaparezca del todo */
+    transform: translateX(calc(100% + 50px)); 
+    opacity: 0;
+    
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efecto de rebote suave */
+    z-index: 10000;
+    pointer-events: none; 
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    background: white;
+}
 
-      .notification.show {
-        right: 20px; /* Aparece en pantalla */
-      }
+/* ESTADO ACTIVO (VISIBLE) */
+.notification.show {
+    transform: translateX(0); /* La colocamos en su posición natural (right: 30px) */
+    opacity: 1;
+    pointer-events: auto;
+}
 
-      .notification-body {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
+/* --- COLORES POR ESTADO --- */
+.notification.success { border-left: 5px solid #2ecc71; }
+.notification.success #notificationIcon { color: #2ecc71; }
 
-      /* Variantes de color */
-      .notification.success {
-        border-color: var(--success);
-        color: var(--success);
-      }
-      .notification.warning {
-        border-color: var(--warning);
-        color: var(--warning);
-      }
-      .notification.error {
-        border-color: var(--danger);
-        color: var(--danger);
-      }
+.notification.error { border-left: 5px solid #e74c3c; }
+.notification.error #notificationIcon { color: #e74c3c; }
 
-      .notification-text-content strong {
-        display: block;
-        font-size: 14px;
-        margin-bottom: 2px;
-      }
-      .notification-text-content p {
-        margin: 0;
-        font-size: 13px;
-        color: #555;
-      }
-      .notification i {
-        font-size: 24px;
-      }
+.notification.warning { border-left: 5px solid #f39c12; }
+.notification.warning #notificationIcon { color: #f39c12; }
 
+/* --- TIPOGRAFÍA INTERNA --- */
+.notification #notificationTitle {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+    color: #2c3e50;
+}
+.notification #notificationText {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.4;
+}
+.notification #notificationIcon {
+    font-size: 1.4rem;
+    margin-top: 2px;
+}
          .modal-confirmacion {
         position: fixed;
         inset: 0;
@@ -803,4 +805,20 @@
   font-weight: 500;
   color: #555;
   letter-spacing: 0.5px;
+}
+
+/* Estilo para el input cuando tiene error */
+.input-error {
+  border: 1px solid #e74c3c !important;
+  background-color: rgba(231, 76, 60, 0.05) !important;
+}
+
+/* Texto del mensaje de error debajo del input */
+.error-message-text {
+  display: block;
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
