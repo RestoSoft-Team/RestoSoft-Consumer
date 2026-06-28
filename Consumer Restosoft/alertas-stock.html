@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft — Alertas de Stock</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft — Alertas de Stock</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <style>
         /* =========================================================
            ROOT
         ========================================================== */
@@ -671,436 +673,474 @@
         }
     </style>
 
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
+    <style id="responsive-table-cards">
+        @media (max-width: 768px) {
 
-  .table-responsive thead {
-    display: none;
-  }
+            .table-responsive table,
+            .table-responsive thead,
+            .table-responsive tbody,
+            .table-responsive th,
+            .table-responsive td,
+            .table-responsive tr {
+                display: block;
+                width: 100%;
+            }
 
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
+            .table-responsive thead {
+                display: none;
+            }
 
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
+            .table-responsive tr {
+                background: #fff;
+                margin-bottom: 16px;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                border: 1px solid #eee;
+            }
 
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
+            .table-responsive td {
+                border: none !important;
+                position: relative;
+                padding-left: 48% !important;
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
+                min-height: 42px;
+                text-align: left !important;
+            }
 
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
+            .table-responsive td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                top: 10px;
+                width: 42%;
+                font-weight: 700;
+                white-space: nowrap;
+                color: #555;
+            }
+        }
+    </style>
 
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
+    <style id="responsive-sidebar-upgrade">
+        .mobile-menu-btn {
+            display: none;
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            font-size: 20px
+        }
 
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998
+        }
 
-    .sidebar.open{left:0!important}
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible
+        }
 
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
+        @media(max-width:992px) {
+            .sidebar {
+                width: 90px
+            }
 
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
+            .sidebar .menu-title,
+            .sidebar .logo h3 {
+                display: none
+            }
 
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
+            .sidebar .menu-item span {
+                display: none
+            }
 
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
+            .main {
+                margin-left: 90px
+            }
+        }
 
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
+        @media(max-width:768px) {
+            .sidebar {
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
+            }
 
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
+            .sidebar.open {
+                left: 0 !important
+            }
+
+            .sidebar .menu-title,
+            .sidebar .logo h3,
+            .sidebar .menu-item span {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                padding: 18px !important;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+                min-width: 100%;
+            }
+        }
+    </style>
 
 </head>
+
 <body>
-<!-- =========================================================
+    <!-- =========================================================
          NOTIFICATION
     ========================================================== -->
-<div class="notification" id="notification">
-<div class="notification-icon">
-<i class="fa-solid fa-triangle-exclamation"></i>
-</div>
-<div>
-<h6>Stock crítico detectado</h6>
-<p>
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+            <h6>Stock crítico detectado</h6>
+            <p>
                 Algunos productos requieren reposición inmediata en inventario.
             </p>
-</div>
-</div>
-<!-- =========================================================
+        </div>
+    </div>
+    <!-- =========================================================
          LAYOUT
     ========================================================== -->
-<div class="layout">
-<!-- =====================================================
+    <div class="layout">
+        <!-- =====================================================
              SIDEBAR
         ====================================================== -->
-<aside class="sidebar">
-<div>
-<div class="brand">
-<div class="brand-logo">
-<i class="fa-solid fa-utensils"></i>
-</div>
-<div class="brand-text">
-<h2>RestSoft</h2>
-<span>Enterprise ERP</span>
-</div>
-</div>
-<nav class="sidebar-menu">
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="menu-item active" href="#">
-<i class="fa-solid fa-triangle-exclamation"></i>
-<span>Alertas Stock</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-boxes-stacked"></i>
-<span>Inventario</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-truck"></i>
-<span>Proveedores</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Reportes</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</nav>
-</div>
-<div class="sidebar-footer">
-<h6>Smart Inventory</h6>
-<p>
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="brand-logo">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h2>RestSoft</h2>
+                        <span>Enterprise ERP</span>
+                    </div>
+                </div>
+                <nav class="sidebar-menu">
+                    <a class="menu-item" href="#">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="menu-item active" href="#">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Alertas Stock</span>
+                    </a>
+                    <a class="menu-item" href="#">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Inventario</span>
+                    </a>
+                    <a class="menu-item" href="#">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>Proveedores</span>
+                    </a>
+                    <a class="menu-item" href="#">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Reportes</span>
+                    </a>
+                    <a class="menu-item" href="#">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Configuración</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="sidebar-footer">
+                <h6>Smart Inventory</h6>
+                <p>
                     Monitorea productos críticos y evita quiebres de stock operativos.
                 </p>
-</div>
-</aside>
-<!-- =====================================================
+            </div>
+        </aside>
+        <!-- =====================================================
              MAIN
         ====================================================== -->
-<main class="main">
-<!-- =================================================
+        <main class="main">
+            <!-- =================================================
                  TOPBAR
             ================================================== -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="page-title">
-<h1>Alertas de Stock</h1>
-<p>
+            <div class="topbar">
+                <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="page-title">
+                    <h1>Alertas de Stock</h1>
+                    <p>
                         Control inteligente de inventario y productos críticos en tiempo real.
                     </p>
-</div>
-<div class="topbar-right">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar productos críticos..." type="text"/>
-</div>
-<div class="profile">
-<img alt="" src="https://i.pravatar.cc/100"/>
-<div>
-<h6>Camila Torres</h6>
-<span>Inventory Supervisor</span>
-</div>
-</div>
-</div>
-</div>
-<!-- =================================================
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input placeholder="Buscar productos críticos..." type="text" />
+                    </div>
+                    <div class="profile">
+                        <img alt="" src="https://i.pravatar.cc/100" />
+                        <div>
+                            <h6>Camila Torres</h6>
+                            <span>Inventory Supervisor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- =================================================
                  STATS
             ================================================== -->
-<div class="stats-grid">
-<div class="card-premium stat-card">
-<div>
-<h3>14</h3>
-<p>Productos Críticos</p>
-</div>
-<div class="stat-icon danger-soft">
-<i class="fa-solid fa-circle-exclamation"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div>
-<h3>32</h3>
-<p>Reposiciones Pendientes</p>
-</div>
-<div class="stat-icon warning-soft">
-<i class="fa-solid fa-box-open"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div>
-<h3>96%</h3>
-<p>Disponibilidad Operativa</p>
-</div>
-<div class="stat-icon success-soft">
-<i class="fa-solid fa-chart-simple"></i>
-</div>
-</div>
-</div>
-<!-- =================================================
+            <div class="stats-grid">
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3>14</h3>
+                        <p>Productos Críticos</p>
+                    </div>
+                    <div class="stat-icon danger-soft">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3>32</h3>
+                        <p>Reposiciones Pendientes</p>
+                    </div>
+                    <div class="stat-icon warning-soft">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3>96%</h3>
+                        <p>Disponibilidad Operativa</p>
+                    </div>
+                    <div class="stat-icon success-soft">
+                        <i class="fa-solid fa-chart-simple"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- =================================================
                  ALERTS GRID
             ================================================== -->
-<div class="alerts-grid">
-<!-- CARD -->
-<div class="card-premium alert-card">
-<div class="alert-top">
-<div class="alert-icon danger-soft">
-<i class="fa-solid fa-cheese"></i>
-</div>
-<span class="alert-status status-danger">
+            <div class="alerts-grid">
+                <!-- CARD -->
+                <div class="card-premium alert-card">
+                    <div class="alert-top">
+                        <div class="alert-icon danger-soft">
+                            <i class="fa-solid fa-cheese"></i>
+                        </div>
+                        <span class="alert-status status-danger">
                             Crítico
                         </span>
-</div>
-<h4>Queso Mozzarella</h4>
-<p>
+                    </div>
+                    <h4>Queso Mozzarella</h4>
+                    <p>
                         Inventario por debajo del mínimo requerido para operaciones.
                     </p>
-<div class="stock-bar">
-<div class="stock-progress progress-danger"></div>
-</div>
-<div class="alert-meta">
-<span class="stock-qty">
+                    <div class="stock-bar">
+                        <div class="stock-progress progress-danger"></div>
+                    </div>
+                    <div class="alert-meta">
+                        <span class="stock-qty">
                             8 kg disponibles
                         </span>
-<button class="btn-premium">
+                        <button class="btn-premium">
                             Reponer
                         </button>
-</div>
-</div>
-<!-- CARD -->
-<div class="card-premium alert-card">
-<div class="alert-top">
-<div class="alert-icon warning-soft">
-<i class="fa-solid fa-wine-bottle"></i>
-</div>
-<span class="alert-status status-warning">
+                    </div>
+                </div>
+                <!-- CARD -->
+                <div class="card-premium alert-card">
+                    <div class="alert-top">
+                        <div class="alert-icon warning-soft">
+                            <i class="fa-solid fa-wine-bottle"></i>
+                        </div>
+                        <span class="alert-status status-warning">
                             Bajo
                         </span>
-</div>
-<h4>Vino Tinto Reserva</h4>
-<p>
+                    </div>
+                    <h4>Vino Tinto Reserva</h4>
+                    <p>
                         El producto se acerca al límite mínimo de inventario.
                     </p>
-<div class="stock-bar">
-<div class="stock-progress progress-warning"></div>
-</div>
-<div class="alert-meta">
-<span class="stock-qty">
+                    <div class="stock-bar">
+                        <div class="stock-progress progress-warning"></div>
+                    </div>
+                    <div class="alert-meta">
+                        <span class="stock-qty">
                             24 botellas
                         </span>
-<button class="btn-outline-premium">
+                        <button class="btn-outline-premium">
                             Revisar
                         </button>
-</div>
-</div>
-<!-- CARD -->
-<div class="card-premium alert-card">
-<div class="alert-top">
-<div class="alert-icon success-soft">
-<i class="fa-solid fa-fish"></i>
-</div>
-<span class="alert-status status-success">
+                    </div>
+                </div>
+                <!-- CARD -->
+                <div class="card-premium alert-card">
+                    <div class="alert-top">
+                        <div class="alert-icon success-soft">
+                            <i class="fa-solid fa-fish"></i>
+                        </div>
+                        <span class="alert-status status-success">
                             Estable
                         </span>
-</div>
-<h4>Salmón Fresco</h4>
-<p>
+                    </div>
+                    <h4>Salmón Fresco</h4>
+                    <p>
                         Inventario estable y abastecimiento controlado correctamente.
                     </p>
-<div class="stock-bar">
-<div class="stock-progress progress-success"></div>
-</div>
-<div class="alert-meta">
-<span class="stock-qty">
+                    <div class="stock-bar">
+                        <div class="stock-progress progress-success"></div>
+                    </div>
+                    <div class="alert-meta">
+                        <span class="stock-qty">
                             86 kg disponibles
                         </span>
-<button class="btn-outline-premium">
+                        <button class="btn-outline-premium">
                             Ver Detalle
                         </button>
-</div>
-</div>
-</div>
-<!-- =================================================
+                    </div>
+                </div>
+            </div>
+            <!-- =================================================
                  TABLE
             ================================================== -->
-<div class="card-premium">
-<div class="d-flex justify-content-between align-items-center mb-4">
-<div>
-<h4 class="fw-bold mb-1">
+            <div class="card-premium">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1">
                             Productos con Alertas
                         </h4>
-<p class="text-secondary mb-0">
+                        <p class="text-secondary mb-0">
                             Monitoreo detallado de existencias y niveles críticos.
                         </p>
-</div>
-<button class="btn-outline-premium">
-<i class="fa-solid fa-file-export me-2"></i>
+                    </div>
+                    <button class="btn-outline-premium">
+                        <i class="fa-solid fa-file-export me-2"></i>
                         Exportar
                     </button>
-</div>
-<div class="table-responsive">
-<table>
-<thead>
-<tr>
-<th>Producto</th>
-<th>Categoría</th>
-<th>Stock Actual</th>
-<th>Mínimo</th>
-<th>Estado</th>
-<th>Proveedor</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-cheese"></i>
-</div>
-<div>
-<h6>Queso Parmesano</h6>
-<span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Stock Actual</th>
+                                <th>Mínimo</th>
+                                <th>Estado</th>
+                                <th>Proveedor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td data-label="Producto">
+                                    <div class="product">
+                                        <div class="product-icon">
+                                            <i class="fa-solid fa-cheese"></i>
+                                        </div>
+                                        <div>
+                                            <h6>Queso Parmesano</h6>
+                                            <span>
                                                 Inventario Gourmet
                                             </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Lácteos</td>
-<td data-label="Stock Actual">5 kg</td>
-<td data-label="Mínimo">20 kg</td>
-<td data-label="Estado">
-<span class="status status-danger">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Categoría">Lácteos</td>
+                                <td data-label="Stock Actual">5 kg</td>
+                                <td data-label="Mínimo">20 kg</td>
+                                <td data-label="Estado">
+                                    <span class="status status-danger">
                                         Crítico
                                     </span>
-</td>
-<td data-label="Proveedor">Lácteos Premium SAS</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-wine-bottle"></i>
-</div>
-<div>
-<h6>Whisky Premium</h6>
-<span>
+                                </td>
+                                <td data-label="Proveedor">Lácteos Premium SAS</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Producto">
+                                    <div class="product">
+                                        <div class="product-icon">
+                                            <i class="fa-solid fa-wine-bottle"></i>
+                                        </div>
+                                        <div>
+                                            <h6>Whisky Premium</h6>
+                                            <span>
                                                 Bar &amp; Lounge
                                             </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Bebidas</td>
-<td data-label="Stock Actual">12 botellas</td>
-<td data-label="Mínimo">25 botellas</td>
-<td data-label="Estado">
-<span class="status status-warning">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Categoría">Bebidas</td>
+                                <td data-label="Stock Actual">12 botellas</td>
+                                <td data-label="Mínimo">25 botellas</td>
+                                <td data-label="Estado">
+                                    <span class="status status-warning">
                                         Bajo
                                     </span>
-</td>
-<td data-label="Proveedor">Wine Distribution</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-shrimp"></i>
-</div>
-<div>
-<h6>Camarones Jumbo</h6>
-<span>
+                                </td>
+                                <td data-label="Proveedor">Wine Distribution</td>
+                            </tr>
+                            <tr>
+                                <td data-label="Producto">
+                                    <div class="product">
+                                        <div class="product-icon">
+                                            <i class="fa-solid fa-shrimp"></i>
+                                        </div>
+                                        <div>
+                                            <h6>Camarones Jumbo</h6>
+                                            <span>
                                                 Cocina Marina
                                             </span>
-</div>
-</div>
-</td>
-<td data-label="Categoría">Mariscos</td>
-<td data-label="Stock Actual">38 kg</td>
-<td data-label="Mínimo">20 kg</td>
-<td data-label="Estado">
-<span class="status status-success">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Categoría">Mariscos</td>
+                                <td data-label="Stock Actual">38 kg</td>
+                                <td data-label="Mínimo">20 kg</td>
+                                <td data-label="Estado">
+                                    <span class="status status-success">
                                         Estable
                                     </span>
-</td>
-<td data-label="Proveedor">Fresh Ocean Foods</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</main>
-</div>
-<!-- =========================================================
+                                </td>
+                                <td data-label="Proveedor">Fresh Ocean Foods</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- =========================================================
          JAVASCRIPT
     ========================================================== -->
-<script>
+    <script>
 
         const notification = document.getElementById('notification');
 
@@ -1128,21 +1168,22 @@
 
     </script>
 
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
+    <script id="responsive-sidebar-upgrade-script">
+        const menuToggle = document.getElementById("menuToggle");
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
 
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
+        menuToggle?.addEventListener("click", () => {
+            sidebar?.classList.toggle("open");
+            overlay?.classList.toggle("show");
+        });
 
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
+        overlay?.addEventListener("click", () => {
+            sidebar?.classList.remove("open");
+            overlay?.classList.remove("show");
+        });
+    </script>
 
 </body>
+
 </html>

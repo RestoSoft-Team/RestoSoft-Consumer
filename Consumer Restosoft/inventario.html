@@ -963,10 +963,6 @@
                 <p>Controla existencias, alertas y movimientos de productos en tiempo real.</p>
             </div>
             <div class="topbar-actions">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input id="inputBusqueda" placeholder="Buscar por nombre, ID o proveedor..." type="text" />
-                </div>
                 <div class="profile-box">
                     <img src="https://i.pravatar.cc/100?img=15" alt="Avatar" />
                     <div>
@@ -1035,12 +1031,16 @@
                     <option value="STOCK_BAJO">Stock Bajo</option>
                     <option value="AGOTADO">Agotado</option>
                 </select>
-                <input class="form-control" type="date" id="filtroFecha" style="max-width:200px;" />
+
             </div>
         </div>
-
+        
         <div class="row g-4">
             <div class="col-xl-8">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="inputBusqueda" placeholder="Buscar por nombre, ID o proveedor..." type="text" />
+                </div>
                 <div class="premium-card" style="padding: 24px 20px;">
                     <div
                         style="display:flex; align-items:center; padding: 0 10px 14px 10px; border-bottom: 2px solid #f0f2f5; margin-bottom: 4px; gap:8px;">
@@ -1089,12 +1089,15 @@
                 <div class="premium-card">
                     <h4 class="fw-bold mb-4">Acciones Rápidas</h4>
                     <div class="d-grid gap-3">
-                        <button class="btn btn-premium" data-accion="entrada"><i
-                                class="fa-solid fa-arrow-down me-2"></i>Registrar Entrada</button>
-                        <button class="btn btn-outline-premium" data-accion="salida"><i
-                                class="fa-solid fa-arrow-up me-2"></i>Registrar Salida</button>
-                        <button class="btn btn-outline-premium" data-accion="exportar"><i
-                                class="fa-solid fa-file-export me-2"></i>Exportar Inventario</button>
+                        <a href="entradas-mercancia.html" class="btn btn-premium">
+                            <i class="fa-solid fa-arrow-down me-2"></i>Registrar Entrada
+                        </a>
+                        <button class="btn btn-outline-premium" data-accion="salida">
+                            <i class="fa-solid fa-arrow-up me-2"></i>Registrar Salida
+                        </button>
+                        <button class="btn btn-outline-premium" data-accion="exportar">
+                            <i class="fa-solid fa-file-export me-2"></i>Exportar Inventario
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1124,6 +1127,7 @@
         </div>
     </div>
     <script src="/js/datos/sidebar.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script type="module" src="js/datos/inventario2.js"></script>
 
 </body>

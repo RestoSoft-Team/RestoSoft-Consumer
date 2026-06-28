@@ -1,51 +1,32 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft • Entradas de Mercancía</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft • Entradas de Mercancía</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
         :root {
-
             --background: #fbfcfb;
-
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-
             --dark: #262f3c;
             --dark-light: #39485c;
-
             --soft: #b09da2;
             --soft-light: #d9d2d4;
-
             --white: #ffffff;
-
             --gray: #6f7782;
-
             --success: #3d8b5c;
             --warning: #d9a441;
             --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
             --radius: 24px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -63,10 +44,6 @@
         a {
             text-decoration: none;
         }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
 
         .sidebar {
             position: fixed;
@@ -90,7 +67,7 @@
             width: 58px;
             height: 58px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, .08);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,7 +100,7 @@
             padding: 16px 18px;
             border-radius: 18px;
             color: #c7cfda;
-            transition: 0.3s;
+            transition: .3s;
             font-weight: 500;
         }
 
@@ -133,7 +110,7 @@
         }
 
         .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, .06);
             color: white;
             transform: translateX(4px);
         }
@@ -143,18 +120,10 @@
             color: white;
         }
 
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
         .main {
             margin-left: 280px;
             padding: 34px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -231,26 +200,18 @@
             font-size: 13px;
         }
 
-        /* =========================================================
-           CARDS
-        ========================================================== */
-
         .premium-card {
             background: white;
             border-radius: 28px;
             padding: 30px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            transition: 0.3s;
+            border: 1px solid rgba(0, 0, 0, .03);
+            transition: .3s;
         }
 
         .premium-card:hover {
             transform: translateY(-5px);
         }
-
-        /* =========================================================
-           STATS
-        ========================================================== */
 
         .stats-card {
             display: flex;
@@ -281,23 +242,19 @@
         }
 
         .icon-success {
-            background: rgba(61, 139, 92, 0.12);
+            background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
         .icon-warning {
-            background: rgba(217, 164, 65, 0.12);
+            background: rgba(217, 164, 65, .12);
             color: var(--warning);
         }
 
         .icon-primary {
-            background: rgba(107, 30, 40, 0.12);
+            background: rgba(107, 30, 40, .12);
             color: var(--primary);
         }
-
-        /* =========================================================
-           SECTION TITLE
-        ========================================================== */
 
         .section-title {
             display: flex;
@@ -317,10 +274,6 @@
             color: var(--gray);
         }
 
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
-
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -328,13 +281,19 @@
             border-radius: 16px;
             padding: 14px 22px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .btn-premium:hover {
             background: var(--primary-light);
             color: white;
             transform: translateY(-2px);
+        }
+
+        .btn-premium:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-outline-premium {
@@ -344,17 +303,13 @@
             border-radius: 16px;
             padding: 14px 22px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .btn-outline-premium:hover {
             background: var(--dark);
             color: white;
         }
-
-        /* =========================================================
-           FORM
-        ========================================================== */
 
         .form-label {
             font-weight: 600;
@@ -369,7 +324,7 @@
             min-height: 56px;
             padding: 14px 18px !important;
             box-shadow: none !important;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .form-control:focus,
@@ -378,9 +333,62 @@
             background: white !important;
         }
 
-        /* =========================================================
-           TABLE
-        ========================================================== */
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border: 2px solid var(--danger) !important;
+        }
+
+        /* Campo de solo lectura con estilo diferenciado */
+        .form-control[readonly] {
+            background: #eef0f4 !important;
+            color: var(--dark-light);
+            font-weight: 700;
+            cursor: default;
+        }
+
+        .stock-preview {
+            background: #f0faf4;
+            border: 1px solid #d4edda;
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .stock-preview-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stock-preview-item .sp-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .stock-preview-item .sp-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .stock-preview-item .sp-value.ant {
+            color: var(--dark-light);
+        }
+
+        .stock-preview-item .sp-value.nuevo {
+            color: var(--success);
+        }
+
+        .stock-preview-arrow {
+            font-size: 20px;
+            color: var(--success);
+            flex-shrink: 0;
+        }
 
         .table-modern {
             width: 100%;
@@ -391,7 +399,7 @@
         .table-modern thead th {
             font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: .5px;
             color: var(--gray);
             font-weight: 700;
             border: none;
@@ -400,7 +408,7 @@
 
         .table-modern tbody tr {
             background: #fafbfc;
-            transition: 0.3s;
+            transition: .3s;
         }
 
         .table-modern tbody tr:hover {
@@ -423,10 +431,6 @@
             border-radius: 0 18px 18px 0;
         }
 
-        /* =========================================================
-           STATUS
-        ========================================================== */
-
         .status {
             padding: 8px 14px;
             border-radius: 12px;
@@ -435,18 +439,19 @@
         }
 
         .status-success {
-            background: rgba(61, 139, 92, 0.12);
+            background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
         .status-warning {
-            background: rgba(217, 164, 65, 0.14);
+            background: rgba(217, 164, 65, .14);
             color: var(--warning);
         }
 
-        /* =========================================================
-           SUPPLIER
-        ========================================================== */
+        .status-danger {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
 
         .supplier {
             display: flex;
@@ -454,11 +459,18 @@
             gap: 14px;
         }
 
-        .supplier img {
+        .supplier-avatar {
             width: 52px;
             height: 52px;
             border-radius: 18px;
-            object-fit: cover;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
         }
 
         .supplier h6 {
@@ -470,10 +482,6 @@
             color: var(--gray);
             font-size: 13px;
         }
-
-        /* =========================================================
-           TIMELINE
-        ========================================================== */
 
         .timeline {
             position: relative;
@@ -517,10 +525,6 @@
             font-size: 14px;
         }
 
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
-
         .notification {
             position: fixed;
             top: 30px;
@@ -533,37 +537,85 @@
             display: flex;
             align-items: flex-start;
             gap: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
             z-index: 9999;
-
             transform: translateX(420px);
-            transition: 0.3s;
+            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.is-error {
+            border-left-color: var(--danger);
+        }
+
         .notification-icon {
             width: 52px;
             height: 52px;
             border-radius: 18px;
-            background: rgba(61, 139, 92, 0.10);
+            background: rgba(61, 139, 92, .10);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--success);
             font-size: 20px;
+            flex-shrink: 0;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        .notification.is-error .notification-icon {
+            background: rgba(187, 58, 75, .10);
+            color: var(--danger);
+        }
+
+        .notification h6 {
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        #totalCosto {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #menuToggle {
+            display: none;
+            background: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
 
         @media(max-width:992px) {
-
             .sidebar {
-                width: 96px;
+                width: 90px;
             }
 
             .sidebar .brand h2,
@@ -577,33 +629,55 @@
             }
 
             .main {
-                margin-left: 96px;
+                margin-left: 90px;
             }
-
         }
 
         @media(max-width:768px) {
-
             .sidebar {
-                display: none;
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0 !important;
+            }
+
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .sidebar-item span {
+                display: block;
+            }
+
+            .sidebar-item {
+                justify-content: flex-start;
             }
 
             .main {
-                margin-left: 0;
-                padding: 22px;
+                margin-left: 0 !important;
+                padding: 18px !important;
+            }
+
+            #menuToggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 15px;
             }
 
             .topbar-actions {
                 width: 100%;
                 flex-direction: column;
-                align-items: stretch;
             }
 
+            .search-box,
             .search-box input {
                 width: 100%;
             }
@@ -613,495 +687,362 @@
                 right: 20px;
             }
 
+            .stock-preview {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .stock-preview-arrow {
+                transform: rotate(90deg);
+            }
         }
     </style>
-
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
 </head>
+
 <body>
-<!-- =========================================================
-       SIDEBAR
-    ========================================================== -->
-<aside class="sidebar">
-<div class="brand">
-<div class="brand-logo">
-<i class="fa-solid fa-utensils"></i>
-</div>
-<div>
-<h2>RestSoft</h2>
-<span>Enterprise POS</span>
-</div>
-</div>
-<nav class="sidebar-menu">
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="sidebar-item active" href="#">
-<i class="fa-solid fa-truck-ramp-box"></i>
-<span>Entradas</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-boxes-stacked"></i>
-<span>Inventario</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-truck"></i>
-<span>Proveedores</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Reportes</span>
-</a>
-<a class="sidebar-item" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</nav>
-</aside>
-<!-- =========================================================
-       MAIN
-    ========================================================== -->
-<main class="main">
-<!-- TOPBAR -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="topbar-title">
-<h1>Entradas de Mercancía</h1>
-<p>
-                    Gestiona ingresos de productos y abastecimiento del inventario operativo.
-                </p>
-</div>
-<div class="topbar-actions">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar entrada o proveedor..." type="text"/>
-</div>
-<div class="profile-box">
-<img src="https://i.pravatar.cc/100?img=33"/>
-<div>
-<h6>Camila Rojas</h6>
-<span>Warehouse Manager</span>
-</div>
-</div>
-</div>
-</div>
-<!-- STATS -->
-<div class="row g-4 mb-4">
-<div class="col-xl-4 col-md-6">
-<div class="premium-card stats-card">
-<div>
-<p>Entradas Hoy</p>
-<h3>42</h3>
-</div>
-<div class="stats-icon icon-success">
-<i class="fa-solid fa-box-open"></i>
-</div>
-</div>
-</div>
-<div class="col-xl-4 col-md-6">
-<div class="premium-card stats-card">
-<div>
-<p>Proveedores Activos</p>
-<h3>18</h3>
-</div>
-<div class="stats-icon icon-primary">
-<i class="fa-solid fa-truck"></i>
-</div>
-</div>
-</div>
-<div class="col-xl-4 col-md-6">
-<div class="premium-card stats-card">
-<div>
-<p>Órdenes Pendientes</p>
-<h3>6</h3>
-</div>
-<div class="stats-icon icon-warning">
-<i class="fa-solid fa-clock"></i>
-</div>
-</div>
-</div>
-</div>
-<div class="row g-4">
-<!-- LEFT -->
-<div class="col-xl-8">
-<!-- FORM -->
-<div class="premium-card mb-4">
-<div class="section-title">
-<div>
-<h3>Registrar Entrada</h3>
-<p>
-                                Agrega nuevas mercancías y actualiza el stock automáticamente.
-                            </p>
-</div>
-<button class="btn btn-premium" onclick="showNotification()">
-<i class="fa-solid fa-plus me-2"></i>
-                            Registrar
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3>RestSoft</h3>
+        </div>
+        <div class="menu-title">Navegación</div>
+        <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                Inicio</span></a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="empleados.html">Empleados</a>
+            <a class="" href="empleado-crear.html">Crear Empleado</a>
+            <a class="" href="empleado-editar.html">Editar Empleado</a>
+            <a class="" href="roles-permisos.html">Roles y Permisos</a>
+            <a class="" href="horarios-turnos.html">Horarios y Turnos</a>
+            <a class="" href="asistencia.html">Asistencia</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="inventario.html">Inventario</a>
+            <a class="" href="insumos-crear.html">Crear Producto</a>
+            <a class="" href="producto-editar.html">Editar Producto</a>
+            <a class="active" href="entradas-mercancia.html">Entradas Mercancía</a>
+            <a class="" href="salidas-mermas.html">Salidas/Mermas</a>
+            <a class="" href="categorias-inventario.html">Categorías</a>
+            <a class="" href="proveedores.html">Proveedores</a>
+            <a class="" href="alertas-stock.html">Alertas Stock</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="pedidos.html">Pedidos</a>
+            <a class="" href="pedido-crear.html">Crear Pedido</a>
+            <a class="" href="pedido-detalle.html">Detalle Pedido</a>
+            <a class="" href="pedido-cocina.html">Pedido Cocina</a>
+            <a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="mesas.html">Mesas</a>
+            <a class="" href="mapa-mesas.html">Mapa Mesas</a>
+            <a class="" href="transferir-mesa.html">Transferir Mesa</a>
+            <a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="reservas.html">Reservas</a>
+            <a class="" href="reserva-crear.html">Crear Reserva</a>
+            <a class="" href="reserva-editar.html">Editar Reserva</a>
+            <a class="" href="calendario-reservas.html">Calendario</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="facturacion.html">Facturación</a>
+            <a class="" href="generar-factura.html">Generar Factura</a>
+            <a class="" href="pagos.html">Pagos</a>
+            <a class="" href="propinas.html">Propinas</a>
+            <a class="" href="cierre-caja.html">Cierre Caja</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="menu-productos.html">Menú</a>
+            <a class="" href="platillo-crear.html">Crear Platillo</a>
+            <a class="" href="platillo-editar.html">Editar Platillo</a>
+            <a class="" href="promociones.html">Promociones</a>
+            <a class="" href="categorias-menu.html">Categorías Menú</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="cocina-dashboard.html">Dashboard Cocina</a>
+            <a class="" href="pedidos-preparacion.html">Pedidos Preparación</a>
+            <a class="" href="tiempos-preparacion.html">Tiempos</a>
+            <a class="" href="notificaciones-cocina.html">Notificaciones</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="clientes.html">Clientes</a>
+            <a class="" href="cliente-crear.html">Crear Cliente</a>
+            <a class="" href="historial-cliente.html">Historial</a>
+            <a class="" href="fidelizacion.html">Fidelización</a>
+            <a class="" href="promociones-clientes.html">Promociones</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="reportes.html">Reportes</a>
+            <a class="" href="reporte-ventas.html">Ventas</a>
+            <a class="" href="reporte-inventario.html">Inventario</a>
+            <a class="" href="reporte-empleados.html">Empleados</a>
+            <a class="" href="reporte-financiero.html">Financiero</a>
+            <a class="" href="reporte-reservas.html">Reservas</a>
+            <a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+        </div>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu">
+            <a class="" href="configuracion-general.html">General</a>
+            <a class="" href="usuarios-sistema.html">Usuarios</a>
+            <a class="" href="impresoras.html">Impresoras</a>
+            <a class="" href="metodos-pago.html">Métodos Pago</a>
+            <a class="" href="alertas.html">Alertas</a>
+            <a class="" href="backup-restauracion.html">Backup</a>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main">
+        <div class="topbar">
+            <button id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-title">
+                <h1>Entradas de Mercancía</h1>
+                <p>Gestiona ingresos de productos y abastecimiento del inventario operativo.</p>
+            </div>
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input id="inputBusquedaEntradas" placeholder="Buscar entrada o insumo..." type="text" />
+                </div>
+                <div class="profile-box">
+                    <img src="https://i.pravatar.cc/100?img=33" alt="Avatar" />
+                    <div>
+                        <h6>Camila Rojas</h6>
+                        <span>Warehouse Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-4 col-md-6">
+                <div class="premium-card stats-card">
+                    <div>
+                        <p>Entradas Registradas</p>
+                        <h3 id="statTotalEntradas">—</h3>
+                    </div>
+                    <div class="stats-icon icon-success">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="premium-card stats-card">
+                    <div>
+                        <p>Insumos Disponibles</p>
+                        <h3 id="statTotalInsumos">—</h3>
+                    </div>
+                    <div class="stats-icon icon-primary">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="premium-card stats-card">
+                    <div>
+                        <p>Proveedores Activos</p>
+                        <h3 id="statTotalProveedores">—</h3>
+                    </div>
+                    <div class="stats-icon icon-warning">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- LEFT -->
+            <div class="col-xl-8">
+                <!-- FORM -->
+                <div class="premium-card mb-4">
+                    <div class="section-title">
+                        <div>
+                            <h3>Registrar Entrada</h3>
+                            <p>Agrega nuevas mercancías y actualiza el stock automáticamente.</p>
+                        </div>
+                        <button class="btn btn-premium" id="btnRegistrar" onclick="registrarEntrada()">
+                            <i class="fa-solid fa-plus me-2"></i>Registrar
                         </button>
-</div>
-<div class="row g-4">
-<div class="col-md-6">
-<label class="form-label">
-                                Producto
-                            </label>
-<select class="form-select">
-<option>Seleccionar producto</option>
-<option>Carne Angus Premium</option>
-<option>Vino Reserva</option>
-<option>Salmón Fresco</option>
-</select>
-</div>
-<div class="col-md-6">
-<label class="form-label">
-                                Proveedor
-                            </label>
-<select class="form-select">
-<option>Seleccionar proveedor</option>
-<option>Fresh Foods SAS</option>
-<option>Premium Drinks</option>
-</select>
-</div>
-<div class="col-md-4">
-<label class="form-label">
-                                Cantidad
-                            </label>
-<input class="form-control" placeholder="0" type="number"/>
-</div>
-<div class="col-md-4">
-<label class="form-label">
-                                Costo Unitario
-                            </label>
-<input class="form-control" placeholder="$0" type="number"/>
-</div>
-<div class="col-md-4">
-<label class="form-label">
-                                Fecha
-                            </label>
-<input class="form-control" type="date"/>
-</div>
-</div>
-</div>
-<!-- TABLE -->
-<div class="premium-card">
-<div class="section-title">
-<div>
-<h3>Últimas Entradas</h3>
-<p>
-                                Historial reciente de mercancía ingresada al sistema.
-                            </p>
-</div>
-<button class="btn btn-outline-premium">
-<i class="fa-solid fa-download me-2"></i>
-                            Exportar
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Insumo / Producto</label>
+                            <select class="form-select" id="selectInsumo">
+                                <option value="">Cargando insumos...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Proveedor</label>
+                            <select class="form-select" id="selectProveedor">
+                                <option value="">Cargando proveedores...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Cantidad a Ingresar</label>
+                            <input class="form-control" id="inputCantidad" placeholder="0" type="number" min="1"
+                                oninput="calcularTotal()" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Costo Unitario ($)</label>
+                            <input class="form-control" id="inputCostoUnitario" placeholder="0.00" type="number" min="0"
+                                step="0.01" oninput="calcularTotal()" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha de Entrada</label>
+                            <input class="form-control" id="inputFecha" type="date" />
+                        </div>
+                    </div>
+
+                    <!-- Campos ocultos para stock (se llenan automáticamente) -->
+                    <input type="hidden" id="inputStockAnterior" value="" />
+                    <input type="hidden" id="inputStockNuevo" value="" />
+
+                    <!-- Vista previa de stock -->
+                    <div class="stock-preview mt-4" id="stockPreview" style="display:none;">
+                        <div class="stock-preview-item">
+                            <div class="sp-label">Stock Anterior</div>
+                            <div class="sp-value ant" id="spStockAnterior">0</div>
+                        </div>
+                        <div class="stock-preview-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                        <div class="stock-preview-item">
+                            <div class="sp-label">Cantidad</div>
+                            <div class="sp-value" id="spCantidad" style="color:var(--primary)">0</div>
+                        </div>
+                        <div class="stock-preview-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                        <div class="stock-preview-item">
+                            <div class="sp-label">Stock Nuevo</div>
+                            <div class="sp-value nuevo" id="spStockNuevo">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Costo total -->
+                    <div class="mt-4 p-4 rounded-4" style="background:#f7f8fa;">
+                        <small class="text-secondary d-block mb-1">Costo Total Calculado</small>
+                        <span id="totalCosto">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div class="premium-card">
+                    <div class="section-title">
+                        <div>
+                            <h3>Historial de Entradas</h3>
+                            <p>Movimientos de ingreso registrados en el sistema.</p>
+                        </div>
+                        <button class="btn btn-outline-premium" onclick="exportarCSV()">
+                            <i class="fa-solid fa-download me-2"></i>Exportar
                         </button>
-</div>
-<div class="table-responsive">
-<table class="table-modern">
-<thead>
-<tr>
-<th>Proveedor</th>
-<th>Producto</th>
-<th>Cantidad</th>
-<th>Estado</th>
-<th>Fecha</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<img src="https://images.unsplash.com/photo-1542831371-d531d36971e6?q=80&amp;w=300&amp;auto=format&amp;fit=crop"/>
-<div>
-<h6>Fresh Foods SAS</h6>
-<span>Distribuidor Gourmet</span>
-</div>
-</div>
-</td>
-<td data-label="Producto">Carne Angus Premium</td>
-<td data-label="Cantidad">120 KG</td>
-<td data-label="Estado">
-<span class="status status-success">
-                                            Recibido
-                                        </span>
-</td>
-<td data-label="Fecha">28 Mayo 2026</td>
-</tr>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&amp;w=300&amp;auto=format&amp;fit=crop"/>
-<div>
-<h6>Premium Drinks</h6>
-<span>Bebidas Exclusivas</span>
-</div>
-</div>
-</td>
-<td data-label="Producto">Vino Reserva Premium</td>
-<td data-label="Cantidad">60 Botellas</td>
-<td data-label="Estado">
-<span class="status status-warning">
-                                            En Revisión
-                                        </span>
-</td>
-<td data-label="Fecha">28 Mayo 2026</td>
-</tr>
-<tr>
-<td data-label="Proveedor">
-<div class="supplier">
-<img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&amp;w=300&amp;auto=format&amp;fit=crop"/>
-<div>
-<h6>Oceanic Market</h6>
-<span>Productos Marinos</span>
-</div>
-</div>
-</td>
-<td data-label="Producto">Salmón Fresco</td>
-<td data-label="Cantidad">85 KG</td>
-<td data-label="Estado">
-<span class="status status-success">
-                                            Recibido
-                                        </span>
-</td>
-<td data-label="Fecha">27 Mayo 2026</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- RIGHT -->
-<div class="col-xl-4">
-<!-- ACTIVITY -->
-<div class="premium-card mb-4">
-<div class="section-title">
-<div>
-<h3>Actividad Reciente</h3>
-<p>
-                                Últimos movimientos de abastecimiento.
-                            </p>
-</div>
-</div>
-<div class="timeline">
-<div class="timeline-item">
-<h6>Nueva mercancía registrada</h6>
-<p>
-                                Fresh Foods SAS • Hace 10 min
-                            </p>
-</div>
-<div class="timeline-item">
-<h6>Inventario actualizado</h6>
-<p>
-                                Vino Reserva Premium • Hace 1 hora
-                            </p>
-</div>
-<div class="timeline-item">
-<h6>Orden validada</h6>
-<p>
-                                Oceanic Market • Hace 3 horas
-                            </p>
-</div>
-</div>
-</div>
-<!-- QUICK INFO -->
-<div class="premium-card">
-<div class="section-title">
-<div>
-<h3>Resumen Operativo</h3>
-<p>
-                                Indicadores rápidos de abastecimiento.
-                            </p>
-</div>
-</div>
-<div class="d-flex flex-column gap-3">
-<div class="p-4 rounded-4 bg-light">
-<small class="text-secondary">
-                                Valor Ingresado Hoy
-                            </small>
-<h3 class="fw-bold mt-2 mb-0">
-                                $18,450
-                            </h3>
-</div>
-<div class="p-4 rounded-4 bg-light">
-<small class="text-secondary">
-                                Productos Recibidos
-                            </small>
-<h3 class="fw-bold mt-2 mb-0">
-                                264 Items
-                            </h3>
-</div>
-<div class="p-4 rounded-4 bg-light">
-<small class="text-secondary">
-                                Tiempo Promedio
-                            </small>
-<h3 class="fw-bold mt-2 mb-0">
-                                18 Min
-                            </h3>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-<!-- =========================================================
-       NOTIFICATION
-    ========================================================== -->
-<div class="notification" id="notification">
-<div class="notification-icon">
-<i class="fa-solid fa-check"></i>
-</div>
-<div>
-<h6>Entrada Registrada</h6>
-<p>
-                La mercancía fue ingresada correctamente al inventario.
-            </p>
-</div>
-</div>
-<!-- =========================================================
-       JAVASCRIPT
-    ========================================================== -->
-<script>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table-modern">
+                            <thead>
+                                <tr>
+                                    <th>Insumo</th>
+                                    <th>Proveedor</th>
+                                    <th>Stock Ant.</th>
+                                    <th>Cantidad</th>
+                                    <th>Stock Nuevo</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaEntradas">
+                                <tr>
+                                    <td colspan="6" class="text-center text-secondary py-4">
+                                        <i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando historial...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        const notification = document.getElementById('notification');
+            <!-- RIGHT -->
+            <div class="col-xl-4">
+                <div class="premium-card mb-4">
+                    <div class="section-title">
+                        <div>
+                            <h3>Actividad Reciente</h3>
+                            <p>Últimos movimientos de abastecimiento.</p>
+                        </div>
+                    </div>
+                    <div class="timeline" id="timelineActividad">
+                        <div class="timeline-item">
+                            <h6>Cargando actividad...</h6>
+                            <p>Por favor espera.</p>
+                        </div>
+                    </div>
+                </div>
 
-        function showNotification() {
+                <div class="premium-card">
+                    <div class="section-title">
+                        <div>
+                            <h3>Resumen Operativo</h3>
+                            <p>Indicadores rápidos de abastecimiento.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-4 rounded-4 bg-light">
+                            <small class="text-secondary">Total Unidades Ingresadas</small>
+                            <h3 class="fw-bold mt-2 mb-0" id="resumenUnidades">—</h3>
+                        </div>
+                        <div class="p-4 rounded-4 bg-light">
+                            <small class="text-secondary">Valor Total Ingresado</small>
+                            <h3 class="fw-bold mt-2 mb-0" id="resumenValor">—</h3>
+                        </div>
+                        <div class="p-4 rounded-4 bg-light">
+                            <small class="text-secondary">Última Entrada</small>
+                            <h3 class="fw-bold mt-2 mb-0" id="resumenUltima" style="font-size:16px;">—</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-            notification.classList.add('show');
+    <!-- NOTIFICATION -->
+    <div class="notification" id="notification">
+        <div class="notification-icon"><i class="fa-solid fa-check" id="notificationIcon"></i></div>
+        <div>
+            <h6 id="notificationTitle">Operación Realizada</h6>
+            <p id="notificationText">La entrada fue registrada correctamente.</p>
+        </div>
+    </div>
 
-            setTimeout(() => {
-
-                hideNotification();
-
-            }, 3500);
-
-        }
-
-        function hideNotification() {
-
-            notification.classList.remove('show');
-
-        }
-
-    </script>
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
+    <script src="/js/datos/sidebar.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="/js/consumo/apiEntradaMercancia.js"></script>
+    <script src="/js/datos/entradaMercancia.js"></script>
 
 </body>
+
 </html>

@@ -1,19 +1,21 @@
 // /js/consumo/apiProveedores.js
 
-// Elimina el "/v1" para que coincida con tu @RequestMapping("/api/proveedores")
-const API_PROVEEDORES = "/api/proveedores"; 
-const API_EMPRESAS = "/api/empresas"; // Asegúrate de que en tu EmpresaController también sea /api/empresas
+const API_PROVEEDORES = "http://localhost:8080/api/proveedores";
+const API_EMPRESAS    = "http://localhost:8080/api/empresa";
 
 const ApiProveedores = {
+
+    /**
+     * Obtiene todos los proveedores
+     */
     obtenerProveedores: async () => {
         const response = await fetch(API_PROVEEDORES);
         if (!response.ok) throw new Error("Error al consultar los proveedores");
         return await response.json();
     },
-    // ... resto del código
 
     /**
-     * Obtiene todas las empresas para llenar el Dropdown List
+     * Obtiene todas las empresas para el dropdown
      */
     obtenerEmpresas: async () => {
         const response = await fetch(API_EMPRESAS);
@@ -22,15 +24,34 @@ const ApiProveedores = {
     },
 
     /**
-     * Guarda un nuevo proveedor en la base de datos
+     * Crea un nuevo proveedor
      */
     crearProveedor: async (proveedorData) => {
-        const response = await fetch(API_PROVEEDORES, {
+        return await fetch(API_PROVEEDORES, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(proveedorData)
         });
-        return response;
+    },
+
+    /**
+     * Actualiza un proveedor existente por ID
+     */
+    actualizarProveedor: async (id, proveedorData) => {
+        return await fetch(`${API_PROVEEDORES}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(proveedorData)
+        });
+    },
+
+    /**
+     * Elimina un proveedor por ID
+     */
+    eliminarProveedor: async (id) => {
+        return await fetch(`${API_PROVEEDORES}/${id}`, {
+            method: 'DELETE'
+        });
     }
 };
 

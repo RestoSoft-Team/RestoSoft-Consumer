@@ -1,6 +1,8 @@
-// inventario.js
+
 
 import api from '../consumo/ApiInventario2.js';
+
+let productosExportar = [];
 
 // ─── HELPERS ROBUSTOS ─────────────────────────────────────────────────
 function resolverTexto(valor) {
@@ -267,7 +269,7 @@ async function cargarInventario() {
                             ${desc ? `<p>${desc}</p>` : `<p class="empty-desc">Sin descripción registrada.</p>`}
                         </div>
                         <div class="detail-actions">
-                            <button class="btn-edit" onclick="event.stopPropagation(); window.location.href='insumos-editar.html?id=${p.id}'">
+                            <button class="btn-edit" onclick="event.stopPropagation(); window.location.href='producto-editar.html?id=${p.id}'">
                                 <i class="fa-regular fa-pen-to-square"></i> Editar
                             </button>
                             <button class="btn-delete" onclick="event.stopPropagation(); window.abrirConfirmacion(${p.id}, '${nombreEscape}')">
@@ -281,6 +283,7 @@ async function cargarInventario() {
 
         actualizarEstadisticas(productos);
         actualizarPanelAlertas(productos);
+        productosExportar = productos;
 
         const afectados = productos.filter(p => {
             const sm = getStockMin(p);
@@ -388,7 +391,68 @@ document.getElementById('filtroEstado')?.addEventListener('change', aplicarFiltr
 // ─── ACCIONES RÁPIDAS ─────────────────────────────────────────────────
 document.querySelector('[data-accion="entrada"]')?.addEventListener('click', () => window.showNotification('Funcionalidad de entrada próximamente'));
 document.querySelector('[data-accion="salida"]')?.addEventListener('click', () => window.showNotification('Funcionalidad de salida próximamente'));
-document.querySelector('[data-accion="exportar"]')?.addEventListener('click', () => window.showNotification('Exportando inventario...'));
+// ══════════════════════════════════════════════════════════════
+// EXPORTAR A EXCEL REAL (USA SHEETJS)
+// ══════════════════════════════════════════════════════════════
+document.querySelector('[data-accion="exportar"]')?.addEventListener('click', () => {
+    if (typeof XLSX === 'undefined') {
+        window.showNotification('Error de librería', 'No se pudo cargar la herramienta de Excel. Recarga la página.', 'error');
+        return;
+    }
 
+    if (!productosExportar.length) {
+        window.showNotification('Sin datos', 'No hay productos para exportar.', 'error');
+        return;
+    }
+
+    // 1. Mapear los datos a un array de objetos planos (como en proveedores.js)
+    const datos = productosExportar.map(p => {
+        const stock = getStock(p);
+        const stockMin = getStockMin(p) ?? '—';
+        
+        let estadoTexto = 'Disponible';
+        if (Number(stock) <= 0) estadoTexto = 'Agotado';
+        else if (stockMin !== '—' && Number(stock) <= Number(stockMin)) estadoTexto = 'Stock Bajo';
+
+        return {
+            'ID':               p.id,
+            'Nombre':           p.nombre || '',
+            'Categoría':        getCategoria(p),
+            'Unidad de Medida': getUnidad(p),
+            'Stock Actual':     stock,
+            'Stock Mínimo':     stockMin,
+            'Costo Unitario':   getCosto(p),
+            'Estado':           estadoTexto,
+            'Proveedor':        getProveedor(p),
+            'Fecha Vencimiento': p.fechaVencimiento || 'Sin fecha'
+        };
+    });
+
+    // 2. Crear el libro y la hoja de Excel
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(datos);
+
+    // 3. Ajustar el ancho de las columnas para que se vea bonito
+    ws['!cols'] = [
+        { wch: 6 },  // ID
+        { wch: 22 }, // Nombre
+        { wch: 16 }, // Categoría
+        { wch: 16 }, // Unidad
+        { wch: 14 }, // Stock Actual
+        { wch: 14 }, // Stock Mínimo
+        { wch: 16 }, // Costo
+        { wch: 14 }, // Estado
+        { wch: 22 }, // Proveedor
+        { wch: 18 }  // Fecha
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+
+    // 4. Generar y descargar el archivo .xlsx (EXTENSIÓN REAL)
+    const fecha = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `Inventario_RestSoft_${fecha}.xlsx`);
+
+    window.showNotification('¡Exportación exitosa!', `Se exportaron ${datos.length} productos a Excel correctamente.`);
+});
 // ─── INICIALIZACIÓN ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', cargarInventario);

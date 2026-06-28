@@ -185,8 +185,7 @@
             resize: vertical;
         }
 
-        .form-control.is-invalid,
-        .form-select.is-invalid {
+        .form-control.is-invalid {
             border: 1.5px solid var(--danger) !important;
             background: #fff5f6;
         }
@@ -198,8 +197,7 @@
             display: none;
         }
 
-        .form-control.is-invalid+.invalid-feedback,
-        .form-select.is-invalid+.invalid-feedback {
+        .form-control.is-invalid + .invalid-feedback {
             display: block;
         }
 
@@ -299,26 +297,180 @@
             position: fixed;
             top: 30px;
             right: 30px;
+            width: 380px;
             background: white;
-            border-left: 5px solid var(--success);
+            border-left: 6px solid var(--success);
             border-radius: 22px;
-            padding: 18px 22px;
+            padding: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            transform: translateX(420px);
-            transition: .3s;
             z-index: 9999;
-            max-width: 360px;
+            transform: translateX(420px);
+            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
-        .notification.error {
+        .notification.is-error {
             border-left-color: var(--danger);
         }
 
-        @media(max-width:992px) {
+        .notification-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: rgba(61, 139, 92, .10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification.is-error .notification-icon {
+            background: rgba(187, 58, 75, .10);
+            color: var(--danger);
+        }
+
+        .notification h6 {
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* ── SEARCHABLE SELECT ── */
+        .ss-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .ss-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .ss-input {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: 1.5px solid transparent;
+            border-radius: 16px;
+            padding: 14px 42px 14px 18px;
+            font-size: 14px;
+            color: var(--dark);
+            outline: none;
+            transition: .3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ss-input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .ss-input::placeholder {
+            color: #b0b8c4;
+        }
+
+        .ss-arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 13px;
+            pointer-events: none;
+            transition: .25s;
+        }
+
+        .ss-arrow.open {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .ss-list {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(38, 47, 60, .15);
+            border: 1px solid #eef0f4;
+            z-index: 500;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 6px;
+            display: none;
+        }
+
+        .ss-list.open {
+            display: block;
+        }
+
+        .ss-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .ss-list::-webkit-scrollbar-thumb {
+            background: #d0d5dc;
+            border-radius: 4px;
+        }
+
+        .ss-option {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            transition: .15s;
+        }
+
+        .ss-option:hover,
+        .ss-option.hl {
+            background: #f5f6f9;
+        }
+
+        .ss-option.selected {
+            background: rgba(107, 30, 40, .08);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .ss-option .ss-opt-sub {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .ss-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .ss-wrapper.is-invalid .ss-input {
+            border-color: var(--danger) !important;
+            background: #fff5f6;
+        }
+
+        .ss-wrapper.is-invalid~.invalid-feedback {
+            display: block !important;
+        }
+
+        @media (max-width: 992px) {
             .sidebar {
                 width: 90px;
             }
@@ -332,7 +484,7 @@
             }
         }
 
-        @media(max-width:768px) {
+        @media (max-width: 768px) {
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
@@ -399,20 +551,14 @@
                         </div>
 
                         <div class="col-lg-6">
-                            <label for="productoCategoria" class="form-label">Categoría <span
-                                    class="text-danger">*</span></label>
-                            <select id="productoCategoria" class="form-select">
-                                <option value="">Cargando categorías...</option>
-                            </select>
+                            <label class="form-label">Categoría <span class="text-danger">*</span></label>
+                            <div id="productoCategoria"></div>
                             <div class="invalid-feedback">Selecciona una categoría.</div>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label" for="idProveedor">Proveedor <span
-                                    class="text-danger">*</span></label>
-                            <select id="idProveedor" class="form-select">
-                                <option value="">Cargando proveedores...</option>
-                            </select>
+                            <label class="form-label">Proveedor <span class="text-danger">*</span></label>
+                            <div id="idProveedor"></div>
                             <div class="invalid-feedback">Selecciona un proveedor.</div>
                         </div>
 
@@ -525,13 +671,18 @@
         </div>
     </div>
 
-    <div id="notification" class="notification">
-        <i class="fa-solid fa-circle-check text-success me-2"></i>
-        <span id="notifMsg">Insumo registrado correctamente</span>
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fa-solid fa-check" id="notificationIcon"></i>
+        </div>
+        <div>
+            <h6 id="notificationTitle">Operación Realizada</h6>
+            <p id="notificationText">El insumo se ha guardado correctamente.</p>
+        </div>
     </div>
 
-   <script type="module" src="/js/consumo/ApiInventario.js"></script>
-    <script type="module" src="/js/datos/crearInsumo.js"></script>  
+    <script type="module" src="/js/datos/crearInsumo.js"></script>
+
 </body>
 
 </html>

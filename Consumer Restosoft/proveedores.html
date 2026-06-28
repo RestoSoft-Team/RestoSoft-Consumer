@@ -7,12 +7,9 @@
     <title>RestSoft — Proveedores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <style>
-        /* =========================================================
-           ROOT & GLOBAL
-        ========================================================== */
         :root {
             --background: #fbfcfb;
             --primary: #6b1e28;
@@ -58,9 +55,7 @@
             display: flex;
         }
 
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
+        /* ── SIDEBAR ── */
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -158,9 +153,7 @@
             margin: 0;
         }
 
-        /* =========================================================
-           MAIN & TOPBAR
-        ========================================================== */
+        /* ── MAIN ── */
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
@@ -209,7 +202,6 @@
         .search-box input:focus {
             outline: none;
             border: 1px solid var(--primary);
-            box-shadow: none;
             background: white;
         }
 
@@ -249,9 +241,7 @@
             font-size: 13px;
         }
 
-        /* =========================================================
-           BUTTONS & CARDS
-        ========================================================== */
+        /* ── BUTTONS ── */
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -259,6 +249,7 @@
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-premium:hover {
@@ -274,6 +265,7 @@
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-outline-premium:hover {
@@ -281,6 +273,7 @@
             color: white;
         }
 
+        /* ── CARDS ── */
         .card-premium {
             background: white;
             border-radius: 28px;
@@ -294,9 +287,7 @@
             transform: translateY(-5px);
         }
 
-        /* =========================================================
-           STATS
-        ========================================================== */
+        /* ── STATS ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -347,13 +338,7 @@
             color: var(--warning);
         }
 
-        /* =========================================================
-           FILTERS & INPUTS
-        ========================================================== */
-        .filters {
-            margin-bottom: 28px;
-        }
-
+        /* ── INPUTS ── */
         .input-premium {
             width: 100%;
             background: #f7f8fa;
@@ -367,13 +352,10 @@
         .input-premium:focus {
             outline: none;
             border: 1px solid var(--primary);
-            box-shadow: none;
             background: white;
         }
 
-        /* =========================================================
-           TABLE
-        ========================================================== */
+        /* ── TABLE ── */
         .table-responsive {
             overflow-x: auto;
         }
@@ -447,23 +429,35 @@
             font-size: 12px;
         }
 
+        /* ── ACTION BUTTONS en la tabla ── */
         .action-btn {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             background: #f7f8fa;
+            cursor: pointer;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .action-btn:hover {
-            background: var(--primary);
-            color: white;
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           FORM & NOTIFICATION
-        ========================================================== */
+        .action-btn.edit:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ── FORM ── */
         .form-section {
             margin-top: 30px;
         }
@@ -482,52 +476,250 @@
             color: var(--gray);
         }
 
+        /* ── NOTIFICATION ── */
         .notification {
             position: fixed;
+            top: 30px;
             right: 30px;
-            bottom: 30px;
-            width: 360px;
+            width: 380px;
             background: white;
+            border-left: 6px solid var(--success);
             border-radius: 22px;
             padding: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            border-left: 5px solid var(--success);
             display: flex;
-            gap: 16px;
-            transform: translateX(420px);
-            transition: .3s;
+            align-items: flex-start;
+            gap: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
             z-index: 99999;
+            transform: translateX(420px);
+            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.is-error {
+            border-left-color: var(--danger);
+        }
+
         .notification-icon {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             border-radius: 18px;
-            background: rgba(61, 139, 92, .12);
-            color: var(--success);
+            background: rgba(61, 139, 92, .10);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--success);
             font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification.is-error .notification-icon {
+            background: rgba(187, 58, 75, .10);
+            color: var(--danger);
         }
 
         .notification h6 {
-            font-weight: 700;
             margin-bottom: 6px;
+            font-weight: 700;
         }
 
         .notification p {
             margin: 0;
             color: var(--gray);
             font-size: 14px;
+        }
+
+        /* ── MODAL CONFIRMACIÓN ELIMINAR ── */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 40px 36px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(38, 47, 60, .22);
+            transform: scale(.88) translateY(24px);
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .confirm-overlay.show .confirm-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 28px;
+            background: rgba(187, 58, 75, .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .confirm-icon-wrap i {
+            font-size: 32px;
+            color: var(--danger);
+        }
+
+        .confirm-modal h4 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .confirm-modal p {
+            color: var(--gray);
+            font-size: 15px;
+            margin-bottom: 8px;
             line-height: 1.6;
         }
 
-        /* RESPONSIVE */
+        .confirm-product-name {
+            display: inline-block;
+            background: #f7f8fa;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-confirm-cancel {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid #e2e6ea;
+            background: white;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-confirm-cancel:hover {
+            background: #f4f6f8;
+        }
+
+        .btn-confirm-delete {
+            flex: 1.4;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: var(--danger);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm-delete:hover {
+            background: #a8303f;
+            transform: translateY(-1px);
+        }
+
+        /* ── MODAL EDITAR ── */
+        .edit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+        }
+
+        .edit-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .edit-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 36px;
+            max-width: 560px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(38, 47, 60, .22);
+            transform: scale(.88) translateY(24px);
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .edit-overlay.show .edit-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .edit-modal-header h4 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .btn-close-modal {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 12px;
+            background: #f7f8fa;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close-modal:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ── RESPONSIVE ── */
         @media(max-width:992px) {
             .sidebar {
                 width: 96px;
@@ -592,7 +784,7 @@
             .notification {
                 width: calc(100% - 40px);
                 right: 20px;
-                bottom: 20px;
+                top: 20px;
             }
 
             .mobile-menu-btn {
@@ -606,6 +798,7 @@
                 font-size: 20px;
                 align-items: center;
                 justify-content: center;
+                cursor: pointer;
             }
         }
     </style>
@@ -613,11 +806,82 @@
 
 <body>
 
+    <!-- NOTIFICACIÓN DINÁMICA -->
     <div class="notification" id="notification">
-        <div class="notification-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="notification-icon">
+            <i class="fa-solid fa-circle-check" id="notificationIcon"></i>
+        </div>
         <div>
-            <h6>Proveedor registrado</h6>
-            <p>El nuevo proveedor fue agregado correctamente al sistema.</p>
+            <h6 id="notificationTitle">Operación realizada</h6>
+            <p id="notificationText">El sistema se ha actualizado correctamente.</p>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR ELIMINACIÓN -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-icon-wrap"><i class="fa-solid fa-trash-can"></i></div>
+            <h4>¿Eliminar proveedor?</h4>
+            <p>Esta acción es permanente y no se puede deshacer. Se eliminará:</p>
+            <div class="confirm-product-name" id="confirmNombre">—</div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="btnCancelDelete">Cancelar</button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR PROVEEDOR -->
+    <div class="edit-overlay" id="editOverlay">
+        <div class="edit-modal">
+            <div class="edit-modal-header">
+                <h4><i class="fa-solid fa-pen-to-square me-2" style="color:var(--primary)"></i>Editar Proveedor</h4>
+                <button class="btn-close-modal" id="btnCloseEdit">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="form-editar">
+                <input type="hidden" id="edit-id" />
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Nombre</label>
+                        <input class="input-premium" id="edit-nombre" type="text" required />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Correo
+                            electrónico</label>
+                        <input class="input-premium" id="edit-email" type="email" required />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Teléfono</label>
+                        <input class="input-premium" id="edit-telefono" type="text" required />
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Dirección</label>
+                        <input class="input-premium" id="edit-direccion" type="text" required />
+                    </div>
+                    <div class="col-12">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Empresa
+                            asociada</label>
+                        <select class="input-premium" id="edit-empresa" required>
+                            <option value="" disabled selected>Seleccione una empresa...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button type="button" class="btn-outline-premium" id="btnCancelEdit">Cancelar</button>
+                    <button type="submit" class="btn-premium">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -647,7 +911,9 @@
 
         <main class="main">
             <div class="topbar">
-                <button id="menuToggle" class="mobile-menu-btn d-md-none"><i class="fa-solid fa-bars"></i></button>
+                <button id="menuToggle" class="mobile-menu-btn d-md-none">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 <div class="page-title">
                     <h1>Gestión de Proveedores</h1>
                     <p>Administra distribuidores, abastecimiento y relaciones comerciales.</p>
@@ -655,7 +921,7 @@
                 <div class="topbar-actions">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input placeholder="Buscar proveedores..." type="text" />
+                        <input placeholder="Buscar proveedores..." type="text" id="input-busqueda" />
                     </div>
                     <div class="profile">
                         <img alt="" src="https://i.pravatar.cc/100" />
@@ -696,7 +962,9 @@
                         <h4 class="fw-bold mb-1">Lista de Proveedores</h4>
                         <p class="text-secondary mb-0">Empresas registradas para abastecimiento.</p>
                     </div>
-                    <button class="btn-outline-premium"><i class="fa-solid fa-file-export me-2"></i> Exportar</button>
+                    <button class="btn-outline-premium" id="btn-exportar">
+                        <i class="fa-solid fa-file-excel me-2"></i> Exportar Excel
+                    </button>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -707,11 +975,10 @@
                                 <th>Teléfono</th>
                                 <th>Dirección</th>
                                 <th>Empresa</th>
-                                <th></th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-proveedores">
-                        </tbody>
+                        <tbody id="tabla-proveedores"></tbody>
                     </table>
                 </div>
             </div>
@@ -744,19 +1011,22 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="d-flex justify-content-end gap-3 mt-4">
                         <button type="button" class="btn-outline-premium"
-                            onclick="document.getElementById('form-proveedor').reset()">Cancelar</button>
-                        <button type="submit" class="btn-premium"><i class="fa-solid fa-plus me-2"></i> Guardar
-                            Proveedor</button>
+                            onclick="document.getElementById('form-proveedor').reset()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-premium">
+                            <i class="fa-solid fa-plus me-2"></i> Guardar Proveedor
+                        </button>
                     </div>
                 </form>
             </div>
         </main>
     </div>
 
-    <script type="module" src="js/consumo/apiProveedores.js"></script>
+    <!-- SheetJS para exportar Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script type="module" src="js/datos/proveedores.js"></script>
 </body>
 

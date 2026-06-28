@@ -1,5 +1,3 @@
-// /js/consumo/ApiInventario.js
-
 const API_BASE = "http://localhost:8080/api";
 
 const ApiInventario = {
@@ -16,12 +14,17 @@ const ApiInventario = {
     },
 
     crearInsumo: async (payload) => {
+        console.log('Payload enviado:', JSON.stringify(payload, null, 2));
         const response = await fetch(`${API_BASE}/insumos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if (!response.ok) throw new Error('Error al crear insumo');
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error('Error del servidor:', response.status, errorBody);
+            throw new Error('Error al crear insumo');
+        }
         return response;
     }
 };
