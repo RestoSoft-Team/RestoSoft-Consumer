@@ -3,20 +3,6 @@ let entradasRegistradas = [];
 let insumos = [];
 let proveedores = [];
 
-// ── SIDEBAR MÓVIL ──────────────────────────────────────────
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('sidebarOverlay');
-
-menuToggle?.addEventListener('click', () => {
-    sidebar?.classList.toggle('open');
-    overlay?.classList.toggle('show');
-});
-overlay?.addEventListener('click', () => {
-    sidebar?.classList.remove('open');
-    overlay?.classList.remove('show');
-});
-
 // ── NOTIFICACIONES ────────────────────────────────────────
 function mostrarNotificacion(titulo, texto, esError = false) {
     const notif = document.getElementById('notification');
@@ -29,7 +15,19 @@ function mostrarNotificacion(titulo, texto, esError = false) {
     setTimeout(() => notif.classList.remove('show'), 3500);
 }
 
-// ── OBTENER STOCK DE UN INSUMO DEL ARRAY LOCAL ───────────
+// ── HELPERS FORMATO FECHA ─────────────────────────────────
+function parseFecha(raw) {
+    if (raw == null) return '—';
+    let fechaStr = raw;
+    if (Array.isArray(raw)) fechaStr = raw[0];
+    if (typeof raw === 'number') fechaStr = new Date(raw).toISOString();
+    try {
+        return new Date(fechaStr).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch (err) {
+        return String(raw).substring(0, 10);
+    }
+}
+
 // ── OBTENER STOCK DE UN INSUMO DEL ARRAY LOCAL ───────────
 function obtenerStockInsumo(insumoId) {
     const id = parseInt(insumoId);
@@ -57,12 +55,8 @@ function onInsumoChange() {
     document.getElementById('inputStockAnterior').value = stockActual;
     document.getElementById('spStockAnterior').textContent = stockActual;
 
-    // Mostrar el preview
     preview.style.display = 'flex';
-
     recalcularStockNuevo();
-
-    console.log('[Stock] Insumo #' + insumoId + ' → stockActual: ' + stockActual);
 }
 
 // ── RECALCULAR STOCK NUEVO ───────────────────────────────
@@ -85,7 +79,6 @@ function calcularTotal() {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
-    // También recalcular stock nuevo si cambia la cantidad
     recalcularStockNuevo();
 }
 
@@ -102,11 +95,6 @@ async function cargarInsumos() {
             sel.appendChild(op);
         });
         document.getElementById('statTotalInsumos').textContent = insumos.length;
-
-        // Log para verificar qué campo de stock trae cada insumo
-        if (insumos.length > 0) {
-            console.log('[DEBUG] Primer insumo recibido:', JSON.stringify(insumos[0], null, 2));
-        }
     } catch (error) {
         console.error('[Insumos] ' + error.message);
         sel.innerHTML = '<option value="">Error al cargar insumos</option>';
@@ -142,59 +130,95 @@ async function cargarEntradas() {
         console.error('[Entradas] ' + error.message);
         entradasRegistradas = [];
     }
-    renderTabla(entradasRegistradas);
+    renderizarVista(entradasRegistradas);
     actualizarResumen(entradasRegistradas);
     actualizarTimeline(entradasRegistradas);
 }
 
-// ── RENDERIZAR TABLA ──────────────────────────────────────
-function renderTabla(lista) {
+// ── GENERADORES DE HTML (TABLA VS CARDS) ──────────────────
+function generarFilaHTML(e) {
+    const insumoNombre = e.nombreInsumo || 'Insumo #—';
+    const proveedorNombre = e.proveedorNombre || 'Proveedor';
+    const inicial = proveedorNombre !== 'Proveedor' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
+    const stockAnt = e.stockAnterior != null ? e.stockAnterior : '—';
+    const stockNue = e.stockNuevo != null ? e.stockNuevo : '—';
+    const fechaFormato = parseFecha(e.fechaMovimiento);
+
+    return '<tr>' +
+        '<td data-label="Insumo"><div style="font-weight:700;">' + insumoNombre + '</div></td>' +
+        '<td data-label="Proveedor"><div class="supplier"><div class="supplier-avatar">' + inicial + '</div><div><h6>' + proveedorNombre + '</h6><span>Proveedor</span></div></div></td>' +
+        '<td data-label="Stock Ant.">' + stockAnt + '</td>' +
+        '<td data-label="Cantidad">+' + (e.cantidad || '0') + '</td>' +
+        '<td data-label="Stock Nuevo"><strong style="color:var(--success);">' + stockNue + '</strong></td>' +
+        '<td data-label="Fecha">' + fechaFormato + '</td>' +
+        '</tr>';
+}
+
+function generarCardHTML(e) {
+    const insumoNombre = e.nombreInsumo || 'Insumo #—';
+    const proveedorNombre = e.proveedorNombre || 'Proveedor';
+    const inicial = proveedorNombre !== 'Proveedor' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
+    const stockAnt = e.stockAnterior != null ? e.stockAnterior : '—';
+    const stockNue = e.stockNuevo != null ? e.stockNuevo : '—';
+    const fechaFormato = parseFecha(e.fechaMovimiento);
+
+    return `
+    <div style="background:white; border-radius:16px; margin-bottom:15px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05); border:1px solid #eef0f4;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #f0f2f5; padding-bottom:10px;">
+            <h6 style="margin:0; font-weight:700; font-size:15px; color:var(--dark);">${insumoNombre}</h6>
+            <span style="font-size:12px; color:var(--gray); font-weight:600;">${fechaFormato}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+            <div style="width:35px; height:35px; border-radius:10px; background:var(--dark); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">${inicial}</div>
+            <span style="font-size:13px; color:var(--dark-light); font-weight:600;">${proveedorNombre}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; background:#f7f9fb; padding:12px; border-radius:10px;">
+            <div style="text-align:center; flex:1;">
+                <label style="display:block; font-size:11px; color:var(--gray); font-weight:600; margin-bottom:4px;">ANTERIOR</label>
+                <span style="font-weight:700; font-size:15px; color:var(--dark);">${stockAnt}</span>
+            </div>
+            <div style="text-align:center; flex:1;">
+                <label style="display:block; font-size:11px; color:var(--gray); font-weight:600; margin-bottom:4px;">ENTRADA</label>
+                <span style="font-weight:700; font-size:15px; color:var(--success);">+${e.cantidad || '0'}</span>
+            </div>
+            <div style="text-align:center; flex:1;">
+                <label style="display:block; font-size:11px; color:var(--gray); font-weight:600; margin-bottom:4px;">NUEVO</label>
+                <span style="font-weight:700; font-size:15px; color:var(--primary);">${stockNue}</span>
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── RENDERIZADO DINÁMICO (RESPONSIVE) ─────────────────────
+function renderizarVista(lista) {
     const tbody = document.getElementById('tablaEntradas');
+    const table = tbody.closest('table');
+    const thead = table ? table.querySelector('thead') : null;
+
     if (!lista || lista.length === 0) {
+        if (thead) thead.style.display = 'none';
         tbody.innerHTML = '<tr><td colspan="6" class="text-center text-secondary py-4"><i class="fa-solid fa-inbox me-2"></i>No hay entradas registradas aún.</td></tr>';
         return;
     }
-    tbody.innerHTML = lista.map(e => {
-        const insumoNombre = e.nombreInsumo || 'Insumo #—';
-        const proveedorNombre = e.proveedorNombre || 'Proveedor';
-        const costo = e.costoUnitario;
-        const costoUnit = costo != null ? '$' + Number(costo).toLocaleString('es-CO') : '—';
-        const stockAnt = e.stockAnterior != null ? e.stockAnterior : '—';
-        const stockNue = e.stockNuevo != null ? e.stockNuevo : '—';
-        const inicial = proveedorNombre !== 'Proveedor' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
 
-        // Parsear fecha robusto: Instant puede venir como string, array o número
-        let fechaFormato = '—';
-        const raw = e.fechaMovimiento;
-        if (raw != null) {
-            let fechaStr = raw;
-            // Si viene como array ["2026-06-24T17:00:44Z"], tomar el primer elemento
-            if (Array.isArray(raw)) {
-                fechaStr = raw[0];
-            }
-            // Si viene como número (timestamp en milisegundos)
-            if (typeof raw === 'number') {
-                fechaStr = new Date(raw).toISOString();
-            }
-            try {
-                fechaFormato = new Date(fechaStr).toLocaleDateString('es-CO', {
-                    day: '2-digit', month: 'short', year: 'numeric'
-                });
-            } catch (err) {
-                fechaFormato = String(raw).substring(0, 10);
-            }
-        }
-
-        return '<tr>' +
-            '<td data-label="Insumo"><div style="font-weight:700;">' + insumoNombre + '</div></td>' +
-            '<td data-label="Proveedor"><div class="supplier"><div class="supplier-avatar">' + inicial + '</div><div><h6>' + proveedorNombre + '</h6><span>Proveedor</span></div></div></td>' +
-            '<td data-label="Stock Ant.">' + stockAnt + '</td>' +
-            '<td data-label="Cantidad">+' + (e.cantidad || '0') + '</td>' +
-            '<td data-label="Stock Nuevo"><strong style="color:var(--success);">' + stockNue + '</strong></td>' +
-            '<td data-label="Fecha">' + fechaFormato + '</td>' +
-            '</tr>';
-    }).join('');
+    if (window.innerWidth <= 768) {
+        if (thead) thead.style.display = 'none';
+        tbody.innerHTML = lista.map(e => generarCardHTML(e)).join('');
+    } else {
+        if (thead) thead.style.display = 'table-header-group';
+        tbody.innerHTML = lista.map(e => generarFilaHTML(e)).join('');
+    }
 }
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (entradasRegistradas.length > 0 || document.getElementById('tablaEntradas').innerHTML !== '') {
+            renderizarVista(entradasRegistradas);
+        }
+    }, 250);
+});
 
 // ── ACTUALIZAR RESUMEN ────────────────────────────────────
 function actualizarResumen(lista) {
@@ -222,20 +246,7 @@ function actualizarTimeline(lista) {
     timeline.innerHTML = lista.slice(0, 5).map(e => {
         const insumoNombre = e.nombreInsumo || 'Insumo';
         const proveedorNombre = e.proveedorNombre || 'Proveedor';
-
-        let fechaRelativa = '';
-        const raw = e.fechaMovimiento;
-        if (raw != null) {
-            let fechaStr = raw;
-            if (Array.isArray(raw)) fechaStr = raw[0];
-            if (typeof raw === 'number') fechaStr = new Date(raw).toISOString();
-            try {
-                fechaRelativa = new Date(fechaStr).toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
-            } catch (err) {
-                fechaRelativa = String(raw).substring(0, 10);
-            }
-        }
-
+        const fechaRelativa = parseFecha(e.fechaMovimiento);
         const stockNue = e.stockNuevo != null ? e.stockNuevo : '';
         return '<div class="timeline-item"><h6>' + insumoNombre + ' • +' + (e.cantidad || 0) + ' uds' + (stockNue ? ' → ' + stockNue : '') + '</h6><p>' + proveedorNombre + ' • ' + fechaRelativa + '</p></div>';
     }).join('');
@@ -250,7 +261,6 @@ async function registrarEntrada() {
     const fecha = document.getElementById('inputFecha').value;
     const stockAnterior = document.getElementById('inputStockAnterior').value;
 
-    // Validaciones
     let valido = true;
     [
         ['selectInsumo', !insumoId],
@@ -276,7 +286,6 @@ async function registrarEntrada() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Registrando...';
 
-    // Payload sincronizado con tu DTO de Java (MovimientoInventarioDTO)
     const payload = {
         idInsumo: parseInt(insumoId),
         idEmpresa: 1,
@@ -286,12 +295,12 @@ async function registrarEntrada() {
         stockNuevo: stockNuevoNum,
         observacion: 'Entrada de mercancía',
         tipoMovimiento: 'ENTRADA',
-        fechaMovimiento: new Date(fecha + 'T12:00:00Z').toISOString()    };
+        fechaMovimiento: new Date(fecha + 'T12:00:00Z').toISOString()
+    };
 
     try {
         const nuevaEntrada = await EntradasConsumer.guardarEntrada(payload);
 
-        // Texto para mostrar sin recargar
         const insumoSel = document.getElementById('selectInsumo');
         const provSel = document.getElementById('selectProveedor');
         nuevaEntrada.insumoNombre = insumoSel.options[insumoSel.selectedIndex].text;
@@ -301,7 +310,6 @@ async function registrarEntrada() {
         nuevaEntrada.stock_nuevo = payload.stockNuevo;
         nuevaEntrada.fecha_movimiento = fecha;
 
-        // Actualizar el stock local del insumo para futuras entradas
         const idxInsumo = insumos.findIndex(i => i.id === parseInt(insumoId));
         if (idxInsumo !== -1) {
             insumos[idxInsumo].stock = stockNuevoNum;
@@ -310,13 +318,12 @@ async function registrarEntrada() {
         }
 
         entradasRegistradas.unshift(nuevaEntrada);
-        renderTabla(entradasRegistradas);
+        renderizarVista(entradasRegistradas);
         actualizarResumen(entradasRegistradas);
         actualizarTimeline(entradasRegistradas);
 
         mostrarNotificacion('Éxito', 'Entrada registrada: +' + cantNum + ' uds (Stock: ' + stockAntNum + ' → ' + stockNuevoNum + ')');
 
-        // Limpiar formulario
         document.getElementById('selectInsumo').value = '';
         document.getElementById('selectProveedor').value = '';
         document.getElementById('inputCantidad').value = '';
@@ -325,6 +332,7 @@ async function registrarEntrada() {
         document.getElementById('inputStockNuevo').value = '';
         document.getElementById('inputFecha').value = new Date().toISOString().split('T')[0];
         document.getElementById('totalCosto').textContent = '$0.00';
+        document.getElementById('stockPreview').style.display = 'none';
     } catch (err) {
         mostrarNotificacion('Error al registrar', err.message, true);
     } finally {
@@ -338,13 +346,13 @@ async function registrarEntrada() {
 // ── BÚSQUEDA EN TIEMPO REAL ───────────────────────────────
 document.getElementById('inputBusquedaEntradas').addEventListener('input', function () {
     const q = this.value.toLowerCase().trim();
-    if (!q) { renderTabla(entradasRegistradas); return; }
+    if (!q) { renderizarVista(entradasRegistradas); return; }
     const filtradas = entradasRegistradas.filter(e => {
         const nombre = (e.insumoNombre || e.nombreInsumo || e.insumo?.nombre || '').toLowerCase();
         const proveedor = (e.proveedorNombre || e.nombreProveedor || e.proveedor?.nombre || '').toLowerCase();
         return nombre.includes(q) || proveedor.includes(q);
     });
-    renderTabla(filtradas);
+    renderizarVista(filtradas);
 });
 
 // ── EXPORTAR A EXCEL REAL (USA SHEETJS) ──────────────────
@@ -359,61 +367,33 @@ function exportarCSV() {
         return;
     }
 
-    // 1. Mapear los datos a un array de objetos planos
     const datos = entradasRegistradas.map(e => {
-        // Formatear fecha de forma robusta
-        let fechaFormato = '—';
-        const raw = e.fechaMovimiento || e.fechaEntrada || e.fecha_movimiento || e.fecha;
-        if (raw != null) {
-            let fechaStr = raw;
-            if (Array.isArray(raw)) fechaStr = raw[0];
-            if (typeof raw === 'number') fechaStr = new Date(raw).toISOString();
-            try {
-                fechaFormato = new Date(fechaStr).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-            } catch (err) {
-                fechaFormato = String(raw).substring(0, 10);
-            }
-        }
-
+        const fechaFormato = parseFecha(e.fechaMovimiento || e.fechaEntrada || e.fecha_movimiento || e.fecha);
         return {
-            'Insumo':         e.insumoNombre || e.nombreInsumo || e.insumo?.nombre || '—',
-            'Proveedor':      e.proveedorNombre || e.nombreProveedor || e.proveedor?.nombre || '—',
+            'Insumo': e.insumoNombre || e.nombreInsumo || e.insumo?.nombre || '—',
+            'Proveedor': e.proveedorNombre || e.nombreProveedor || e.proveedor?.nombre || '—',
             'Stock Anterior': e.stock_anterior ?? e.stockAnterior ?? '—',
-            'Cantidad':       e.cantidad || 0,
-            'Stock Nuevo':    e.stock_nuevo ?? e.stockNuevo ?? '—',
+            'Cantidad': e.cantidad || 0,
+            'Stock Nuevo': e.stock_nuevo ?? e.stockNuevo ?? '—',
             'Costo Unitario': e.costoUnitario ?? 0,
-            'Fecha':          fechaFormato
+            'Fecha': fechaFormato
         };
     });
 
-    // 2. Crear el libro y la hoja de Excel
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(datos);
-
-    // 3. Ajustar el ancho de las columnas
     ws['!cols'] = [
-        { wch: 22 }, // Insumo
-        { wch: 22 }, // Proveedor
-        { wch: 16 }, // Stock Anterior
-        { wch: 12 }, // Cantidad
-        { wch: 14 }, // Stock Nuevo
-        { wch: 18 }, // Costo Unitario
-        { wch: 20 }  // Fecha
+        { wch: 22 }, { wch: 22 }, { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 18 }, { wch: 20 }
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, 'Entradas');
-
-    // 4. Generar y descargar el archivo .xlsx real
     const fecha = new Date().toISOString().slice(0, 10);
     XLSX.writeFile(wb, `Entradas_Mercancia_${fecha}.xlsx`);
-
     mostrarNotificacion('¡Exportación exitosa!', `Se exportaron ${datos.length} registros a Excel correctamente.`);
 }
 
-// ── FECHA POR DEFECTO ─────────────────────────────────────
+// ── FECHA POR DEFECTO Y EVENTOS ───────────────────────────
 document.getElementById('inputFecha').value = new Date().toISOString().split('T')[0];
-
-// ── EVENTO: cambio de insumo → llenar stock anterior ─────
 document.getElementById('selectInsumo').addEventListener('change', onInsumoChange);
 
 // ── INICIALIZACIÓN ────────────────────────────────────────

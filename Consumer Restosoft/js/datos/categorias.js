@@ -269,14 +269,17 @@ async function cargarCategorias() {
 }
 
 // ── Sidebar responsive ────────────────────────────────────────
+// ── Sidebar responsive ────────────────────────────────────────
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.querySelector(".sidebar");
 const overlay = document.getElementById("sidebarOverlay");
 
-menuToggle?.addEventListener("click", () => {
+menuToggle?.addEventListener("click", (e) => {
+    e.stopPropagation(); // ESTO EVITA QUE EL CLIC SE PROPAGUE Y CANCELE LA APERTURA
     sidebar?.classList.toggle("open");
     overlay?.classList.toggle("show");
 });
+
 overlay?.addEventListener("click", () => {
     sidebar?.classList.remove("open");
     overlay?.classList.remove("show");

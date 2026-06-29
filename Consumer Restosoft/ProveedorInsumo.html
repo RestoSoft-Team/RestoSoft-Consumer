@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestSoft — Insumos por Proveedor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
+        :root {
+            --background: #fbfcfb;
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+            --dark: #262f3c;
+            --dark-light: #39485c;
+            --gray: #6f7782;
+            --success: #3d8b5c;
+            --warning: #d9a441;
+            --danger: #bb3a4b;
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--dark);
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
+        }
+
+        .brand-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            color: white;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand span {
+            color: #aab3be;
+            font-size: 13px;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            color: #dbe2ec;
+            font-weight: 500;
+            transition: .3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .07);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 22px;
+            text-align: center;
+        }
+
+        .main {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 34px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 300px;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px 14px 48px;
+            font-size: 14px;
+            transition: .3s;
+        }
+
+        .search-box input:focus {
+            border: 1px solid var(--primary);
+            outline: none;
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #99a3af;
+        }
+
+        .profile {
+            background: white;
+            border-radius: 20px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            object-fit: cover;
+        }
+
+        .profile h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .profile span {
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .btn-premium {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-premium:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline-premium {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+            cursor: pointer;
+        }
+
+        .btn-outline-premium:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .card-premium {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, .03);
+            transition: .3s;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-card h3 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .stat-card p {
+            color: var(--gray);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .stat-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .primary-soft {
+            background: rgba(107, 30, 40, .12);
+            color: var(--primary);
+        }
+
+        .success-soft {
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+        }
+
+        .warning-soft {
+            background: rgba(217, 164, 65, .12);
+            color: var(--warning);
+        }
+
+        .danger-soft {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        .filtros-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .filtro-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            padding: 10px 18px;
+            border-radius: 14px;
+            border: 2px solid #e8ebf0;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            outline: none;
+        }
+
+        .chip:hover {
+            border-color: var(--dark);
+            background: #f7f8fa;
+        }
+
+        .chip.active {
+            border-color: var(--primary);
+            background: rgba(107, 30, 40, .06);
+            color: var(--primary);
+        }
+
+        .chip-count {
+            background: #eef0f4;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 700;
+        }
+
+        .chip.active .chip-count {
+            background: rgba(107, 30, 40, .12);
+            color: var(--primary);
+        }
+
+        .relacion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 22px;
+        }
+
+        .relacion-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .relacion-card.is-active {
+            border: 2px solid var(--primary);
+            padding: 28px;
+        }
+
+        .relacion-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .insumo-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(107, 30, 40, .08);
+            color: var(--primary);
+        }
+
+        .relacion-card h4 {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .relacion-card .sub-text {
+            color: var(--gray);
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .proveedor-badge {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #f7f8fa;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #eef0f4;
+            transition: .2s;
+        }
+
+        .proveedor-badge:hover {
+            background: #f0f2f6;
+            border-color: #dde0e8;
+        }
+
+        .proveedor-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .proveedor-badge h6 {
+            margin: 0 0 2px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .proveedor-badge span {
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .prov-del-btn {
+            margin-left: auto;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .relacion-card.is-active .prov-del-btn {
+            display: flex;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .meta-item {
+            background: #fafbfc;
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .meta-item label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--gray);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .meta-item span {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .badge-soft {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-activo {
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+        }
+
+        .badge-inactivo {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        .badge-stock-bajo {
+            background: rgba(217, 164, 65, .15);
+            color: var(--warning);
+        }
+
+        .no-proveedor {
+            background: rgba(187, 58, 75, .06);
+            border: 1px dashed rgba(187, 58, 75, .3);
+            border-radius: 18px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: var(--danger);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #dde0e8;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h4 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .card-footer-actions {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eef0f4;
+        }
+
+        .relacion-card.is-active .card-footer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-add-prov {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: .2s;
+        }
+
+        .btn-add-prov:hover {
+            background: var(--primary-light);
+        }
+
+        /* ── PROVEEDORES: VER MÁS / OCULTAR ── */
+        .prov-show-more {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(107, 30, 40, .04);
+            border: 1px dashed rgba(107, 30, 40, .2);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .prov-show-more:hover {
+            background: rgba(107, 30, 40, .09);
+            border-color: rgba(107, 30, 40, .4);
+        }
+
+        .prov-show-more i {
+            font-size: 11px;
+            transition: transform .3s;
+        }
+
+        .prov-show-more.is-open i {
+            transform: rotate(180deg);
+        }
+
+        .prov-hidden-list {
+            display: none;
+        }
+
+        .prov-hidden-list.is-open {
+            display: block;
+        }
+
+        /* ── NOTIFICACIÓN ── */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 380px;
+            background: white;
+            border-left: 6px solid var(--success);
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
+            z-index: 99999;
+            transform: translateX(420px);
+            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.is-error {
+            border-left-color: var(--danger);
+        }
+
+        .notification-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: rgba(61, 139, 92, .10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification.is-error .notification-icon {
+            background: rgba(187, 58, 75, .10);
+            color: var(--danger);
+        }
+
+        .notification h6 {
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* ── FORMULARIOS ── */
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e8ebf0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 30, 40, .1);
+        }
+
+        .form-control:disabled,
+        .form-select:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+
+        .btn-form-save {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-form-save:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-form-cancel {
+            background: #f0f2f6;
+            color: var(--dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ── MODAL PREMIUM (BUSCADOR INTEGRADO) ── */
+        .modal-content-premium {
+            border-radius: 28px;
+            border: none;
+            box-shadow: 0 25px 60px rgba(38, 47, 60, 0.18);
+            overflow: hidden;
+        }
+
+        .modal-header-premium {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            border: none;
+            padding: 28px 32px;
+        }
+
+        .modal-header-premium .modal-title {
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .modal-header-premium .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: .7;
+        }
+
+        .modal-header-premium .btn-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body-premium {
+            padding: 32px;
+        }
+
+        .modal-footer-premium {
+            border-top: 1px solid #f0f2f6;
+            padding: 20px 32px 28px;
+            background: #fafbfc;
+        }
+
+        .selector-group {
+            margin-bottom: 28px;
+        }
+
+        .selector-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .selector-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .selector-label-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .selector-label h6 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+        }
+
+        .selector-label span {
+            display: block;
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .search-select-wrapper {
+            position: relative;
+        }
+
+        .search-select-wrapper .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 14px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .search-select-input {
+            width: 100%;
+            height: 48px;
+            border: 2px solid #e8ebf0;
+            border-radius: 14px;
+            padding: 0 16px 0 44px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            background: white;
+            transition: .2s;
+            outline: none;
+        }
+
+        .search-select-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(107, 30, 40, .08);
+        }
+
+        .search-select-input::placeholder {
+            color: #b0b8c4;
+        }
+
+        .hidden-select {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e8ebf0;
+            border-radius: 14px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 1050;
+            box-shadow: 0 12px 32px rgba(38, 47, 60, 0.12);
+            display: none;
+            padding: 6px;
+        }
+
+        .dropdown-list.is-open {
+            display: block;
+            animation: dropIn .2s ease;
+        }
+
+        @keyframes dropIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dropdown-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .dropdown-list::-webkit-scrollbar-thumb {
+            background: #dde0e8;
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .15s;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(107, 30, 40, .05);
+        }
+
+        .dropdown-item.selected {
+            background: rgba(107, 30, 40, .08);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .dropdown-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item-sub {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .dropdown-empty {
+            padding: 20px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .dropdown-empty i {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #dde0e8;
+        }
+
+        .selected-display {
+            margin-top: 8px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: rgba(61, 139, 92, .06);
+            border: 1px solid rgba(61, 139, 92, .2);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .selected-display.visible {
+            display: flex;
+        }
+
+        .selected-display-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .selected-display-info {
+            flex: 1;
+        }
+
+        .selected-display-info strong {
+            font-size: 14px;
+            display: block;
+        }
+
+        .selected-display-info span {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .selected-display-clear {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: .2s;
+            font-size: 13px;
+        }
+
+        .selected-display-clear:hover {
+            background: rgba(187, 58, 75, .1);
+            color: var(--danger);
+        }
+
+        .connector-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -8px 0 20px;
+            position: relative;
+        }
+
+        .connector-line::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: #e8ebf0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .connector-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #e8ebf0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: var(--gray);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 90px;
+                padding: 28px 16px;
+            }
+
+            .brand-text,
+            .menu-item span,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .menu-item {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+
+            .notification {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -280px;
+                transition: .3s;
+                z-index: 999;
+                width: 280px;
+                padding: 28px 22px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .brand-text,
+            .menu-item span,
+            .sidebar-footer {
+                display: block;
+            }
+
+            .menu-item {
+                justify-content: flex-start;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 22px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .topbar-right {
+                width: 100%;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .relacion-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .notification {
+                width: calc(100% - 40px);
+                right: 20px;
+                top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NOTIFICACIÓN -->
+    <div class="notification" id="notification">
+        <div class="notification-icon">
+            <i class="fa-solid fa-circle-check" id="notificationIcon"></i>
+        </div>
+        <div>
+            <h6 id="notificationTitle">Operación realizada</h6>
+            <p id="notificationText">Datos cargados correctamente.</p>
+        </div>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3>RestSoft</h3>
+            </div>
+            <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                    class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+                class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
+                    href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar
+                    Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class=""
+                    href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
+            </div><button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="menu-item active" href="inventario.html">Inventario</a><a class=""
+                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
+                    href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                    href="categorias-inventario.html">Categorías</a><a class=""
+                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
+                    Proveedor</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i>
+                    Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
+                    href="seguimiento-pedidos.html">Seguimiento</a> </div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
+                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
+                    href="dividir-cuenta.html">Dividir Cuenta</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
+                    href="reserva-crear.html">Crear Reserva</a><a class="" href="reserva-editar.html">Editar
+                    Reserva</a><a class="" href="calendario-reservas.html">Calendario</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
+                    href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar
+                    Platillo</a><a class="" href="promociones.html">Promociones</a><a class=""
+                    href="categorias-menu.html">Categorías Menú</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                    href="tiempos-preparacion.html">Tiempos</a><a class=""
+                    href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
+                    href="cliente-crear.html">Crear Cliente</a><a class="" href="historial-cliente.html">Historial</a><a
+                    class="" href="fidelizacion.html">Fidelización</a><a class=""
+                    href="promociones-clientes.html">Promociones</a> </div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                    class="" href="reporte-empleados.html">Empleados</a><a class=""
+                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
+                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a
+                    class="" href="backup-restauracion.html">Backup</a></div>
+        </div>
+
+        <main class="main">
+            <div class="topbar">
+                <button id="menuToggle"
+                    style="border:none;background:var(--primary);color:white;width:50px;height:50px;border-radius:14px;font-size:20px;cursor:pointer;display:none;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    <h1>Insumos por Proveedor</h1>
+                    <p>Relación directa entre cada insumo y su proveedor asignado en el sistema.</p>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="inputBusqueda" placeholder="Buscar insumo o proveedor...">
+                    </div>
+                    <div class="profile">
+                        <img src="https://i.pravatar.cc/100?img=33" alt="">
+                        <div>
+                            <h6>Camila Rojas</h6>
+                            <span>Warehouse Manager</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="statTotal">0</h3>
+                        <p>Total Insumos</p>
+                    </div>
+                    <div class="stat-icon primary-soft"><i class="fa-solid fa-box-open"></i></div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="statConProveedor">0</h3>
+                        <p>Con Proveedor</p>
+                    </div>
+                    <div class="stat-icon success-soft"><i class="fa-solid fa-link"></i></div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="statSinProveedor">0</h3>
+                        <p>Sin Proveedor</p>
+                    </div>
+                    <div class="stat-icon danger-soft"><i class="fa-solid fa-link-slash"></i></div>
+                </div>
+                <div class="card-premium stat-card">
+                    <div>
+                        <h3 id="statProveedoresUnicos">0</h3>
+                        <p>Proveedores Únicos</p>
+                    </div>
+                    <div class="stat-icon warning-soft"><i class="fa-solid fa-truck-fast"></i></div>
+                </div>
+            </div>
+
+            <div class="filtros-bar">
+                <div class="filtros-left">
+                    <h4>Filtrar por Proveedor</h4>
+                    <p>Selecciona un proveedor para ver solo sus insumos.</p>
+                </div>
+                <div class="filtro-chips" id="filtroChips">
+                    <div class="chip active" data-proveedor="">Todos <span class="chip-count" id="chipTodos">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relacion-grid" id="relacionGrid">
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <h4>Cargando relaciones...</h4>
+                    <p>Obteniendo insumos y sus proveedores asignados.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: CREAR (PREMIUM CON BÚSQUEDA) -->
+    <div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-premium">
+                <div class="modal-header modal-header-premium">
+                    <h5 class="modal-title" id="modalTitle">
+                        <i class="fa-solid fa-link me-2"></i>Asignar Proveedor a Insumo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modal-body-premium">
+
+                    <!-- SELECTOR: INSUMO -->
+                    <div class="selector-group" id="selectorInsumo">
+                        <div class="selector-label">
+                            <div class="selector-label-icon primary-soft">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <div>
+                                <h6>Insumo</h6>
+                                <span>Selecciona el insumo que quieres asignar</span>
+                            </div>
+                        </div>
+                        <div class="search-select-wrapper">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" class="search-select-input" id="searchInsumo"
+                                placeholder="Buscar insumo por nombre..." autocomplete="off">
+                            <select class="hidden-select" id="selectInsumo"></select>
+                            <div class="dropdown-list" id="dropdownInsumo"></div>
+                        </div>
+                        <div class="selected-display" id="selectedInsumo">
+                            <div class="selected-display-icon">
+                                <i class="fa-solid fa-cube"></i>
+                            </div>
+                            <div class="selected-display-info">
+                                <strong id="selectedInsumoName">—</strong>
+                                <span id="selectedInsumoSub">—</span>
+                            </div>
+                            <button type="button" class="selected-display-clear" id="clearInsumo"
+                                title="Cambiar selección">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CONECTOR VISUAL -->
+                    <div class="connector-line">
+                        <div class="connector-dot">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </div>
+                    </div>
+
+                    <!-- SELECTOR: PROVEEDOR -->
+                    <div class="selector-group" id="selectorProveedor">
+                        <div class="selector-label">
+                            <div class="selector-label-icon success-soft">
+                                <i class="fa-solid fa-truck"></i>
+                            </div>
+                            <div>
+                                <h6>Proveedor</h6>
+                                <span>¿Quién suministra este insumo?</span>
+                            </div>
+                        </div>
+                        <div class="search-select-wrapper">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" class="search-select-input" id="searchProveedor"
+                                placeholder="Buscar proveedor por nombre o empresa..." autocomplete="off">
+                            <select class="hidden-select" id="selectProveedor"></select>
+                            <div class="dropdown-list" id="dropdownProveedor"></div>
+                        </div>
+                        <div class="selected-display" id="selectedProveedor">
+                            <div class="selected-display-icon">
+                                <i class="fa-solid fa-truck"></i>
+                            </div>
+                            <div class="selected-display-info">
+                                <strong id="selectedProveedorName">—</strong>
+                                <span id="selectedProveedorSub">—</span>
+                            </div>
+                            <button type="button" class="selected-display-clear" id="clearProveedor"
+                                title="Cambiar selección">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer modal-footer-premium">
+                    <button type="button" class="btn-form-cancel" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn-form-save" id="btnGuardarRelacion">
+                        <i class="fa-solid fa-link"></i> Crear Asignación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ELIMINAR -->
+    <div class="modal fade" id="modalDelete" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 24px; border: none; padding: 10px; text-align: center;">
+                <div class="modal-body" style="padding: 30px;">
+                    <div
+                        style="width: 70px; height: 70px; border-radius: 50%; background: rgba(187, 58, 75, .1); color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h4 style="font-weight: 700; margin-bottom: 10px;">¿Eliminar Asignación?</h4>
+                    <p style="color: var(--gray); margin-bottom: 0;">Esta acción removerá la relación entre el insumo
+                        y el proveedor.</p>
+                </div>
+                <div class="modal-footer" style="border: none; padding: 0 24px 24px; justify-content: center;">
+                    <button type="button" class="btn-form-cancel" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn-form-save" style="background: var(--danger);"
+                        onclick="window.confirmarEliminar()">
+                        <i class="fa-solid fa-trash"></i> Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/datos/proveedorInsumo.js"></script>
+</body>
+
+</html>

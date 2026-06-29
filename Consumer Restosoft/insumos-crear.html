@@ -9,20 +9,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
-
+    <link rel="stylesheet" href="/css/sidebar.css">
     <style>
         :root {
             --background: #fbfcfb;
             --primary: #6b1e28;
             --primary-light: #8a3b47;
             --dark: #262f3c;
-            --soft: #b09da2;
-            --white: #ffffff;
+            --dark-light: #39485c;
             --gray: #6f7782;
             --success: #3d8b5c;
-            --warning: #d9a441;
             --danger: #bb3a4b;
-            --shadow: 0 10px 40px rgba(38, 47, 60, .08);
+            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
         }
 
         * {
@@ -37,76 +35,38 @@
             color: var(--dark);
         }
 
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background: var(--dark);
-            padding: 28px 22px;
-        }
-
-        .logo {
-            color: white;
-            font-size: 26px;
-            font-weight: 800;
-            margin-bottom: 40px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .menu a {
+        a {
             text-decoration: none;
-            color: #d9dce2;
-            padding: 14px 18px;
-            border-radius: 18px;
-            display: flex;
-            gap: 14px;
-            align-items: center;
-            transition: .3s;
         }
 
-        .menu a:hover {
-            transform: translateX(4px);
-            background: rgba(255, 255, 255, .08);
-        }
-
-        .menu a.active {
-            background: var(--primary);
-            color: white;
-        }
-
+        /* ── MAIN Y TOPBAR (Complementan tu sidebar.css) ── */
         .main {
-            margin-left: 280px;
-            padding: 30px;
+            padding: 34px;
         }
 
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 28px;
+            gap: 24px;
+            margin-bottom: 32px;
         }
 
-        .title h2 {
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .title h1 {
+            font-size: 34px;
             font-weight: 800;
-            font-size: 32px;
+            margin: 0;
         }
 
         .title p {
             color: var(--gray);
-            margin-top: 6px;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
+            margin: 6px 0 0;
         }
 
         .search {
@@ -135,18 +95,45 @@
             color: var(--gray);
         }
 
-        .avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .card-premium {
+        .profile-box img {
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            object-fit: cover;
+        }
+
+        .profile-box h6 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-box span {
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        /* ── TARJETAS Y FORMULARIOS ── */
+        .premium-card {
             background: white;
             border-radius: 28px;
             padding: 30px;
             box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, .03);
             transition: .3s;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
         }
 
         .card-title {
@@ -197,7 +184,7 @@
             display: none;
         }
 
-        .form-control.is-invalid + .invalid-feedback {
+        .form-control.is-invalid+.invalid-feedback {
             display: block;
         }
 
@@ -469,118 +456,154 @@
         .ss-wrapper.is-invalid~.invalid-feedback {
             display: block !important;
         }
-
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 90px;
-            }
-
-            .menu a span {
-                display: none;
-            }
-
-            .main {
-                margin-left: 90px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-
-            .search input {
-                width: 100%;
-            }
-
-            .main {
-                padding: 20px;
-            }
-        }
     </style>
 </head>
 
 <body>
 
-    <div class="sidebar">
-        <div class="logo">RestSoft</div>
-        <div class="menu">
-            <a href="#"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
-            <a href="#"><i class="fa-solid fa-calendar-check"></i><span>Reservas</span></a>
-            <a href="#"><i class="fa-solid fa-users"></i><span>Clientes</span></a>
-            <a href="#"><i class="fa-solid fa-utensils"></i><span>Menú</span></a>
-            <a href="inventario.html" class="active"><i class="fa-solid fa-box"></i><span>Inventario</span></a>
-            <a href="#"><i class="fa-solid fa-cart-shopping"></i><span>Compras</span></a>
-            <a href="#"><i class="fa-solid fa-user-group"></i><span>Empleados</span></a>
-            <a href="#"><i class="fa-solid fa-chart-pie"></i><span>Reportes</span></a>
-            <a href="#"><i class="fa-solid fa-gear"></i><span>Configuración</span></a>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3>RestSoft</h3>
         </div>
+        <div class="menu-title">Navegación</div>
+
+        <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                Inicio</span></a>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="empleados.html">Empleados</a><a href="empleado-crear.html">Crear Empleado</a><a
+                href="empleado-editar.html">Editar Empleado</a><a href="roles-permisos.html">Roles y Permisos</a><a
+                href="horarios-turnos.html">Horarios y Turnos</a><a href="asistencia.html">Asistencia</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron rotate"></i></button>
+        <div class="submenu open"><a href="inventario.html">Inventario</a><a class="active"
+                href="insumos-crear.html">Crear Producto</a><a href="producto-editar.html">Editar Producto</a><a
+                href="entradas-mercancia.html">Entradas Mercancía</a><a href="salidas-mermas.html">Salidas/Mermas</a><a
+                href="categorias-inventario.html">Categorías</a><a href="proveedores.html">Proveedores</a><a
+                href="ProveedorInsumo.html">Insumos por Proveedor</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="pedidos.html">Pedidos</a><a href="pedido-crear.html">Crear Pedido</a><a
+                href="pedido-detalle.html">Detalle Pedido</a><a href="pedido-cocina.html">Pedido Cocina</a><a
+                href="seguimiento-pedidos.html">Seguimiento</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="mesas.html">Mesas</a><a href="mapa-mesas.html">Mapa Mesas</a><a
+                href="transferir-mesa.html">Transferir Mesa</a><a href="dividir-cuenta.html">Dividir Cuenta</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reservas.html">Reservas</a><a href="reserva-crear.html">Crear Reserva</a><a
+                href="reserva-editar.html">Editar Reserva</a><a href="calendario-reservas.html">Calendario</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="facturacion.html">Facturación</a><a href="generar-factura.html">Generar
+                Factura</a><a href="pagos.html">Pagos</a><a href="propinas.html">Propinas</a><a
+                href="cierre-caja.html">Cierre Caja</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="menu-productos.html">Menú</a><a href="platillo-crear.html">Crear Platillo</a><a
+                href="platillo-editar.html">Editar Platillo</a><a href="promociones.html">Promociones</a><a
+                href="categorias-menu.html">Categorías Menú</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="cocina-dashboard.html">Dashboard Cocina</a><a
+                href="pedidos-preparacion.html">Pedidos Preparación</a><a href="tiempos-preparacion.html">Tiempos</a><a
+                href="notificaciones-cocina.html">Notificaciones</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="clientes.html">Clientes</a><a href="cliente-crear.html">Crear Cliente</a><a
+                href="historial-cliente.html">Historial</a><a href="fidelizacion.html">Fidelización</a><a
+                href="promociones-clientes.html">Promociones</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reportes.html">Reportes</a><a href="reporte-ventas.html">Ventas</a><a
+                href="reporte-inventario.html">Inventario</a><a href="reporte-empleados.html">Empleados</a><a
+                href="reporte-financiero.html">Financiero</a><a href="reporte-reservas.html">Reservas</a><a
+                href="estadisticas-ocupacion.html">Ocupación</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="configuracion-general.html">General</a><a
+                href="usuarios-sistema.html">Usuarios</a><a href="impresoras.html">Impresoras</a><a
+                href="metodos-pago.html">Métodos Pago</a><a href="alertas.html">Alertas</a><a
+                href="backup-restauracion.html">Backup</a></div>
     </div>
 
-    <div class="main">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <div class="topbar">
-            <div class="title">
-                <h2>Crear Insumo</h2>
-                <p>Registra nuevos ingredientes y productos para el inventario.</p>
+    <div class="main">
+                <div class="topbar">
+            <!-- Contenedor que agrupa el botón y el título a la izquierda -->
+            <div style="display: flex; align-items: center; gap: 15px; flex-grow: 1;">
+                <button class="mobile-menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="title">
+                    <h1>Crear Insumo</h1>
+                    <p>Registra nuevos ingredientes y productos para el inventario.</p>
+                </div>
             </div>
-            <div class="top-actions">
+            
+            <div class="topbar-right">
                 <div class="search">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Buscar..." />
                 </div>
-                <img class="avatar" src="https://i.pravatar.cc/150?img=12" alt="Avatar" />
+                <div class="profile-box">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="Avatar" />
+                    <div>
+                        <h6>Valentina Cruz</h6><span>Inventory Manager</span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="row g-4">
-
             <div class="col-lg-8">
-
-                <div class="card-premium">
+                <div class="premium-card">
                     <div class="card-title">Información General</div>
                     <div class="row g-4">
-
                         <div class="col-md-6">
                             <label class="form-label" for="nombre">Nombre del Insumo <span
                                     class="text-danger">*</span></label>
                             <input id="nombre" class="form-control" placeholder="Queso Mozzarella Premium" />
                             <div class="invalid-feedback">El nombre es obligatorio.</div>
                         </div>
-
                         <div class="col-lg-6">
                             <label class="form-label">Categoría <span class="text-danger">*</span></label>
                             <div id="productoCategoria"></div>
                             <div class="invalid-feedback">Selecciona una categoría.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label">Proveedor <span class="text-danger">*</span></label>
                             <div id="idProveedor"></div>
                             <div class="invalid-feedback">Selecciona un proveedor.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="unidadMedida">Unidad <span
                                     class="text-danger">*</span></label>
                             <input id="unidadMedida" class="form-control" placeholder="Ej: Kg, Litros, Unidad..." />
                             <div class="invalid-feedback">Ingresa la unidad de medida.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="stockActual">Stock Inicial <span
                                     class="text-danger">*</span></label>
                             <input id="stockActual" class="form-control" type="number" min="0" placeholder="50" />
                             <div class="invalid-feedback">Ingresa un stock válido.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="stockMinimo">Stock Mínimo</label>
                             <input id="stockMinimo" class="form-control" type="number" min="0" placeholder="10" />
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="costoUnitario">Costo Unitario <span
                                     class="text-danger">*</span></label>
@@ -588,7 +611,6 @@
                                 placeholder="25000" />
                             <div class="invalid-feedback">Ingresa un costo válido.</div>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="estado">Estado</label>
                             <select id="estado" class="form-select">
@@ -596,93 +618,63 @@
                                 <option value="INACTIVO">Inactivo</option>
                             </select>
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
                             <input id="fechaVencimiento" class="form-control" type="date" />
                         </div>
-
                     </div>
                 </div>
 
-                <div class="card-premium mt-4">
+                <div class="premium-card mt-4">
                     <div class="card-title">Descripción</div>
                     <textarea id="descripcion" class="form-control"
                         placeholder="Notas adicionales del insumo..."></textarea>
                 </div>
-
             </div>
 
             <div class="col-lg-4">
-                <div class="card-premium summary">
+                <div class="premium-card summary">
                     <div class="card-title">Resumen</div>
-
-                    <div class="summary-item">
-                        <span>Nombre</span>
-                        <strong id="sumNombre" class="placeholder-val">—</strong>
+                    <div class="summary-item"><span>Nombre</span><strong id="sumNombre"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Categoría</span><strong id="sumCategoria"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Proveedor</span><strong id="sumProveedor"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Unidad</span><strong id="sumUnidad"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Stock</span><strong id="sumStock" class="placeholder-val">—</strong>
                     </div>
-                    <div class="summary-item">
-                        <span>Categoría</span>
-                        <strong id="sumCategoria" class="placeholder-val">—</strong>
+                    <div class="summary-item"><span>Stock Mín.</span><strong id="sumStockMin"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Costo Unit.</span><strong id="sumCosto"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Vence</span><strong id="sumVence" class="placeholder-val">—</strong>
                     </div>
-                    <div class="summary-item">
-                        <span>Proveedor</span>
-                        <strong id="sumProveedor" class="placeholder-val">—</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Unidad</span>
-                        <strong id="sumUnidad" class="placeholder-val">—</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Stock</span>
-                        <strong id="sumStock" class="placeholder-val">—</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Stock Mín.</span>
-                        <strong id="sumStockMin" class="placeholder-val">—</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Costo Unit.</span>
-                        <strong id="sumCosto" class="placeholder-val">—</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span>Vence</span>
-                        <strong id="sumVence" class="placeholder-val">—</strong>
-                    </div>
-
                     <hr />
-
                     <div id="sumEstadoBadge" class="badge-status badge-activo mb-3">Activo</div>
-
                     <hr />
-
                     <div class="d-grid gap-3">
                         <button class="btn-primary-custom" id="btnGuardar">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            Guardar Insumo
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Insumo
                         </button>
-                        <button class="btn-outline-custom" id="btnCancelar">
-                            Cancelar
-                        </button>
+                        <button class="btn-outline-custom" id="btnCancelar">Cancelar</button>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div class="notification" id="notification">
-        <div class="notification-icon">
-            <i class="fa-solid fa-check" id="notificationIcon"></i>
-        </div>
+        <div class="notification-icon"><i class="fa-solid fa-check" id="notificationIcon"></i></div>
         <div>
             <h6 id="notificationTitle">Operación Realizada</h6>
             <p id="notificationText">El insumo se ha guardado correctamente.</p>
         </div>
     </div>
 
+    <script src="/js/datos/sidebar.js"></script>
     <script type="module" src="/js/datos/crearInsumo.js"></script>
-
 </body>
 
 </html>

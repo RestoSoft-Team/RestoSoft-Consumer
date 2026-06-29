@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/css/sidebar.css">
     <style>
         :root {
             --background: #fbfcfb;
@@ -124,24 +125,6 @@
             color: white;
         }
 
-        .sidebar-footer {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 20px;
-        }
-
-        .sidebar-footer h6 {
-            color: white;
-            font-weight: 700;
-        }
-
-        .sidebar-footer p {
-            color: #b7c0cb;
-            font-size: 13px;
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
@@ -154,6 +137,13 @@
             align-items: center;
             margin-bottom: 30px;
             gap: 20px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
         }
 
         .page-title h1 {
@@ -333,12 +323,6 @@
             font-size: 14px;
         }
 
-        .growth {
-            margin-top: 10px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
         .input-premium {
             background: #f7f8fa;
             border: none;
@@ -402,6 +386,7 @@
             border-radius: 0 18px 18px 0;
         }
 
+        /* ── NOTIFICACIÓN (OCULTA POR DEFECTO) ── */
         .notification {
             position: fixed;
             top: 30px;
@@ -416,12 +401,18 @@
             gap: 16px;
             align-items: flex-start;
             transform: translateX(420px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
             transition: .3s;
             z-index: 99999;
         }
 
         .notification.show {
             transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         .notification-icon {
@@ -459,16 +450,19 @@
             justify-content: center;
         }
 
+        /* ── BOTÓN HAMBURGUESA (FORZAR COLOR) ── */
         .mobile-menu-btn {
             display: none;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            width: 50px;
-            height: 50px;
+            border: none !important;
+            background: var(--primary) !important;
+            color: #fff !important;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
             border-radius: 14px;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
+            box-shadow: var(--shadow);
         }
 
         .sidebar-overlay {
@@ -486,51 +480,28 @@
             visibility: visible;
         }
 
-        @media (max-width: 768px) {
-
-            .table-responsive table,
-            .table-responsive thead,
-            .table-responsive tbody,
-            .table-responsive th,
-            .table-responsive td,
-            .table-responsive tr {
-                display: block;
-                width: 100%;
+        @media(max-width:992px) {
+            .sidebar {
+                width: 90px;
             }
 
-            .table-responsive thead {
+            .sidebar .brand-text,
+            .sidebar .menu-item span,
+            .sidebar .sidebar-footer {
                 display: none;
             }
 
-            .table-responsive tr {
-                background: #fff;
-                margin-bottom: 16px;
-                border-radius: 12px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-                border: 1px solid #eee;
+            .main {
+                margin-left: 90px;
+                width: calc(100% - 90px);
             }
 
-            .table-responsive td {
-                border: none !important;
-                position: relative;
-                padding-left: 48% !important;
-                padding-top: 10px !important;
-                min-height: 42px;
-                text-align: left !important;
+            .menu-item {
+                justify-content: center;
             }
+        }
 
-            .table-responsive td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 12px;
-                top: 10px;
-                width: 42%;
-                font-weight: 700;
-                white-space: nowrap;
-                color: #555;
-            }
-
+        @media (max-width: 768px) {
             .sidebar {
                 width: 280px !important;
                 left: -280px !important;
@@ -551,6 +522,7 @@
             .main {
                 margin-left: 0 !important;
                 padding: 18px !important;
+                width: 100% !important;
             }
 
             .mobile-menu-btn {
@@ -581,27 +553,6 @@
                 right: 20px;
             }
         }
-
-        @media(max-width:992px) {
-            .sidebar {
-                width: 90px;
-            }
-
-            .sidebar .brand-text,
-            .sidebar .menu-item span,
-            .sidebar .sidebar-footer {
-                display: none;
-            }
-
-            .main {
-                margin-left: 90px;
-                width: calc(100% - 90px);
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-        }
     </style>
 </head>
 
@@ -616,42 +567,89 @@
     </div>
 
     <div class="app">
-        <aside class="sidebar" id="sidebar">
-            <div>
-                <div class="brand">
-                    <div class="brand-logo"><i class="fa-solid fa-utensils"></i></div>
-                    <div class="brand-text">
-                        <h2>RestSoft</h2><span>Enterprise POS</span>
-                    </div>
-                </div>
-                <nav class="menu">
-                    <a class="menu-item" href="Dashboard-example.html"><i
-                            class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
-                    <a class="menu-item active" href="inventario.html"><i
-                            class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a>
-                    <a class="menu-item" href="pedidos.html"><i
-                            class="fa-solid fa-cart-shopping"></i><span>Pedidos</span></a>
-                    <a class="menu-item" href="mesas.html"><i class="fa-solid fa-chair"></i><span>Mesas</span></a>
-                    <a class="menu-item" href="facturacion.html"><i
-                            class="fa-solid fa-file-invoice-dollar"></i><span>Facturación</span></a>
-                    <a class="menu-item" href="reportes.html"><i
-                            class="fa-solid fa-chart-pie"></i><span>Reportes</span></a>
-                    <a class="menu-item" href="configuracion.html"><i
-                            class="fa-solid fa-gear"></i><span>Configuración</span></a>
-                </nav>
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3>RestSoft</h3>
             </div>
-            <div class="sidebar-footer">
-                <h6>Inventario Inteligente</h6>
-                <p>Controla pérdidas, desperdicios y movimientos internos en tiempo real.</p>
-            </div>
-        </aside>
+            <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                    class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+                class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
+                    href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar
+                    Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class=""
+                    href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
+            </div><button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="menu-item" href="inventario.html">Inventario</a><a class=""
+                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a
+                    class="menu-item active" href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                    href="categorias-inventario.html">Categorías</a><a class=""
+                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
+                    Proveedor</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i>
+                    Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
+                    href="seguimiento-pedidos.html">Seguimiento</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
+                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
+                    href="dividir-cuenta.html">Dividir Cuenta</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
+                    href="reserva-crear.html">Crear Reserva</a><a class="" href="reserva-editar.html">Editar
+                    Reserva</a><a class="" href="calendario-reservas.html">Calendario</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
+                    href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar
+                    Platillo</a><a class="" href="promociones.html">Promociones</a><a class=""
+                    href="categorias-menu.html">Categorías Menú</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                    href="tiempos-preparacion.html">Tiempos</a><a class=""
+                    href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
+                    href="cliente-crear.html">Crear Cliente</a><a class="" href="historial-cliente.html">Historial</a><a
+                    class="" href="fidelizacion.html">Fidelización</a><a class=""
+                    href="promociones-clientes.html">Promociones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                    class="" href="reporte-empleados.html">Empleados</a><a class=""
+                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
+                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a
+                    class="" href="backup-restauracion.html">Backup</a></div>
+        </div>
 
         <main class="main">
             <div class="topbar">
-                <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-                <div class="page-title">
-                    <h1>Salidas & Mermas</h1>
-                    <p>Gestión avanzada de pérdidas, consumo interno y desperdicios.</p>
+                <div class="topbar-left">
+                    <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                    <div class="page-title">
+                        <h1>Salidas & Mermas</h1>
+                        <p>Gestión avanzada de pérdidas, consumo interno y desperdicios.</p>
+                    </div>
                 </div>
                 <div class="topbar-right">
                     <div class="search-box">
@@ -672,31 +670,33 @@
                     <div class="stat-info">
                         <h3 id="statTotalSalidas">0</h3>
                         <p>Salidas Registradas</p>
-                        <div class="growth text-danger"><i class="fa-solid fa-arrow-up"></i> Actualizando...</div>
                     </div>
-                    <div class="stat-icon bg-danger-soft"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                    <div class="stat-icon bg-danger-soft">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
                 </div>
+
                 <div class="card-premium stat-card">
                     <div class="stat-info">
-                        <h3 id="statPerdidas">$0</h3>
+                        <h3 id="statPerdidas">0 uds</h3>
                         <p>Pérdidas Totales</p>
-                        <div class="growth text-warning"><i class="fa-solid fa-triangle-exclamation"></i> Calculando...
-                        </div>
                     </div>
-                    <div class="stat-icon bg-warning-soft"><i class="fa-solid fa-chart-column"></i></div>
+                    <div class="stat-icon bg-warning-soft">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
                 </div>
+
                 <div class="card-premium stat-card">
                     <div class="stat-info">
                         <h3>96%</h3>
                         <p>Control de Inventario</p>
-                        <div class="growth text-success"><i class="fa-solid fa-circle-check"></i> Operación estable
-                        </div>
                     </div>
-                    <div class="stat-icon bg-success-soft"><i class="fa-solid fa-shield-heart"></i></div>
+                    <div class="stat-icon bg-success-soft">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
                 </div>
             </div>
 
-            <!-- ✅ FILTROS LIMPIOS -->
             <div class="card-premium mb-4">
                 <div class="row g-4">
                     <div class="col-lg-4">
@@ -720,7 +720,6 @@
                 </div>
             </div>
 
-            <!-- ✅ TABLA LIMPIA -->
             <div class="card-premium table-card">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -733,7 +732,7 @@
                 </div>
                 <div class="table-responsive">
                     <table>
-                        <thead>
+                        <thead id="theadSalidas">
                             <tr>
                                 <th>Producto</th>
                                 <th>Tipo</th>
@@ -744,7 +743,7 @@
                         </thead>
                         <tbody id="tablaSalidas">
                             <tr>
-                                <td colspan="4" class="text-center text-secondary py-4"><i
+                                <td colspan="5" class="text-center text-secondary py-4"><i
                                         class="fa-solid fa-spinner fa-spin me-2"></i>Cargando salidas...</td>
                             </tr>
                         </tbody>
@@ -752,7 +751,6 @@
                 </div>
             </div>
 
-            <!-- ✅ MODAL LIMPIO -->
             <div class="modal-overlay" id="modalOverlay">
                 <div class="card-premium" id="modalCard"
                     style="max-width:520px;width:90%;padding:40px;transform:scale(.95);transition:.3s;">
@@ -794,14 +792,7 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <script>
-        const menuToggle = document.getElementById("menuToggle");
-        const sidebar = document.querySelector(".sidebar");
-        const overlay = document.getElementById("sidebarOverlay");
-        menuToggle?.addEventListener("click", () => { sidebar?.classList.toggle("open"); overlay?.classList.toggle("show"); });
-        overlay?.addEventListener("click", () => { sidebar?.classList.remove("open"); overlay?.classList.remove("show"); });
-    </script>
-
+    <script src="/js/datos/sidebar.js"></script>
     <script type="module" src="/js/consumo/apiSalidaMermas.js"></script>
     <script type="module" src="/js/datos/salidaMermas.js"></script>
 </body>

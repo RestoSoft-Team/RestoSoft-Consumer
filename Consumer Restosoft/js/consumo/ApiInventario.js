@@ -1,15 +1,24 @@
 const API_BASE = "http://localhost:8080/api";
 
+// const token = localStorage.getItem("token");
+const token =
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI2ODc0MTgsImV4cCI6MTc4Mjc3MzgxOH0.xEOf-8izPT5bu64_oCsojldcaD1mcRTZSI3HJ1Xn8ZE";
+
 export const api = {
-    obtenerInsumos: async (idEmpresa) => {
-        const response = await fetch(`${API_BASE}/insumos/empresa/${idEmpresa}`);
+    // ✅ CORREGIDO: Se quitó el /empresa/1 (El Controller lo saca del token)
+    obtenerInsumos: async () => {
+        const response = await fetch(`${API_BASE}/insumos`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) throw new Error("Error al obtener los insumos del servidor");
         return response.json();
     },
 
+    // ✅ CORREGIDO: Se quitó el /empresa/1
     obtenerInsumoPorId: async (id) => {
-        const idEmpresa = 1;
-        const response = await fetch(`${API_BASE}/insumos/${id}/empresa/${idEmpresa}`);
+        const response = await fetch(`${API_BASE}/insumos/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) throw new Error("Error al obtener el insumo");
         return response.json();
     },
@@ -17,8 +26,11 @@ export const api = {
     crearInsumo: async (insumoRequest) => {
         const response = await fetch(`${API_BASE}/insumos`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(insumoRequest)
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(insumoRequest),
         });
         if (!response.ok) throw new Error("Error al crear el insumo");
         return response.json();
@@ -27,32 +39,39 @@ export const api = {
     actualizarInsumo: async (id, insumoRequest) => {
         const response = await fetch(`${API_BASE}/insumos/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(insumoRequest)
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(insumoRequest),
         });
         if (!response.ok) throw new Error("Error al actualizar el insumo");
         return response.json();
     },
 
-    eliminarInsumo: async (id, idEmpresa) => {
-        const response = await fetch(`${API_BASE}/insumos/${id}/empresa/${idEmpresa}`, {
-            method: "DELETE"
+    // ✅ CORREGIDO: Se quitó el /empresa/1
+    eliminarInsumo: async (id) => {
+        const response = await fetch(`${API_BASE}/insumos/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Error al eliminar el insumo");
         return true;
     },
 
-    // 👇 NUEVA FUNCIÓN: Obtener Proveedores (Ajusta la URL según tu backend)
     obtenerProveedores: async () => {
-        const response = await fetch(`${API_BASE}/proveedores`);
+        const response = await fetch(`${API_BASE}/proveedores`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) throw new Error("Error al obtener proveedores");
         return response.json();
     },
 
-    // 👇 NUEVA FUNCIÓN: Obtener Categorías (Ajusta la URL según tu backend)
     obtenerCategorias: async () => {
-        const response = await fetch(`${API_BASE}/v1/categoria-insumo`);
+        const response = await fetch(`${API_BASE}/v1/categoria-insumo`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
         if (!response.ok) throw new Error("Error al obtener categorías");
         return response.json();
-    }
+    },
 };

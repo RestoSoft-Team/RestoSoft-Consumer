@@ -30,7 +30,6 @@ function crearSearchableSelect(containerId, placeholder) {
     const state = { value: '', text: '', data: {}, allOptions: [], hlIndex: -1 };
     dropdowns[containerId] = state;
 
-    // ── Renderizar opciones filtradas ──
     function render(opts, resetHl = true) {
         if (resetHl) state.hlIndex = -1;
         if (opts.length === 0) {
@@ -42,7 +41,6 @@ function crearSearchableSelect(containerId, placeholder) {
         ).join('');
     }
 
-    // ── Abrir / cerrar ──
     function open() {
         render(state.allOptions);
         list.classList.add('open');
@@ -53,11 +51,9 @@ function crearSearchableSelect(containerId, placeholder) {
         list.classList.remove('open');
         arrow.classList.remove('open');
         state.hlIndex = -1;
-        // Si no hay valor seleccionado y el usuario escribió algo, limpiar al cerrar
         if (!state.value) input.value = '';
     }
 
-    // ── Seleccionar ──
     function selectOption(value) {
         const opt = state.allOptions.find(o => o.value === value);
         if (!opt) return;
@@ -70,7 +66,6 @@ function crearSearchableSelect(containerId, placeholder) {
         container.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    // ── API pública del state ──
     state.setOptions = function (opts) {
         state.allOptions = opts;
         state.value = '';
@@ -88,12 +83,9 @@ function crearSearchableSelect(containerId, placeholder) {
         render(state.allOptions);
     };
 
-    // ── Eventos ──
     input.addEventListener('focus', () => {
         const q = input.value.toLowerCase().trim();
-        const filtered = q
-            ? state.allOptions.filter(o => o.text.toLowerCase().includes(q))
-            : state.allOptions;
+        const filtered = q ? state.allOptions.filter(o => o.text.toLowerCase().includes(q)) : state.allOptions;
         render(filtered);
         list.classList.add('open');
         arrow.classList.add('open');
@@ -101,15 +93,12 @@ function crearSearchableSelect(containerId, placeholder) {
 
     input.addEventListener('input', () => {
         const q = input.value.toLowerCase().trim();
-        const filtered = q
-            ? state.allOptions.filter(o => o.text.toLowerCase().includes(q))
-            : state.allOptions;
+        const filtered = q ? state.allOptions.filter(o => o.text.toLowerCase().includes(q)) : state.allOptions;
         render(filtered);
         if (!list.classList.contains('open')) {
             list.classList.add('open');
             arrow.classList.add('open');
         }
-        // Si el usuario está escribiendo, ya no hay selección válida
         const exactMatch = state.allOptions.find(o => o.text.toLowerCase() === q);
         if (!exactMatch) {
             state.value = '';
@@ -129,12 +118,10 @@ function crearSearchableSelect(containerId, placeholder) {
         else { input.focus(); }
     });
 
-    // Cerrar al hacer click fuera
     document.addEventListener('click', (e) => {
         if (!wrapper.contains(e.target)) close();
     });
 
-    // Navegación con teclado
     input.addEventListener('keydown', (e) => {
         const visibleOpts = optionsEl.querySelectorAll('.ss-option');
         if (visibleOpts.length === 0) return;
@@ -205,13 +192,10 @@ function showToast(titulo, mensaje, esError = false) {
 // ══════════════════════════════════════════════════════════════
 function actualizarResumen() {
     const nombre = $('nombre').value.trim();
-
     const catDd = dropdowns['productoCategoria'];
     const categoria = catDd?.text || '';
-
     const provDd = dropdowns['idProveedor'];
     const proveedor = provDd?.text || '';
-
     const unidad = $('unidadMedida').value.trim();
     const stock = $('stockActual').value;
     const stockMin = $('stockMinimo').value;
@@ -274,14 +258,12 @@ function setSummaryField(id, value) {
     }
 }
 
-// Escuchar cambios en inputs normales (sin los dropdowns)
 ['nombre', 'unidadMedida', 'stockActual', 'stockMinimo', 'costoUnitario', 'estado', 'fechaVencimiento'].forEach(id => {
     const el = $(id);
     el?.addEventListener('input', actualizarResumen);
     el?.addEventListener('change', actualizarResumen);
 });
 
-// Escuchar cambios en dropdowns (se disparan al seleccionar)
 ['productoCategoria', 'idProveedor'].forEach(id => {
     $(id)?.addEventListener('change', actualizarResumen);
 });
@@ -291,7 +273,6 @@ function setSummaryField(id, value) {
 // ══════════════════════════════════════════════════════════════
 function validar() {
     let ok = true;
-
     const textos = {
         nombre: 'Ingresa el nombre del insumo.',
         unidadMedida: 'Ingresa la unidad de medida.',
@@ -311,7 +292,6 @@ function validar() {
         }
     });
 
-    // Validar dropdowns
     const dropdownValidations = {
         'productoCategoria': 'Selecciona una categoría.',
         'idProveedor': 'Selecciona un proveedor.'
@@ -334,7 +314,7 @@ function validar() {
 // ══════════════════════════════════════════════════════════════
 // GUARDAR
 // ══════════════════════════════════════════════════════════════
- $('btnGuardar').addEventListener('click', async () => {
+$('btnGuardar').addEventListener('click', async () => {
     if (!validar()) {
         showToast('Campos incompletos', 'Revisa los campos obligatorios marcados en rojo.', true);
         return;
@@ -373,7 +353,7 @@ function validar() {
     }
 });
 
- $('btnCancelar').addEventListener('click', () => {
+$('btnCancelar').addEventListener('click', () => {
     window.location.href = 'inventario.html';
 });
 
@@ -429,11 +409,8 @@ async function cargarCategoriasDropdown() {
 // INICIALIZACIÓN
 // ══════════════════════════════════════════════════════════════
 async function inicializar() {
-    // Crear los dropdowns de búsqueda
     crearSearchableSelect('productoCategoria', 'Buscar categoría...');
     crearSearchableSelect('idProveedor', 'Buscar proveedor...');
-
-    // Cargar datos desde la API
     await Promise.allSettled([cargarProveedores(), cargarCategoriasDropdown()]);
 }
 
