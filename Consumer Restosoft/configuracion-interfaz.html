@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RestSoft — Configuración de Interfaz</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/configuracion-interfaz.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+
+    <script type="module" src="js/datos/theme-loader.js"></script>
+  </head>
+  <body>
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3 id="nombreEmpresa"></h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="active" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="perfil.html">Mi Perfil</a>
+        <a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="menuToggle" class="mobile-menu-btn">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <div class="page-title">
+            <h1>Configuración de Interfaz</h1>
+            <p>Personaliza la apariencia global de RestSoft.</p>
+          </div>
+        </div>
+
+        <div id="infoPerfilContainer" class="profile"></div>
+      </header>
+
+      <main class="page-content">
+        <div class="config-grid">
+          <!-- COLUMNA IZQUIERDA: CONTROLES -->
+          <div>
+            <div class="wizard-tabs">
+              <button class="wizard-tab active" data-step="marca">
+                <div class="rs-card-icon">
+                  <i class="fa-solid fa-droplet"></i>
+                </div>
+                <span>Marca</span>
+              </button>
+
+              <button class="wizard-tab" data-step="fondos">
+                <div class="rs-card-icon">
+                  <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <span>Fondos</span>
+              </button>
+
+              <button class="wizard-tab" data-step="texto">
+                <div class="rs-card-icon">
+                  <i class="fa-solid fa-font"></i>
+                </div>
+                <span>Texto</span>
+              </button>
+
+              <button class="wizard-tab" data-step="estados">
+                <div class="rs-card-icon">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <span>Estados</span>
+              </button>
+            </div>
+            <!-- MARCA -->
+            <div class="rs-card wizard-page active" data-step="marca">
+              <div class="rs-card-header">
+                <div>
+                  <h3 class="rs-card-title">Colores de Marca</h3>
+                  <p class="rs-card-desc">
+                    Identidad principal del restaurante.
+                  </p>
+                </div>
+              </div>
+
+              <div class="color-row" data-key="primary" data-type="hex">
+                <label>Primario (Botones)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-primary"
+                  />
+                  <input type="text" class="color-text" id="text-primary" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="primaryLight" data-type="hex">
+                <label>Primario Light (Hovers)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-primaryLight"
+                  />
+                  <input
+                    type="text"
+                    class="color-text"
+                    id="text-primaryLight"
+                  />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="primarySoft" data-type="rgba">
+                <label>Primario Soft (Fondos)</label>
+                <div class="controls-wrapper rgba-controls">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-primarySoft"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.1"
+                    class="color-range"
+                    id="range-primarySoft"
+                  />
+                  <input type="text" class="color-text" id="text-primarySoft" />
+                </div>
+              </div>
+            </div>
+
+            <!-- FONDOS -->
+            <div class="rs-card wizard-page" data-step="fondos">
+              <div class="rs-card-header">
+                <div>
+                  <h3 class="rs-card-title">Fondos y Bordes</h3>
+                  <p class="rs-card-desc">
+                    Estructura visual de la aplicación.
+                  </p>
+                </div>
+              </div>
+
+              <div class="color-row" data-key="background" data-type="hex">
+                <label>Background (Fondo general)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-background"
+                  />
+                  <input type="text" class="color-text" id="text-background" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="surface" data-type="hex">
+                <label>Surface (Tarjetas)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-surface"
+                  />
+                  <input type="text" class="color-text" id="text-surface" />
+                </div>
+              </div>
+
+              <div
+                class="color-row"
+                data-key="surfaceContainer"
+                data-type="hex"
+              >
+                <label>Surface Container (Inputs)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-surfaceContainer"
+                  />
+                  <input
+                    type="text"
+                    class="color-text"
+                    id="text-surfaceContainer"
+                  />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="borderColor" data-type="hex">
+                <label>Border Color (Bordes)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-borderColor"
+                  />
+                  <input type="text" class="color-text" id="text-borderColor" />
+                </div>
+              </div>
+            </div>
+
+            <!-- TEXTO -->
+            <div class="rs-card wizard-page" data-step="texto">
+              <div class="rs-card-header">
+                <div>
+                  <h3 class="rs-card-title">Tipografía y Texto</h3>
+                  <p class="rs-card-desc">Colores de la letra e iconos.</p>
+                </div>
+              </div>
+
+              <div class="color-row" data-key="dark" data-type="hex">
+                <label>Dark (Texto principal)</label>
+                <div class="controls-wrapper">
+                  <input type="color" class="color-picker" id="picker-dark" />
+                  <input type="text" class="color-text" id="text-dark" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="gray" data-type="hex">
+                <label>Gray (Texto secundario)</label>
+                <div class="controls-wrapper">
+                  <input type="color" class="color-picker" id="picker-gray" />
+                  <input type="text" class="color-text" id="text-gray" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="soft" data-type="hex">
+                <label>Soft (Iconos inactivos)</label>
+                <div class="controls-wrapper">
+                  <input type="color" class="color-picker" id="picker-soft" />
+                  <input type="text" class="color-text" id="text-soft" />
+                </div>
+              </div>
+            </div>
+
+            <!-- ESTADOS -->
+            <div class="rs-card wizard-page" data-step="estados">
+              <div class="rs-card-header">
+                <div>
+                  <h3 class="rs-card-title">Estados y Alertas</h3>
+                  <p class="rs-card-desc">Badges, notificaciones y avisos.</p>
+                </div>
+              </div>
+
+              <div class="color-row" data-key="success" data-type="hex">
+                <label>Success (Confirmaciones)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-success"
+                  />
+                  <input type="text" class="color-text" id="text-success" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="successSoft" data-type="rgba">
+                <label>Success Soft (Fondos)</label>
+                <div class="controls-wrapper rgba-controls">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-successSoft"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.1"
+                    class="color-range"
+                    id="range-successSoft"
+                  />
+                  <input type="text" class="color-text" id="text-successSoft" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="warning" data-type="hex">
+                <label>Warning (Advertencias)</label>
+                <div class="controls-wrapper">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-warning"
+                  />
+                  <input type="text" class="color-text" id="text-warning" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="warningSoft" data-type="rgba">
+                <label>Warning Soft (Fondos)</label>
+                <div class="controls-wrapper rgba-controls">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-warningSoft"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.1"
+                    class="color-range"
+                    id="range-warningSoft"
+                  />
+                  <input type="text" class="color-text" id="text-warningSoft" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="danger" data-type="hex">
+                <label>Danger (Errores)</label>
+                <div class="controls-wrapper">
+                  <input type="color" class="color-picker" id="picker-danger" />
+                  <input type="text" class="color-text" id="text-danger" />
+                </div>
+              </div>
+
+              <div class="color-row" data-key="dangerSoft" data-type="rgba">
+                <label>Danger Soft (Fondos)</label>
+                <div class="controls-wrapper rgba-controls">
+                  <input
+                    type="color"
+                    class="color-picker"
+                    id="picker-dangerSoft"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.1"
+                    class="color-range"
+                    id="range-dangerSoft"
+                  />
+                  <input type="text" class="color-text" id="text-dangerSoft" />
+                </div>
+              </div>
+            </div>
+            <div class="wizard-actions">
+              <button id="btnRestablecerTema" class="btn-rs btn-rs-outline">
+                <i class="fa-solid fa-rotate-left"></i>
+                Restablecer estilos
+              </button>
+
+              <button id="btnGuardarTema" class="btn-rs btn-rs-primary">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Guardar cambios globales
+              </button>
+            </div>
+          </div>
+
+          <!-- COLUMNA DERECHA: VISTA PREVIA FIJA -->
+          <div class="preview-sidebar">
+            <div class="rs-card preview-card">
+              <h3 class="rs-card-title">Vista en Vivo</h3>
+              <p class="rs-card-desc">Así se verán tus componentes.</p>
+
+              <div class="preview-section">
+                <h6>Botones</h6>
+                <div class="preview-buttons">
+                  <button class="btn-rs btn-rs-primary">Primario</button>
+                  <button class="btn-rs btn-rs-outline">Secundario</button>
+                </div>
+              </div>
+
+              <div class="preview-section">
+                <h6>Alertas</h6>
+                <div class="preview-alert success">
+                  <i class="fa-solid fa-circle-check"></i> Operación exitosa
+                </div>
+                <div class="preview-alert warning">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Advertencia
+                  menor
+                </div>
+                <div class="preview-alert danger">
+                  <i class="fa-solid fa-circle-xmark"></i> Error crítico
+                </div>
+              </div>
+
+              <div class="preview-section">
+                <h6>Texto</h6>
+                <p style="color: var(--dark); font-weight: 600">
+                  Texto Principal
+                </p>
+                <p style="color: var(--gray)">Texto Secundario</p>
+                <p style="color: var(--soft)">
+                  <i class="fa-solid fa-icon"></i> Iconos inactivos
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/datos/configuracion-interfaz.js"></script>
+    <script type="module" src="js/datos/sidebar.js"></script>
+  </body>
+</html>
