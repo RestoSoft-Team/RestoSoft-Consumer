@@ -1,245 +1,295 @@
+:root {
+  /* Marca */
+  --primary: #6b1e28;
+  --primary-light: #8a3b47;
+  --primary-soft: rgba(107, 30, 40, 0.08);
+
+  /* Fondo y Superficie */
+  --background: #f8f9fb;
+  --surface: #ffffff;
+  --surface-container: #f1f3f6;
+  --border-color: #e8ebf0;
+
+  /* Texto */
+  --dark: #111827;
+  --gray: #6b7280;
+  --soft: #9ca3af;
+
+  /* Estados */
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+
+  /* Sombras y Bordes (Estos no suelen cambiarse desde la API, los dejamos fijos) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+
+  /* Tamaños fijos */
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 78px;
+  --topbar-height: 80px;
+}
 /* =========================================
    SCROLLBAR PERSONALIZADO (Webkit)
    ========================================= */
 .sidebar::-webkit-scrollbar {
-    width: 6px; /* Deslizador muy fino */
+  width: 6px; /* Deslizador muy fino */
 }
 .sidebar::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 .sidebar::-webkit-scrollbar-thumb {
-    background: var(--primary); /* Color de tu marca */
-    border-radius: 10px;
+  background: var(--primary); /* Color de tu marca */
+  border-radius: 10px;
 }
 .sidebar::-webkit-scrollbar-thumb:hover {
-    background: #d1551a; /* Un tono ligeramente más oscuro al pasar el cursor */
+  background: #d1551a; /* Un tono ligeramente más oscuro al pasar el cursor */
 }
 
 /* =========================================
    SIDEBAR BASE (PC / Desktop)
    ========================================= */
 .sidebar {
-    width: 280px;
-    height: 100vh;
-    background: var(--dark);
-    position: fixed;
-    left: 0;
-    top: 0;
-    padding: 28px 22px;
-    overflow-y: auto;
-    z-index: 999;
-    transition: left 0.3s ease;
+  width: 280px;
+  height: 100vh;
+  background: var(--dark);
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 28px 22px;
+  overflow-y: auto;
+  z-index: 999;
+  transition: left 0.3s ease;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 50px;
 }
 
-.logo-icon, .logo-box {
-    width: 55px;
-    height: 55px;
-    border-radius: 18px;
-    background: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 22px;
+.logo-icon,
+.logo-box {
+  width: 55px;
+  height: 55px;
+  border-radius: 18px;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 22px;
 }
 
 .logo h3 {
-    color: white;
-    font-weight: 800;
-    margin: 0;
+  color: white;
+  font-weight: 800;
+  margin: 0;
 }
 
 .menu-title {
-    color: #8d98aa;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 25px 0 15px;
+  color: #8d98aa;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 25px 0 15px;
 }
 
 .menu-item {
-    width: 100%;
-    border: none;
-    background: none;
-    color: #d8dde5;
-    padding: 16px 18px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    text-decoration: none;
-    transition: 0.3s;
-    margin-bottom: 10px;
-    font-weight: 500;
+  width: 100%;
+  border: none;
+  background: none;
+  color: #d8dde5;
+  padding: 16px 18px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  transition: 0.3s;
+  margin-bottom: 10px;
+  font-weight: 500;
 }
 
 .menu-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: white;
-    transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  transform: translateX(4px);
 }
 
 .menu-item.active {
-    background: var(--primary);
-    color: white;
+  background: var(--primary);
+  color: white;
 }
 
 .menu-item i {
-    width: 20px;
-    text-align: center;
+  width: 20px;
+  text-align: center;
 }
 
 /* =========================================
    SUBMENÚS Y ACORDEÓN
    ========================================= */
 .menu-group-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 16px 18px;
-    border-radius: 18px;
-    color: #d8dde5;
-    background: none;
-    border: none;
-    text-align: left;
-    margin-bottom: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  color: #d8dde5;
+  background: none;
+  border: none;
+  text-align: left;
+  margin-bottom: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .menu-group-btn:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 .submenu {
-    display: none;
-    padding-left: 12px;
-    margin-bottom: 10px;
+  display: none;
+  padding-left: 12px;
+  margin-bottom: 10px;
 }
 
 .submenu.open {
-    display: block;
+  display: block;
 }
 
 .submenu a {
-    display: block;
-    color: #cdd4df;
-    text-decoration: none;
-    padding: 10px 14px;
-    border-radius: 12px;
-    margin: 4px 0;
-    transition: 0.3s;
+  display: block;
+  color: #cdd4df;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin: 4px 0;
+  transition: 0.3s;
 }
 
 .submenu a:hover,
 .submenu a.active {
-    background: var(--primary);
-    color: #fff;
+  background: var(--primary);
+  color: #fff;
 }
 
 .chevron {
-    transition: 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .chevron.rotate {
-    transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 
 /* =========================================
    ELEMENTOS DE INTERFAZ (Overlay y Botón)
    ========================================= */
 .mobile-menu-btn {
-    display: none; /* Oculto en PC */
-    border: none;
-    background: var(--primary);
-    color: #fff;
-    width: 45px;
-    height: 45px;
-    border-radius: 14px;
-    font-size: 20px;
-    cursor: pointer;
+  display: none; /* Oculto en PC */
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  width: 45px;
+  height: 45px;
+  border-radius: 14px;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    z-index: 998;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease;
+  z-index: 998;
 }
 
 .sidebar-overlay.show {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .main {
-    margin-left: 280px; /* Margen para PC */
-    transition: margin-left 0.3s ease;
+  margin-left: 280px; /* Margen para PC */
+  transition: margin-left 0.3s ease;
+}
+
+.main-wrapper {
+  margin-left: 280px; /* Margen para PC */
+  transition: margin-left 0.3s ease;
 }
 
 /* =========================================
    RESPONSIVE: Pantallas Medianas (Laptops y Tablets: 769px a 1280px)
    ========================================= */
 @media (max-width: 1280px) {
-    /* Forzamos el ancho normal de 280px y ocultamos la barra hacia la izquierda */
-    .sidebar {
-        width: 280px !important; 
-        left: -300px !important; 
-        box-shadow: none;
-    }
+  /* Forzamos el ancho normal de 280px y ocultamos la barra hacia la izquierda */
+  .sidebar {
+    width: 280px !important;
+    left: -300px !important;
+    box-shadow: none;
+  }
 
-    /* Al abrirse, desliza hacia adentro con una pequeña sombra */
-    .sidebar.open {
-        left: 0 !important;
-        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
-    }
+  /* Al abrirse, desliza hacia adentro con una pequeña sombra */
+  .sidebar.open {
+    left: 0 !important;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+  }
 
-    /* Obligamos a que los textos y títulos siempre se muestren */
-    .sidebar .menu-item span,
-    .sidebar .menu-title,
-    .sidebar .logo h3 {
-        display: block !important;
-    }
+  /* Obligamos a que los textos y títulos siempre se muestren */
+  .sidebar .menu-item span,
+  .sidebar .menu-title,
+  .sidebar .logo h3 {
+    display: block !important;
+  }
 
-    /* Forzamos al contenedor principal a ocupar el 100% del espacio libre */
-    .main {
-        margin-left: 0 !important;
-        width: 100% !important;
-        padding: 20px !important;
-    }
+  /* Forzamos al contenedor principal a ocupar el 100% del espacio libre */
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 20px !important;
+  }
 
-    /* Mostramos el botón hamburguesa */
-    .mobile-menu-btn {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0; /* Evita que el botón se haga más pequeño por falta de espacio */
-    }
+  /* Mostramos el botón hamburguesa */
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Evita que el botón se haga más pequeño por falta de espacio */
+  }
 
-    /* Ajuste dinámico de la barra superior para que nada se aplaste */
-    .topbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-    }
+  /* Ajuste dinámico de la barra superior para que nada se aplaste */
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
 
-    .title {
-        flex-grow: 1; /* El título ocupa todo el espacio que sobre en el centro */
+  .title {
+    flex-grow: 1; /* El título ocupa todo el espacio que sobre en el centro */
+  }
+  
+  .main-wrapper{
+        margin-left:0 !important;
+        width:100%;
     }
 }
 
@@ -247,20 +297,26 @@
    RESPONSIVE: Pantallas Pequeñas (Móviles: <= 768px)
    ========================================= */
 @media (max-width: 768px) {
-    .topbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .topbar-right {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        gap: 15px;
-    }
-    
-    .search {
-        width: 100%;
-        flex-grow: 1;
-    }
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-right {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .search {
+    width: 100%;
+    flex-grow: 1;
+  }
+}
+
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
 }
