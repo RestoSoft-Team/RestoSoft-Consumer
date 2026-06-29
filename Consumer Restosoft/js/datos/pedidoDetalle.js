@@ -1,6 +1,5 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
 
-const ID_EMPRESA = 1;
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
@@ -40,10 +39,10 @@ if (document.readyState === 'loading') {
 async function initDetallePage() {
     try {
         const [mesas, pedidos, cats, platos] = await Promise.all([
-            api.getMesas(ID_EMPRESA),
-            api.getPedidosActivos(ID_EMPRESA),
-            api.getCategorias(ID_EMPRESA),
-            api.getPlatos(ID_EMPRESA)
+            api.getMesas(),
+            api.getPedidosActivos(),
+            api.getCategorias(),
+            api.getPlatos()
         ]);
 
         todasLasMesas = mesas;

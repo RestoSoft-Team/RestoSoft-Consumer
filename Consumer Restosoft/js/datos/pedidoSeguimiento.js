@@ -1,6 +1,5 @@
 import { apiSeguimiento as api } from '../consumo/apiSeguimientoPedido.js';
 
-const ID_EMPRESA = 1;
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
@@ -41,7 +40,7 @@ async function init() {
 
 async function cargarPedidos() {
     try {
-        todosLosPedidos = await api.getPedidos(ID_EMPRESA);
+        todosLosPedidos = await api.getPedidos();
         renderTabla();
     } catch (error) {
         console.error("Error:", error);

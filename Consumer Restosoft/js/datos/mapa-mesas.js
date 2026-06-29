@@ -35,12 +35,11 @@ document.addEventListener('DOMContentLoaded', cargarDatos);
 window.addEventListener('resize', ajustarResolucionCanvas);
 
 async function cargarDatos() {
-    const ID_EMPRESA = 1; 
     
     try {
         const [mesasData, zonasData] = await Promise.all([
-            api.obtenerMesas(ID_EMPRESA),
-            api.obtenerZonas(ID_EMPRESA)
+            api.obtenerMesas(),
+            api.obtenerZonas()
         ]);
 
         state.mesas = mesasData;

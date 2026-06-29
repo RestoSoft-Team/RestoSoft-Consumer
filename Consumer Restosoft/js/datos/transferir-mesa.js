@@ -39,11 +39,10 @@ function iniciarModuloTransferencia() {
     window.addEventListener('resize', ajustarAmbasResoluciones);
 
     async function iniciarCarga() {
-        const ID_EMPRESA = 1;
         try {
             const [mesasData, zonasData] = await Promise.all([
-                api.obtenerMesas(ID_EMPRESA),
-                api.obtenerZonas(ID_EMPRESA)
+                api.obtenerMesas(),
+                api.obtenerZonas()
             ]);
 
             state.mesas = mesasData;

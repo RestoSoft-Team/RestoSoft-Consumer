@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestSoft V2 - API Tester Pro</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --input-bg: #334155;
+            --text-color: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #475569;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h1 { color: #f8fafc; text-align: center; font-size: 1.8rem; }
+        h2 { color: #94a3b8; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
+
+        /* CONFIG BAR */
+        .config-bar {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 20px;
+        }
+        .config-bar label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; font-weight: 600; }
+        .config-bar input, .config-bar textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+        .token-box textarea { height: 40px; resize: none; font-size: 0.85rem; }
+        .token-status { font-size: 0.8rem; margin-top: 5px; font-weight: bold; }
+        .active { color: var(--success); }
+        .inactive { color: var(--danger); }
+
+        /* GRID LAYOUT */
+        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } .config-bar { grid-template-columns: 1fr; } }
+
+        /* CARDS */
+        .card {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .endpoint {
+            background-color: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--border);
+        }
+        .endpoint.post { border-left-color: var(--primary); }
+        .endpoint.get { border-left-color: var(--success); }
+        .endpoint.put { border-left-color: var(--warning); }
+        .endpoint.delete { border-left-color: var(--danger); }
+
+        .endpoint-title { font-family: monospace; font-size: 0.9rem; margin-bottom: 10px; font-weight: bold; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px; 
+            font-size: 0.75rem; font-weight: bold; color: white; margin-right: 8px;
+        }
+        .badge-post { background-color: var(--primary); }
+        .badge-get { background-color: var(--success); }
+        .badge-put { background-color: var(--warning); color: black; }
+        .badge-delete { background-color: var(--danger); }
+        
+        .tag {
+            display: inline-block; font-size: 0.7rem; padding: 2px 6px; 
+            border-radius: 10px; margin-left: 8px; font-weight: normal;
+        }
+        .tag-auth { background-color: #7c3aed; color: white; }
+        .tag-public { background-color: #14532d; color: #4ade80; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; background-color: var(--input-bg); border: 1px solid var(--border);
+            color: white; padding: 8px; border-radius: 4px;
+        }
+
+        .btn {
+            width: 100%; padding: 10px; border: none; border-radius: 6px;
+            cursor: pointer; font-weight: bold; transition: 0.2s; margin-top: 10px;
+        }
+        .btn-post { background-color: var(--primary); color: white; }
+        .btn-post:hover { background-color: var(--primary-hover); }
+        .btn-get { background-color: var(--success); color: white; }
+        .btn-put { background-color: var(--warning); color: black; }
+        .btn-delete { background-color: var(--danger); color: white; }
+        
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* RESPONSE */
+        #response-container {
+            background-color: #000; padding: 20px; border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace; font-size: 0.9rem;
+            white-space: pre-wrap; word-wrap: break-word; max-height: 500px;
+            overflow-y: auto; border: 1px solid var(--border); color: #d4d4d4;
+        }
+        .s-2xx { color: #4ec9b0; } .s-4xx { color: #dcdcaa; } .s-5xx { color: #f48771; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 RestSoft V2 - Probador de API</h1>
+
+    <!-- BARRA DE CONFIGURACIÓN GLOBAL -->
+    <div class="config-bar">
+        <div>
+            <label>URL Base:</label>
+            <input type="text" id="base-url" value="http://localhost:8080">
+        </div>
+        <div>
+            <label>ID Empresa (Fallback <code>idempresa</code>):</label>
+            <input type="number" id="global-empresa-id" value="1">
+            <small style="color:#94a3b8">Solo se usa si NO hay token. Con token se ignora.</small>
+        </div>
+        <div class="token-box">
+            <label>Token JWT (Header <code>Authorization</code>):</label>
+            <textarea id="global-token" placeholder="Pega aquí tu token (o usa el Login)"></textarea>
+            <div id="token-status" class="token-status inactive">⚠️ Token no configurado</div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="container">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div>
+            <!-- AUTH -->
+            <div class="card">
+                <h2>🔐 Autenticación (Público)</h2>
+                
+                <div class="endpoint post">
+                    <div class="endpoint-title"><span class="badge badge-post">POST</span>/api/auth/login</div>
+                    <div class="form-group"><label>Email</label><input type="email" id="login-email" value="admin@restosoft.com"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="login-password" value="12345678"></div>
+                    <button class="btn btn-post" onclick="login('login')">Login Empresa (Guarda Token)</button>
+                </div>
+
+                <div class="endpoint post">
+                    <div class="endpoint-title"><span class="badge badge-post">POST</span>/api/auth/cliente</div>
+                    <button class="btn btn-post" onclick="login('cliente')">Login Cliente</button>
+                </div>
+
+                <div class="endpoint post">
+                    <div class="endpoint-title"><span class="badge badge-post">POST</span>/api/auth/configuracion</div>
+                    <button class="btn btn-post" onclick="login('config')">Login Configuración</button>
+                </div>
+            </div>
+
+            <!-- CLIENTES -->
+            <div class="card">
+                <h2>🛒 Registro Clientes (Público)</h2>
+                <div class="endpoint post">
+                    <div class="endpoint-title"><span class="badge badge-post">POST</span>/api/usuarios/clientes <span class="tag tag-public">PUBLICO</span></div>
+                    <div class="row">
+                        <div class="form-group"><label>Nombres</label><input type="text" id="cli-nombres" value="Maria"></div>
+                        <div class="form-group"><label>Apellidos</label><input type="text" id="cli-apellidos" value="Lopez"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Email</label><input type="email" id="cli-email" value="maria@cliente.com"></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="cli-password" value="12345678"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Teléfono</label><input type="text" id="cli-telefono" value="3009876543"></div>
+                        <div class="form-group"><label>F. Nacimiento</label><input type="date" id="cli-fecha" value="1995-05-15"></div>
+                    </div>
+                    <button class="btn btn-post" onclick="crearCliente()">Crear Cliente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div>
+            <!-- CREAR EMPLEADO -->
+            <div class="card">
+                <h2>👤 Crear Empleado (Público + Empresa)</h2>
+                <div class="endpoint post">
+                    <div class="endpoint-title"><span class="badge badge-post">POST</span>/api/usuarios/empleados <span class="tag tag-public">REQUIERE EMPRESA</span></div>
+                    <div class="row">
+                        <div class="form-group"><label>Nombres</label><input type="text" id="emp-nombres" value="Juan"></div>
+                        <div class="form-group"><label>Apellidos</label><input type="text" id="emp-apellidos" value="Perez"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Email</label><input type="email" id="emp-email" value="juan.perez@restosoft.com"></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="emp-password" value="12345678"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Teléfono</label><input type="text" id="emp-telefono" value="3001234567"></div>
+                        <div class="form-group"><label>F. Nacimiento</label><input type="date" id="emp-fecha" value="1990-01-01"></div>
+                    </div>
+                    <div class="form-group"><label>ID Rol</label><input type="number" id="emp-rol" value="2"></div>
+                    <button class="btn btn-post" onclick="crearEmpleado()">Crear Empleado</button>
+                </div>
+            </div>
+
+            <!-- GESTION EMPLEADOS (PROTEGIDO) -->
+            <div class="card">
+                <h2>📋 Gestión Empleados (Protegido 🔒)</h2>
+                
+                <div class="endpoint get">
+                    <div class="endpoint-title"><span class="badge badge-get">GET</span>/api/usuarios <span class="tag tag-auth">AUTH + EMPRESA</span></div>
+                    <button class="btn btn-get" onclick="listarEmpleados()">Listar Empleados</button>
+                </div>
+
+                <div class="endpoint get">
+                    <div class="endpoint-title"><span class="badge badge-get">GET</span>/api/usuarios/me <span class="tag tag-auth">AUTH</span></div>
+                    <button class="btn btn-get" onclick="verMiPerfil()">Ver Mi Perfil</button>
+                </div>
+
+                <div class="form-group" style="margin-top:15px">
+                    <label><b>ID Usuario (Para GET, PUT, DELETE)</b></label>
+                    <input type="number" id="target-user-id" placeholder="Ej: 1">
+                </div>
+
+                <div class="endpoint get">
+                    <div class="endpoint-title"><span class="badge badge-get">GET</span>/api/usuarios/{id}</div>
+                    <button class="btn btn-get" onclick="obtenerEmpleado()">Obtener por ID</button>
+                </div>
+
+                <div class="endpoint put">
+                    <div class="endpoint-title"><span class="badge badge-put">PUT</span>/api/usuarios/{id}</div>
+                    <div class="form-group"><label>Nuevo Nombre (para probar)</label><input type="text" id="upd-nombres" value="Juan Carlos (Actualizado)"></div>
+                    <button class="btn btn-put" onclick="actualizarEmpleado()">Actualizar Empleado</button>
+                </div>
+
+                <div class="endpoint delete">
+                    <div class="endpoint-title"><span class="badge badge-delete">DELETE</span>/api/usuarios/{id}</div>
+                    <button class="btn btn-delete" onclick="eliminarEmpleado()">Eliminar Empleado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESPUESTA -->
+    <div class="card">
+        <h2>📡 Respuesta del Servidor</h2>
+        <div id="response-container">Esperando peticiones...</div>
+    </div>
+
+    <script>
+        const getToken = () => document.getElementById('global-token').value.trim();
+        const getEmpresaId = () => document.getElementById('global-empresa-id').value;
+        const getBaseUrl = () => document.getElementById('base-url').value;
+
+        // Actualizar indicador visual del token
+        document.getElementById('global-token').addEventListener('input', (e) => {
+            const status = document.getElementById('token-status');
+            if (e.target.value.trim().length > 10) {
+                status.className = 'token-status active';
+                status.innerText = '✅ Token activo (Se usará el ID Empresa del token)';
+            } else {
+                status.className = 'token-status inactive';
+                status.innerText = '⚠️ Token no configurado';
+            }
+        });
+
+        function renderResponse(status, data) {
+            const container = document.getElementById('response-container');
+            let statusClass = 's-2xx';
+            if (status >= 400 && status < 500) statusClass = 's-4xx';
+            if (status >= 500) statusClass = 's-5xx';
+            container.innerHTML = `<span class="${statusClass}">Status: ${status}</span>\n\n` + JSON.stringify(data, null, 2);
+        }
+
+        function getHeaders(requiresAuth = false, requiresEmpresa = false) {
+            let headers = { 'Content-Type': 'application/json' };
+            const token = getToken();
+            const empId = getEmpresaId();
+
+            // 1. Siempre enviamos el token si existe, para que Spring Security lo lea en el contexto
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            // 2. Validar rutas estrictamente protegidas
+            if (requiresAuth && !token) {
+                alert("¡Error! Se requiere Token JWT para esta petición (Inicia sesión arriba)."); 
+                throw new Error("Falta Token"); 
+            }
+
+            // 3. Validar rutas que requieren Empresa
+            if (requiresEmpresa) {
+                // Si no hay token ni empresa, error
+                if (!token && !empId) {
+                    alert("¡Error! Para esta petición necesitas un Token o indicar el ID de la Empresa."); 
+                    throw new Error("Falta Empresa"); 
+                }
+                
+                // SOLO enviamos el header 'idempresa' si NO hay token. 
+                // Si hay token, NO lo enviamos, para forzar a tu IdEmpresaArgumentResolver 
+                // a tomarlo del SecurityContextHolder.
+                if (!token && empId) {
+                    headers['idempresa'] = empId;
+                }
+            }
+            return headers;
+        }
+
+        // --- AUTH ---
+        async function login(tipo) {
+            const body = {
+                email: document.getElementById('login-email').value,
+                password: document.getElementById('login-password').value
+            };
+            const urls = { login: '/api/auth/login', cliente: '/api/auth/cliente', config: '/api/auth/configuracion' };
+            try {
+                const res = await fetch(`${getBaseUrl()}${urls[tipo]}`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(body) });
+                const data = await res.json();
+                if (res.ok && data.token) {
+                    document.getElementById('global-token').value = data.token;
+                    document.getElementById('global-token').dispatchEvent(new Event('input'));
+                    alert(`¡Login ${tipo} exitoso! Token guardado. Ya puedes usar las rutas protegidas sin llenar el ID Empresa.`);
+                }
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        // --- EMPLEADOS ---
+        async function crearEmpleado() {
+            const body = {
+                nombres: document.getElementById('emp-nombres').value,
+                apellidos: document.getElementById('emp-apellidos').value,
+                email: document.getElementById('emp-email').value,
+                password: document.getElementById('emp-password').value,
+                telefono: document.getElementById('emp-telefono').value,
+                fechaNacimiento: document.getElementById('emp-fecha').value,
+                idRol: parseInt(document.getElementById('emp-rol').value)
+            };
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/empleados`, { method: 'POST', headers: getHeaders(false, true), body: JSON.stringify(body) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        async function listarEmpleados() {
+            try {
+                // requiresAuth=true, requiresEmpresa=true
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/clientes`, { method: 'GET', headers: getHeaders(true, true) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        async function verMiPerfil() {
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/me`, { method: 'GET', headers: getHeaders(true, false) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        async function obtenerEmpleado() {
+            const id = document.getElementById('target-user-id').value;
+            if (!id) { alert("Ingresa el ID del usuario"); return; }
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/${id}`, { method: 'GET', headers: getHeaders(true, true) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        async function actualizarEmpleado() {
+            const id = document.getElementById('target-user-id').value;
+            if (!id) { alert("Ingresa el ID del usuario"); return; }
+            const body = {
+                nombres: document.getElementById('upd-nombres').value,
+                apellidos: document.getElementById('emp-apellidos').value,
+                email: document.getElementById('emp-email').value,
+                password: document.getElementById('emp-password').value,
+                telefono: document.getElementById('emp-telefono').value,
+                fechaNacimiento: document.getElementById('emp-fecha').value,
+                idRol: parseInt(document.getElementById('emp-rol').value)
+            };
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/${id}`, { method: 'PUT', headers: getHeaders(true, true), body: JSON.stringify(body) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        async function eliminarEmpleado() {
+            const id = document.getElementById('target-user-id').value;
+            if (!id) { alert("Ingresa el ID del usuario"); return; }
+            if (!confirm(`¿Eliminar al usuario ID ${id}?`)) return;
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/${id}`, { method: 'DELETE', headers: getHeaders(true, true) });
+                let data = (res.status === 204) ? { mensaje: "Eliminado correctamente (204 No Content)" } : await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+
+        // --- CLIENTES ---
+        async function crearCliente() {
+            const body = {
+                nombres: document.getElementById('cli-nombres').value,
+                apellidos: document.getElementById('cli-apellidos').value,
+                email: document.getElementById('cli-email').value,
+                password: document.getElementById('cli-password').value,
+                telefono: document.getElementById('cli-telefono').value,
+                fechaNacimiento: document.getElementById('cli-fecha').value
+            };
+            try {
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/clientes`, { method: 'POST', headers: getHeaders(false, false), body: JSON.stringify(body) });
+                const data = await res.json();
+                renderResponse(res.status, data);
+            } catch (e) { renderResponse(500, { error: e.message }); }
+        }
+    </script>
+</body>
+</html>

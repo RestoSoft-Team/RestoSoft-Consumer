@@ -1,8 +1,7 @@
 import { apiPedido } from '../consumo/apiCrearPedido.js';
+import { obtenerIdUsuarioDeToken } from '../consumo/auth.js';
 
-const ID_USUARIO_LOGUEADO = 1;
-const ID_EMPRESA = 1;
-
+const ID_USUARIO_LOGUEADO = obtenerIdUsuarioDeToken(); 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
@@ -58,14 +57,14 @@ if (document.readyState === 'loading') {
 }
 
 async function initPedidoPage() {
-    try {
+      try {
         const [zonas, mesas, mesaAbierta, cats, platos, usuarios] = await Promise.all([
-            apiPedido.getZonas(ID_EMPRESA),
-            apiPedido.getMesas(ID_EMPRESA),
-            apiPedido.getMesaAbierta(ID_USUARIO_LOGUEADO),
-            apiPedido.getCategorias(ID_EMPRESA),
-            apiPedido.getPlatos(ID_EMPRESA),
-            apiPedido.getUsuarios(ID_EMPRESA)
+            apiPedido.getZonas(),
+            apiPedido.getMesas(),
+            apiPedido.getMesaAbierta(), 
+            apiPedido.getCategorias(),
+            apiPedido.getPlatos(),
+            apiPedido.getUsuarios()
         ]);
         
         todasLasMesas = mesas;
@@ -408,7 +407,6 @@ async function confirmarPedido() {
         observaciones: dom.txtObservaciones.value || "Sin observaciones",
         idMesas: idMesas,
         idUsuarios: meserosSeleccionados,
-        idempresa: ID_EMPRESA,
         estado: "PENDIENTE",
         fecha: new Date().toISOString(),
         detalles: carrito.map(item => ({
@@ -419,8 +417,8 @@ async function confirmarPedido() {
     };
 
     try {
-        await apiPedido.createPedido(pedidoData);
-        await apiPedido.cerrarMesa(ID_USUARIO_LOGUEADO);
+         await apiPedido.createPedido(pedidoData);
+        await apiPedido.cerrarMesa(); 
         
         showNotification("Pedido creado", "El pedido fue enviado correctamente a cocina.", "success");
         setTimeout(() => window.location.href = "mesas.html", 2000);

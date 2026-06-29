@@ -252,3 +252,42 @@ a {
 
 .modal-actions { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
 .modal-actions a, .modal-actions button { flex: 1; min-width: 180px; justify-content: center; }
+
+#perfil
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    transition: .3s;
+}
+.profile-link:hover {
+    transform: translateY(-2px);
+}
+.profile-text-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+.profile-info strong {
+    display: block;
+    font-size: 15px;
+    color: var(--dark);
+}
+.profile-info div {
+    font-size: 13px;
+    color: var(--gray);
+}

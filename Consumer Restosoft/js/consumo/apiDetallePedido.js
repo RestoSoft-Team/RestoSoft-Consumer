@@ -1,62 +1,49 @@
 const API_BASE = "http://localhost:8080/api";
+const TOKEN = localStorage.getItem("token") || "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEzLCJlbXByZXNhSWQiOjEsInJvbCI6IkFETUlOSVNUUkFET1IiLCJpYXQiOjE3ODI2OTEwNTMsImV4cCI6MTc4Mjc3NzQ1M30.B0ff1vGF6kvhh2Quw1Q3AIIL37RIBkZT7T2UFK93lgA";
+const authHeader = { 'Authorization': `Bearer ${TOKEN}` };
 
 export const apiPedidoDetalle = {
-    // Obtener todas las mesas para filtrar las ocupadas en el frontend
-    getMesas: async (idEmpresa) => {
-        const response = await fetch(`${API_BASE}/mesas/empresa/${idEmpresa}`);
+    getMesas: async () => {
+        const response = await fetch(`${API_BASE}/mesas`, { headers: authHeader });
         return response.ok ? await response.json() : [];
     },
-
-    // Obtener un pedido por ID
     getPedidoById: async (idPedido) => {
-        const response = await fetch(`${API_BASE}/pedido/${idPedido}`);
+        const response = await fetch(`${API_BASE}/pedido/${idPedido}`, { headers: authHeader });
         return response.ok ? await response.json() : null;
     },
-
-    // Obtener todos los pedidos de la empresa y filtrar los activos en el frontend
-    getPedidosActivos: async (idEmpresa) => {
-        const response = await fetch(`${API_BASE}/pedido/empresa/${idEmpresa}`);
+    getPedidosActivos: async () => {
+        const response = await fetch(`${API_BASE}/pedido`, { headers: authHeader });
         if (!response.ok) return [];
         const pedidos = await response.json();
-        // Filtramos pedidos que no estén pagados/cerrados
         return pedidos.filter(p => p.estado !== 'PAGADO' && p.estado !== 'CANCELADO');
     },
-
-    // Obtener detalles (productos) de un pedido específico
-    // Asumiendo que tu backend puede devolver los detalles filtrados por pedido
     getDetallesPedido: async (idPedido) => {
-        const response = await fetch(`${API_BASE}/detallepedido/${idPedido}`);
+        const response = await fetch(`${API_BASE}/detallepedido/${idPedido}`, { headers: authHeader });
         return response.ok ? await response.json() : [];
     },
-
-    // Catálogos para el modal
-    getCategorias: async (idEmpresa) => {
-        const response = await fetch(`${API_BASE}/categorias/empresa/${idEmpresa}`);
+    getCategorias: async () => {
+        const response = await fetch(`${API_BASE}/categorias`, { headers: authHeader });
         return response.ok ? await response.json() : [];
     },
-    getPlatos: async (idEmpresa) => {
-        const response = await fetch(`${API_BASE}/plato/empresa/${idEmpresa}`);
+    getPlatos: async () => {
+        const response = await fetch(`${API_BASE}/plato`, { headers: authHeader });
         return response.ok ? await response.json() : [];
     },
-
     addDetallePedido: async (detalleData) => {
         const response = await fetch(`${API_BASE}/detallepedido`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...authHeader },
             body: JSON.stringify(detalleData)
         });
         if (!response.ok) throw new Error("Error al agregar el producto");
         return await response.json();
     },
-
-       getPedidoActivoByMesa: async (idMesa) => {
+    getPedidoActivoByMesa: async (idMesa) => {
         try {
-            const response = await fetch(`${API_BASE}/pedido/mesa/${idMesa}`);
+            const response = await fetch(`${API_BASE}/pedido/mesa/${idMesa}`, { headers: authHeader });
             if (response.status === 404 || response.status === 500) return null; 
             if (!response.ok) throw new Error("Error al obtener el pedido");
             return await response.json();
-        } catch (error) {
-            return null; 
-        }
-    },
+        } catch (error) { return null; }
+    }
 };

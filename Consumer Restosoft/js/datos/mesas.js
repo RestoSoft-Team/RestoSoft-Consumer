@@ -65,32 +65,32 @@ const ESTADOS_MESA = {
 // =========================================
 // 3. CAPA DE DATOS (Caché y Backoff)
 // =========================================
-async function fetchConBackoff(idEmpresa, intento = 0) {
+async function fetchConBackoff(intento = 0) {
     const MAX_INTENTOS = 5;
     const DELAY_BASE = 1000;
     
     try {
         const [mesas, zonas] = await Promise.all([
-            api.obtenerMesas(idEmpresa),
-            api.obtenerZonas(idEmpresa)
+            api.obtenerMesas(),
+            api.obtenerZonas()
         ]);
         if (mesas && mesas.length > 0) return { mesas, zonas };
         throw new Error("EMPTY_DATA");
     } catch (error) {
         if (intento < MAX_INTENTOS) {
             await sleep(DELAY_BASE * Math.pow(2, intento));
-            return fetchConBackoff(idEmpresa, intento + 1);
+            return fetchConBackoff(intento + 1);
         }
         throw new Error("SERVICE_UNAVAILABLE");
     }
 }
 
-async function obtenerDatosOptimizados(idEmpresa) {
+async function obtenerDatosOptimizados() {
     const ahora = Date.now();
     if (cache.datos && (ahora - cache.ultimaVez < cache.TTL)) {
         return cache.datos;
     }
-    const data = await fetchConBackoff(idEmpresa);
+    const data = await fetchConBackoff();
     cache.datos = data;
     cache.ultimaVez = ahora;
     return data;
@@ -102,15 +102,14 @@ async function obtenerDatosOptimizados(idEmpresa) {
 document.addEventListener('DOMContentLoaded', initApp);
 
 async function initApp() {
-    const ID_EMPRESA = 1; // En producción: obtener de sesión/JWT
     renderSkeletonCards();
     setupEventListeners();
 
     try {
-        await cargarYRenderizarDatos(ID_EMPRESA);
+        await cargarYRenderizarDatos();
         
         // Iniciar actualización automática (Polling)
-        state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
+        state.intervalId = setInterval(() => cargarYRenderizarDatos(true), 60000);
         
         // Pausar polling si el usuario sale de la pestaña (Ahorro de recursos)
         document.addEventListener('visibilitychange', () => {
@@ -118,7 +117,7 @@ async function initApp() {
                 clearInterval(state.intervalId);
                 state.intervalId = null;
             } else if (!document.hidden && !state.intervalId) {
-                state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
+                state.intervalId = setInterval(() => cargarYRenderizarDatos(true), 60000);
             }
         });
 
@@ -127,11 +126,11 @@ async function initApp() {
     }
 }
 
-async function cargarYRenderizarDatos(idEmpresa, isBackgroundUpdate = false) {
+async function cargarYRenderizarDatos(isBackgroundUpdate = false) {
     try {
-        if (!isBackgroundUpdate) cache.datos = null; // Forzar fetch fresco en carga inicial
+        if (!isBackgroundUpdate) cache.datos = null; 
         
-        const { mesas, zonas } = await obtenerDatosOptimizados(idEmpresa);
+        const { mesas, zonas } = await obtenerDatosOptimizados();
         state.mesas = mesas;
         state.zonas = zonas;
 
@@ -139,7 +138,7 @@ async function cargarYRenderizarDatos(idEmpresa, isBackgroundUpdate = false) {
         renderFilters();
         renderTables();
     } catch (error) {
-        if (!isBackgroundUpdate) throw error; // Si es carga inicial, mostrar pantalla de error
+        if (!isBackgroundUpdate) throw error; 
         console.error("El refresco automático falló, pero la UI se mantiene estable:", error);
     }
 }
@@ -355,7 +354,7 @@ function handleGestionarMesa(idMesa) {
 async function navegarSeguroBackend(idMesa, urlDestino) {
     try {
         // 1. Avisar al backend (Puntero no bloqueante)
-        await apiPedido.abrirMesa(1, idMesa); // 1 = ID del usuario logueado simulado
+        await apiPedido.abrirMesa(idMesa); // 1 = ID del usuario logueado simulado
 
         // 2. Redirigir a la URL 100% limpia
         window.location.href = urlDestino;
