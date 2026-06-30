@@ -1,4 +1,5 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
+import { connectWebSocket } from '../consumo/websocket.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -50,15 +51,31 @@ async function initDetallePage() {
         categorias = cats;
         todosLosPlatos = platos;
 
-        // Cargar dropdown de pedidos (agrupando mesas)
         cargarPedidosDropdown();
 
-        // Verificar si venimos de la pantalla de mesas
-        const idMesaSeleccionada = sessionStorage.getItem('mesaDetalleId');
-        if (idMesaSeleccionada) {
-            const ped = await api.getPedidoActivoByMesa(idMesaSeleccionada);
-            if (ped) dom.selectMesaPedido.value = ped.id;
-            sessionStorage.removeItem('mesaDetalleId');
+        const vieneDePedidos = sessionStorage.getItem('vieneDePedidos') === 'true';
+        const vieneDeMesas = sessionStorage.getItem('vieneDeMesas') === 'true';
+        
+        if (vieneDePedidos) {
+            sessionStorage.removeItem('vieneDePedidos');
+            const idPedidoActivo = await api.getPedidoActivo();
+            if (idPedidoActivo) {
+                dom.selectMesaPedido.value = idPedidoActivo;
+            }
+            await api.cerrarPedidoActivo(); 
+        } 
+        else if (vieneDeMesas) {
+            sessionStorage.removeItem('vieneDeMesas');
+            const mesaAbierta = await api.getMesaAbierta();
+            if (mesaAbierta) {
+                const ped = await api.getPedidoActivoByMesa(mesaAbierta.id);
+                if (ped) dom.selectMesaPedido.value = ped.id;
+            }
+            await api.cerrarMesa(); 
+        } 
+        else {
+            await api.cerrarMesa();
+            await api.cerrarPedidoActivo();
         }
 
         cargarPedidoSeleccionado();
@@ -71,10 +88,20 @@ async function initDetallePage() {
 
         dom.categoriasContainer.addEventListener('click', handleCategoriasClick);
         dom.platosContainer.addEventListener('click', handlePlatosClick);
-        dom.listaProductos.addEventListener('click', handleAccordionClick); // Acordeón
+        dom.listaProductos.addEventListener('click', handleAccordionClick);
 
-        // Cronómetros en vivo
         setInterval(actualizarTiemposDOM, 1000);
+
+        // 👇 WEBSOCKET: Escuchar cambios en el pedido actual
+        connectWebSocket((canal, data) => {
+            if (canal === 'COCINA' && data.idPedido && pedidoActual && parseInt(data.idPedido) === pedidoActual.id) {
+                if (data.tipo === 'PRODUCTO_AGREGADO' || data.tipo === 'ESTADO_ACTUALIZADO') {
+                    setTimeout(() => {
+                        cargarPedidoSeleccionado();
+                    }, 300);
+                }
+            }
+        });
 
     } catch (error) {
         console.error("Error inicial:", error);
@@ -86,7 +113,6 @@ function cargarPedidosDropdown() {
         dom.selectMesaPedido.innerHTML = '<option value="">No hay pedidos activos</option>';
         return;
     }
-    // Agrupamos las mesas unidas en una sola opción por pedido
     dom.selectMesaPedido.innerHTML = '<option value="">Seleccione un pedido...</option>' +
         pedidosActivos.map(p => {
             const mesasTxt = p.numerosMesas && p.numerosMesas.length > 0 ? p.numerosMesas.join(' + ') : 'Sin mesa';
@@ -101,7 +127,7 @@ async function cargarPedidoSeleccionado() {
         return;
     }
 
-    // Buscamos el pedido en el array que ya tenemos cargado
+    pedidosActivos = await api.getPedidosActivos();
     pedidoActual = pedidosActivos.find(p => p.id === idPedido);
 
     if (!pedidoActual) {
@@ -141,6 +167,8 @@ function renderProductosPedido(detalles) {
         return;
     }
 
+    const pedidoEnProgreso = (pedidoActual.estado === 'PREPARANDO' || pedidoActual.estado === 'LISTO');
+
     dom.listaProductos.innerHTML = detalles.map(det => {
         const unidades = det.unidades || [];
         const totalUnidades = unidades.length || det.cantidad;
@@ -148,43 +176,54 @@ function renderProductosPedido(detalles) {
         const nombrePlato = det.nombrePlato || 'Producto';
         const tipoPlato = det.categoriaPlato || 'General';
 
-        // Construir el HTML de las unidades (Acordeón)
         let unidadesHTML = '';
         if (unidades.length > 0) {
-            unidadesHTML = `
-                <div class="units-accordion">
-                    ${unidades.map((u, i) => {
-                        const estadoTxt = u.estado || 'PENDIENTE';
-                        let estadoClass = 'state-pending';
-                        if (estadoTxt === 'PREPARANDO') estadoClass = 'state-preparing';
-                        if (estadoTxt === 'LISTO') estadoClass = 'state-ready';
+            unidadesHTML = `<div class="units-accordion">`;
+            
+            unidades.forEach((u, i) => {
+                const estadoTxt = u.estado || 'PENDIENTE';
+                let estadoClass = 'state-pending';
+                let estadoTextoBonito = 'Pendiente';
+                let badgeNuevo = '';
+                
+                if (estadoTxt === 'PREPARANDO') {
+                    estadoClass = 'state-preparing';
+                    estadoTextoBonito = 'En Cocina';
+                } else if (estadoTxt === 'LISTO') {
+                    estadoClass = 'state-ready';
+                    estadoTextoBonito = 'Listo';
+                } else if (estadoTxt === 'PENDIENTE' && pedidoEnProgreso) {
+                    badgeNuevo = '<span class="badge-new">¡NUEVO!</span>';
+                    estadoTextoBonito = 'Agregado';
+                }
 
-                        const start = u.fechaInicio ? new Date(u.fechaInicio).getTime() : 0;
-                        const end = u.fechaListo ? new Date(u.fechaListo).getTime() : 0;
-                        let timerHTML = `<span class="unit-time-static">--:--</span>`;
-                        if (start > 0) {
-                            timerHTML = `<span class="unit-timer" data-start="${start}" data-end="${end}">00:00</span>`;
-                        }
+                const start = u.fechaInicio ? new Date(u.fechaInicio).getTime() : 0;
+                const end = u.fechaListo ? new Date(u.fechaListo).getTime() : 0;
+                let timerHTML = `<span class="unit-time-static">En espera</span>`;
+                if (start > 0) {
+                    timerHTML = `<span class="unit-timer" data-start="${start}" data-end="${end}">00:00</span>`;
+                } else if (end > 0) {
+                    timerHTML = `<span class="unit-time-static"><i class="fa-solid fa-check"></i></span>`;
+                }
 
-                        return `
-                            <div class="unit-row ${estadoTxt}">
-                                <div class="unit-info">
-                                    <span class="unit-label">Unidad ${i + 1}</span>
-                                    <span class="item-status ${estadoClass}">${estadoTxt}</span>
-                                </div>
-                                <div class="unit-time-box">${timerHTML}</div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
+                unidadesHTML += `
+                    <div class="unit-row ${estadoTxt}">
+                        <div class="unit-info">
+                            <span class="unit-label">Unidad ${i + 1} ${badgeNuevo}</span>
+                            <span class="item-status ${estadoClass}">${estadoTextoBonito}</span>
+                        </div>
+                        <div class="unit-time-box">${timerHTML}</div>
+                    </div>
+                `;
+            });
+            unidadesHTML += `</div>`;
         }
 
-        // Si hay 1 sola unidad, no mostramos el icono de desplegar
         const toggleIcon = unidades.length > 1 ? '<i class="fa-solid fa-chevron-down toggle-icon"></i>' : '';
+        const claseDiv = unidades.length === 1 ? 'auto-open' : (unidades.length > 1 ? 'clickable' : '');
 
         return `
-            <div class="product-accordion-item ${unidades.length > 1 ? 'clickable' : ''}">
+            <div class="product-accordion-item ${claseDiv}">
                 <div class="product-item">
                     <div class="product-left">
                         <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
@@ -228,18 +267,13 @@ function actualizarEstadisticas(detalles) {
     dom.statTotal.textContent = fmtCOP.format(total);
 }
 
-// Lógica para abrir/cerrar el acordeón al hacer clic
 function handleAccordionClick(e) {
     const item = e.target.closest('.product-accordion-item');
     if (!item || !item.classList.contains('clickable')) return;
-
-    // Evitar que se cierre si seleccionan texto
     if (e.target.closest('.btn-add-cart') || e.target.closest('button')) return;
-
     item.classList.toggle('active');
 }
 
-// --- LÓGICA MODAL PRODUCTOS ---
 function abrirModalProductos() {
     if (!pedidoActual) { showNotification("Atención", "Selecciona un pedido activo primero.", "warning"); return; }
     renderCategorias();
@@ -328,17 +362,13 @@ async function handlePlatosClick(e) {
 
             showNotification("Producto Agregado", `Se agregaron ${cantidad} unidades al pedido #RS-${pedidoActual.id}.`, "success");
             
-            // Recargamos los detalles del pedido
-            // También actualizamos el array de pedidosActivos por si cambió el estado
-            pedidosActivos = await api.getPedidosActivos(ID_EMPRESA);
-            cargarPedidoSeleccionado();
+            // 👇 No forzamos fetch. El WebSocket se encargará de recargar la vista en tiempo real.
         } catch (error) {
             showNotification("Error", "No se pudo agregar el producto.", "danger");
         }
     }
 }
 
-// Cronómetro en tiempo real para las unidades desplegadas
 function actualizarTiemposDOM() {
     document.querySelectorAll('.unit-timer').forEach(el => {
         const start = parseInt(el.dataset.start);

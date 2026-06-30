@@ -1,7 +1,7 @@
 const API_BASE = "http://localhost:8080/api";
 // const token = localStorage.getItem("token");
 const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb3NlLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEzLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4MjUxMjU1MiwiZXhwIjoxNzgyNTk4OTUyfQ.wtI1vALmOsUwUdms17hGsYHjTGdO-TLWYz2Rboi-PnM";
+  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4Mjc3MzYyMiwiZXhwIjoxNzgyODYwMDIyfQ.u7CG1zEdY36gDCpqDnl7_qTnOqUba9SzsGGVbG1Y94g";
 
 export const apiReserva = {
   listarPorReservaId: async (idReserva) => {

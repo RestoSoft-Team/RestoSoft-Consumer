@@ -1,12 +1,12 @@
 import { api } from '../consumo/apiMesas.js';
 import { apiPedido } from '../consumo/apiCrearPedido.js';
+import { connectWebSocket } from '../consumo/websocket.js'; // 👈 IMPORT WEBSOCKET
 
 // =========================================
 // 1. ESTADO Y CONFIGURACIÓN GLOBAL
 // =========================================
 const state = {
     mesas: [],
-    // ... resto de tu código
     zonas: [],
     filtroActivo: 'todas',
     busqueda: '',
@@ -38,10 +38,8 @@ const dom = {
 };
 
 // =========================================
-// 2. UTILIDADES (Seguridad y Render)
+// 2. UTILIDADES
 // =========================================
-
-// Evita inyecciones XSS (Cross-Site Scripting)
 const escapeHTML = (str) => {
     if (str == null) return '';
     return String(str)
@@ -54,7 +52,6 @@ const escapeHTML = (str) => {
 
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-// Mapeo limpio de estados
 const ESTADOS_MESA = {
     LIBRE: { text: 'Disponible', color: 'table-free', status: 'status-success' },
     OCUPADA: { text: 'Ocupada', color: 'table-busy', status: 'status-danger' },
@@ -63,7 +60,7 @@ const ESTADOS_MESA = {
 };
 
 // =========================================
-// 3. CAPA DE DATOS (Caché y Backoff)
+// 3. CAPA DE DATOS
 // =========================================
 async function fetchConBackoff(intento = 0) {
     const MAX_INTENTOS = 5;
@@ -86,18 +83,18 @@ async function fetchConBackoff(intento = 0) {
 }
 
 async function obtenerDatosOptimizados() {
-    const ahora = Date.now();
-    if (cache.datos && (ahora - cache.ultimaVez < cache.TTL)) {
+    const agora = Date.now();
+    if (cache.datos && (agora - cache.ultimaVez < cache.TTL)) {
         return cache.datos;
     }
     const data = await fetchConBackoff();
     cache.datos = data;
-    cache.ultimaVez = ahora;
+    cache.ultimaVez = agora;
     return data;
 }
 
 // =========================================
-// 4. INICIALIZACIÓN Y POLLING INTELIGENTE
+// 4. INICIALIZACIÓN Y WEBSOCKET
 // =========================================
 document.addEventListener('DOMContentLoaded', initApp);
 
@@ -108,16 +105,17 @@ async function initApp() {
     try {
         await cargarYRenderizarDatos();
         
-        // Iniciar actualización automática (Polling)
-        state.intervalId = setInterval(() => cargarYRenderizarDatos(true), 60000);
-        
-        // Pausar polling si el usuario sale de la pestaña (Ahorro de recursos)
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && state.intervalId) {
-                clearInterval(state.intervalId);
-                state.intervalId = null;
-            } else if (!document.hidden && !state.intervalId) {
-                state.intervalId = setInterval(() => cargarYRenderizarDatos(true), 60000);
+        // 👇 CONEXIÓN WEBSOCKET (Eliminamos el setInterval)
+        connectWebSocket((canal, data) => {
+            if (canal === 'COCINA') {
+                // Si se crea un pedido o se reserva/libera una mesa, actualizamos las tarjetas
+                if (data.tipo === 'NUEVO_PEDIDO' || data.tipo === 'ESTADO_ACTUALIZADO' || data.tipo === 'MESA_RESERVADA' || data.tipo === 'MESA_LIBERADA') {
+                    
+                    // 👇 FORZAMOS QUE SE PIDAN DATOS NUEVOS AL BACKEND AL LIMPIAR LA CACHÉ
+                    cache.datos = null; 
+                    
+                    cargarYRenderizarDatos(true); // true = actualización en segundo plano
+                }
             }
         });
 
@@ -166,7 +164,7 @@ function renderFilters() {
         { id: 'estado-LIBRE', texto: 'Disponibles' },
         { id: 'estado-OCUPADA', texto: 'Ocupadas' },
         { id: 'estado-RESERVADA', texto: 'Reservadas' },
-        { id: 'estado-FUERA_SERVICIO', texto: 'Fuera de Servicio' }
+        { id: 'estado-FUERA_SERVICIO', texto: 'Fuera de Dienst' }
     ];
 
     const botonesHTML = filtrosBase.map(f => crearBotonFiltro(f.id, f.texto)).join('');
@@ -182,7 +180,6 @@ function crearBotonFiltro(id, texto) {
 function renderTables() {
     let mesasFiltradas = state.mesas;
 
-    // Filtro por Estado o Zona
     if (state.filtroActivo.startsWith('estado-')) {
         mesasFiltradas = mesasFiltradas.filter(m => m.estado === state.filtroActivo.split('-')[1]);
     } else if (state.filtroActivo.startsWith('zona-')) {
@@ -190,7 +187,6 @@ function renderTables() {
         mesasFiltradas = mesasFiltradas.filter(m => m.idZona === idZona);
     }
 
-    // Filtro por Búsqueda (Input)
     if (state.busqueda) {
         const query = state.busqueda.toLowerCase();
         mesasFiltradas = mesasFiltradas.filter(m => {
@@ -205,7 +201,6 @@ function renderTables() {
         return;
     }
 
-    // Uso de DocumentFragment para rendimiento
     const fragment = document.createDocumentFragment();
     const wrapper = document.createElement('div');
 
@@ -245,10 +240,9 @@ function renderTables() {
 }
 
 // =========================================
-// 6. EVENTOS Y DELEGACIÓN (Patrón Empresarial)
+// 6. EVENTOS
 // =========================================
 function setupEventListeners() {
-    // Delegación para Filtros
     dom.filtersContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.filter-btn');
         if (!btn) return;
@@ -258,7 +252,6 @@ function setupEventListeners() {
         renderTables();
     });
 
-    // Delegación para Acciones de Mesas (Gestionar / Ver)
     dom.tablesGrid.addEventListener('click', (e) => {
         const btnVer = e.target.closest('.btn-ver');
         const btnGestionar = e.target.closest('.btn-gestionar');
@@ -267,25 +260,34 @@ function setupEventListeners() {
         if (btnGestionar) handleGestionarMesa(parseInt(btnGestionar.dataset.id));
     });
 
-    // Buscador con debounce básico
     let searchTimeout;
     dom.searchInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             state.busqueda = e.target.value.trim();
             renderTables();
-        }, 300); // Espera 300ms después de que el usuario deja de escribir
+        }, 300);
     });
 
-    // Cerrar Modal
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.modalOverlay.addEventListener('click', (e) => {
         if (e.target === dom.modalOverlay) closeModal();
     });
+    
+    // Listener para redirección segura
+    dom.modalBody.addEventListener('click', async (e) => {
+        const btnRedirect = e.target.closest('.btn-redirect');
+        if (btnRedirect) {
+            e.preventDefault();
+            const url = btnRedirect.dataset.url;
+            const idMesa = parseInt(btnRedirect.dataset.id);
+            await navegarSeguroBackend(idMesa, url);
+        }
+    });
 }
 
 // =========================================
-// 7. LÓGICA DE MODALES (Acciones 100% Seguras)
+// 7. LÓGICA DE MODALES
 // =========================================
 function handleVerMesa(idMesa) {
     const mesa = state.mesas.find(m => m.id === idMesa);
@@ -312,12 +314,11 @@ function handleGestionarMesa(idMesa) {
     dom.modalTitle.innerHTML = `<i class="fa-solid fa-gear"></i> Gestionar Mesa ${escapeHTML(mesa.numeroMesa)}`;
     let actionsHTML = '';
 
-    // Usamos botones, NO enlaces con URLs. El ID no se expone.
     if (mesa.estado === 'LIBRE') {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--success)">Disponible</strong>. ¿Deseas iniciar un nuevo pedido?</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pedido-crear.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-plus"></i> Crear Nuevo Pedido
                 </button>
             </div>
@@ -326,10 +327,10 @@ function handleGestionarMesa(idMesa) {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--danger)">Ocupada</strong>. Selecciona una acción:</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-outline-custom btn-redirect" data-url="../Pedidos/pedido-detalle.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-outline-custom btn-redirect" data-url="pedido-detalle.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-utensils"></i> Agregar Producto
                 </button>
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../pagos.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pagos.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-cash-register"></i> Cobrar Cuenta
                 </button>
             </div>
@@ -338,7 +339,7 @@ function handleGestionarMesa(idMesa) {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--warning)">Reservada</strong>. Esperando la llegada del cliente.</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pedido-crear.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-bell-concierge"></i> Iniciar Pedido de Reserva
                 </button>
             </div>
@@ -353,26 +354,13 @@ function handleGestionarMesa(idMesa) {
 
 async function navegarSeguroBackend(idMesa, urlDestino) {
     try {
-        // 1. Avisar al backend (Puntero no bloqueante)
-        await apiPedido.abrirMesa(idMesa); // 1 = ID del usuario logueado simulado
-
-        // 2. Redirigir a la URL 100% limpia
+        await apiPedido.abrirMesa(idMesa); 
+        sessionStorage.setItem('vieneDeMesas', 'true');
         window.location.href = urlDestino;
     } catch (error) {
         alert("No se pudo abrir la página de pedidos.");
     }
 }
-// Dentro de setupEventListeners() o al final de tu JS
-dom.modalBody.addEventListener('click', async (e) => {
-    const btnRedirect = e.target.closest('.btn-redirect');
-    if (btnRedirect) {
-        e.preventDefault();
-        const url = btnRedirect.dataset.url;
-        const idMesa = parseInt(btnRedirect.dataset.id);
-        
-        await navegarSeguroBackend(idMesa, url);
-    }
-});
 
 function openModal() { dom.modalOverlay.classList.add('show'); }
 function closeModal() { dom.modalOverlay.classList.remove('show'); }

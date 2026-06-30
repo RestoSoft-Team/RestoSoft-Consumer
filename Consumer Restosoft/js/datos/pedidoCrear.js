@@ -1,7 +1,5 @@
 import { apiPedido } from '../consumo/apiCrearPedido.js';
-import { obtenerIdUsuarioDeToken } from '../consumo/auth.js';
 
-const ID_USUARIO_LOGUEADO = obtenerIdUsuarioDeToken(); 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
@@ -47,8 +45,9 @@ let todosLosUsuarios = [];
 let categoriaActiva = 'todas';
 let carrito = []; 
 let mesasUnidas = []; 
-let meserosSeleccionados = [ID_USUARIO_LOGUEADO]; 
-let notifTimeout = null; // Para controlar el tiempo de la notificación
+// 👇 Ya no inicializamos con el ID logueado. El backend lo agregará automáticamente si está vacío.
+let meserosSeleccionados = []; 
+let notifTimeout = null; 
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPedidoPage);
@@ -57,7 +56,7 @@ if (document.readyState === 'loading') {
 }
 
 async function initPedidoPage() {
-      try {
+    try {
         const [zonas, mesas, mesaAbierta, cats, platos, usuarios] = await Promise.all([
             apiPedido.getZonas(),
             apiPedido.getMesas(),
@@ -74,15 +73,22 @@ async function initPedidoPage() {
         todosLosUsuarios = usuarios;
 
         cargarZonas();
-        if (mesaAbierta) seleccionarMesaAutomaticamente(mesaAbierta);
         dom.selectZona.addEventListener('change', () => filtrarMesasPorZona());
+
+        const vieneDeMesas = sessionStorage.getItem('vieneDeMesas') === 'true';
+        
+        if (vieneDeMesas && mesaAbierta) {
+            seleccionarMesaAutomaticamente(mesaAbierta);
+            sessionStorage.removeItem('vieneDeMesas');
+        } else {
+            await apiPedido.cerrarMesa();
+        }
 
         renderCategorias();
         renderPlatos();
         actualizarEstadisticas();
         renderTagsMeseros();
 
-        // Listeners Modales
         dom.btnAbrirModal.addEventListener('click', () => dom.modalProductos.classList.add('show'));
         dom.modalCloseBtn.addEventListener('click', () => dom.modalProductos.classList.remove('show'));
         dom.modalProductos.addEventListener('click', (e) => { if (e.target === dom.modalProductos) dom.modalProductos.classList.remove('show'); });
@@ -223,32 +229,25 @@ function abrirModalMeseros() {
 function confirmarAsignacionMeseros() {
     const seleccionados = dom.listaMeserosAsignar.querySelectorAll('.lista-item.selected');
     meserosSeleccionados = Array.from(seleccionados).map(el => parseInt(el.dataset.id));
-    
-    if (!meserosSeleccionados.includes(ID_USUARIO_LOGUEADO)) {
-        meserosSeleccionados.push(ID_USUARIO_LOGUEADO);
-    }
     renderTagsMeseros();
     dom.modalMeseros.classList.remove('show');
 }
 
 function renderTagsMeseros() {
     if (meserosSeleccionados.length === 0) {
-        dom.tagsMeseros.innerHTML = '<span class="empty-tags">Asigna los meseros...</span>';
+        dom.tagsMeseros.innerHTML = '<span class="empty-tags">Serás asignado automáticamente al confirmar.</span>';
         return;
     }
     dom.tagsMeseros.innerHTML = meserosSeleccionados.map(id => {
         const u = todosLosUsuarios.find(x => x.id === id);
-        if (!u && id === ID_USUARIO_LOGUEADO) return `<div class="tag-badge mesero">Daniel Mora (Tú) <i class="fa-solid fa-lock remove-tag" style="cursor:not-allowed; opacity:0.3;"></i></div>`;
         return u ? `<div class="tag-badge mesero">${u.nombres} ${u.apellidos} <i class="fa-solid fa-times remove-tag" data-id="${id}"></i></div>` : '';
     }).join('');
     
     dom.tagsMeseros.querySelectorAll('.remove-tag').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = parseInt(btn.dataset.id);
-            if (id !== ID_USUARIO_LOGUEADO) {
-                meserosSeleccionados = meserosSeleccionados.filter(m => m !== id);
-                renderTagsMeseros();
-            }
+            meserosSeleccionados = meserosSeleccionados.filter(m => m !== id);
+            renderTagsMeseros();
         });
     });
 }
@@ -406,7 +405,7 @@ async function confirmarPedido() {
     const pedidoData = {
         observaciones: dom.txtObservaciones.value || "Sin observaciones",
         idMesas: idMesas,
-        idUsuarios: meserosSeleccionados,
+        idUsuarios: meserosSeleccionados, 
         estado: "PENDIENTE",
         fecha: new Date().toISOString(),
         detalles: carrito.map(item => ({
@@ -417,15 +416,14 @@ async function confirmarPedido() {
     };
 
     try {
-         await apiPedido.createPedido(pedidoData);
-        await apiPedido.cerrarMesa(); 
-        
+        await apiPedido.createPedido(pedidoData);
+        await apiPedido.cerrarMesa();
+
         showNotification("Pedido creado", "El pedido fue enviado correctamente a cocina.", "success");
-        setTimeout(() => window.location.href = "mesas.html", 2000);
-        
+        setTimeout(() => window.location.href = "mesas.html", 2000); 
+
     } catch (error) {
         showNotification("Error al crear", error.message || "Ocurrió un error desconocido.", "danger");
-        setTimeout(() => window.location.reload(), 4000);
     }
 }
 
@@ -438,13 +436,11 @@ function showNotification(titulo, mensaje, tipo = 'success') {
     const strong = notification.querySelector('strong');
     const textDiv = notification.querySelector('.notification-content > div:last-child > div:last-child');
 
-    // Limpiar clases y estilos anteriores
     notification.style.borderLeftColor = '';
     iconDiv.style.background = '';
     iconDiv.style.color = '';
     iconDiv.innerHTML = '';
 
-    // Aplicar estilos según el tipo de error/mensaje
     if (tipo === 'success') {
         notification.style.borderLeftColor = 'var(--success)';
         iconDiv.style.background = '#edf7f1';
@@ -467,7 +463,6 @@ function showNotification(titulo, mensaje, tipo = 'success') {
 
     notification.classList.add('show');
     
-    // Limpiar timeout anterior si existe para evitar que se cierre antes de tiempo
     if (notifTimeout) clearTimeout(notifTimeout);
     notifTimeout = setTimeout(() => notification.classList.remove('show'), 3500);
 }

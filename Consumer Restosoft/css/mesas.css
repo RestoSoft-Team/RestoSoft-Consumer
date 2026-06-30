@@ -1,20 +1,41 @@
 :root {
-    --background: #fbfcfb;
-    --primary: #6b1e28;
-    --primary-light: #8a3b47;
-    --dark: #262f3c;
-    --dark-light: #39485c;
-    --soft: #b09da2;
-    --soft-light: #d9d2d4;
-    --white: #ffffff;
-    --gray: #6f7782;
-    --gray-light: #eef0f2;
-    --success: #3d8b5c;
-    --warning: #d9a441;
-    --danger: #bb3a4b;
-    --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-    --radius: 24px;
-    --transition: .3s;
+  /* Marca */
+  --primary: #6b1e28;
+  --primary-light: #8a3b47;
+  --primary-soft: rgba(107, 30, 40, 0.08);
+  
+  /* Fondo y Superficie */
+  --background: #f8f9fb;
+  --surface: #ffffff;
+  --surface-container: #f1f3f6;
+  --border-color: #e8ebf0;
+  
+  /* Texto */
+  --dark: #111827;
+  --gray: #6b7280;
+  --soft: #9ca3af;
+  
+  /* Estados */
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  
+  /* Sombras y Bordes (Estos no suelen cambiarse desde la API, los dejamos fijos) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  /* Tamaños fijos */
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 78px;
+  --topbar-height: 80px;
 }
 
 * {

@@ -221,7 +221,7 @@ function iniciarModuloTransferencia() {
         const C = parseInt(mesa.disponibilidadPersonas) || 4;
         ctx.save();
         
-        let mainColor = "#6b1e28"; 
+        let mainColor = "#22521b"; 
         let strokeColor = "#4a121a";
 
         if (mesa.estado === 'OCUPADA') { mainColor = "#d32f2f"; strokeColor = "#7f0000"; }

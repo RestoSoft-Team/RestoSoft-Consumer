@@ -105,6 +105,14 @@
             width: 100%; background-color: var(--input-bg); border: 1px solid var(--border);
             color: white; padding: 8px; border-radius: 4px;
         }
+        /* Estilo para el input de archivos */
+        .form-group input[type="file"] {
+            padding: 4px; cursor: pointer;
+        }
+        .form-group input[type="file"]::file-selector-button {
+            background-color: var(--primary); color: white; border: none;
+            padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 10px;
+        }
 
         .btn {
             width: 100%; padding: 10px; border: none; border-radius: 6px;
@@ -126,6 +134,10 @@
             overflow-y: auto; border: 1px solid var(--border); color: #d4d4d4;
         }
         .s-2xx { color: #4ec9b0; } .s-4xx { color: #dcdcaa; } .s-5xx { color: #f48771; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .checkbox-group label { margin-bottom: 0; font-size: 0.85rem; color: #ef4444; cursor: pointer; }
+        .checkbox-group input { width: auto; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -201,7 +213,7 @@
 
         <!-- COLUMNA DERECHA -->
         <div>
-            <!-- CREAR EMPLEADO -->
+            <!-- CREAR EMPLEADO CON IMAGEN -->
             <div class="card">
                 <h2>👤 Crear Empleado (Público + Empresa)</h2>
                 <div class="endpoint post">
@@ -218,7 +230,14 @@
                         <div class="form-group"><label>Teléfono</label><input type="text" id="emp-telefono" value="3001234567"></div>
                         <div class="form-group"><label>F. Nacimiento</label><input type="date" id="emp-fecha" value="1990-01-01"></div>
                     </div>
-                    <div class="form-group"><label>ID Rol</label><input type="number" id="emp-rol" value="2"></div>
+                    <div class="row">
+                        <div class="form-group"><label>ID Rol</label><input type="number" id="emp-rol" value="2"></div>
+                        <!-- NUEVO: INPUT DE IMAGEN -->
+                        <div class="form-group">
+                            <label>Imagen (Opcional)</label>
+                            <input type="file" id="emp-imagen" accept="image/*">
+                        </div>
+                    </div>
                     <button class="btn btn-post" onclick="crearEmpleado()">Crear Empleado</button>
                 </div>
             </div>
@@ -247,9 +266,21 @@
                     <button class="btn btn-get" onclick="obtenerEmpleado()">Obtener por ID</button>
                 </div>
 
+                <!-- ACTUALIZAR EMPLEADO CON IMAGEN -->
                 <div class="endpoint put">
                     <div class="endpoint-title"><span class="badge badge-put">PUT</span>/api/usuarios/{id}</div>
-                    <div class="form-group"><label>Nuevo Nombre (para probar)</label><input type="text" id="upd-nombres" value="Juan Carlos (Actualizado)"></div>
+                    <div class="form-group"><label>Nuevo Nombre</label><input type="text" id="upd-nombres" value="Juan Carlos (Actualizado)"></div>
+                    
+                    <!-- NUEVO: INPUT DE IMAGEN Y CHECKBOX DE ELIMINAR -->
+                    <div class="form-group">
+                        <label>Nueva Imagen (Dejar vacío para no cambiar)</label>
+                        <input type="file" id="upd-imagen" accept="image/*">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="upd-eliminar-imagen">
+                        <label for="upd-eliminar-imagen">Eliminar imagen actual (si no sube nueva)</label>
+                    </div>
+                    
                     <button class="btn btn-put" onclick="actualizarEmpleado()">Actualizar Empleado</button>
                 </div>
 
@@ -292,33 +323,27 @@
             container.innerHTML = `<span class="${statusClass}">Status: ${status}</span>\n\n` + JSON.stringify(data, null, 2);
         }
 
-        function getHeaders(requiresAuth = false, requiresEmpresa = false) {
-            let headers = { 'Content-Type': 'application/json' };
+        // Se añade el parámetro isMultipart para controlar el Content-Type
+        function getHeaders(requiresAuth = false, requiresEmpresa = false, isMultipart = false) {
+            // Si es multipart, NO ponemos Content-Type. El navegador lo hace automáticamente con el boundary.
+            let headers = isMultipart ? {} : { 'Content-Type': 'application/json' };
             const token = getToken();
             const empId = getEmpresaId();
 
-            // 1. Siempre enviamos el token si existe, para que Spring Security lo lea en el contexto
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            // 2. Validar rutas estrictamente protegidas
             if (requiresAuth && !token) {
                 alert("¡Error! Se requiere Token JWT para esta petición (Inicia sesión arriba)."); 
                 throw new Error("Falta Token"); 
             }
 
-            // 3. Validar rutas que requieren Empresa
             if (requiresEmpresa) {
-                // Si no hay token ni empresa, error
                 if (!token && !empId) {
                     alert("¡Error! Para esta petición necesitas un Token o indicar el ID de la Empresa."); 
                     throw new Error("Falta Empresa"); 
                 }
-                
-                // SOLO enviamos el header 'idempresa' si NO hay token. 
-                // Si hay token, NO lo enviamos, para forzar a tu IdEmpresaArgumentResolver 
-                // a tomarlo del SecurityContextHolder.
                 if (!token && empId) {
                     headers['idempresa'] = empId;
                 }
@@ -345,9 +370,10 @@
             } catch (e) { renderResponse(500, { error: e.message }); }
         }
 
-        // --- EMPLEADOS ---
+        // --- EMPLEADOS (CREAR - MULTIPART) ---
         async function crearEmpleado() {
-            const body = {
+            // 1. Recolectar los datos de texto en un objeto
+            const empleadoData = {
                 nombres: document.getElementById('emp-nombres').value,
                 apellidos: document.getElementById('emp-apellidos').value,
                 email: document.getElementById('emp-email').value,
@@ -356,8 +382,26 @@
                 fechaNacimiento: document.getElementById('emp-fecha').value,
                 idRol: parseInt(document.getElementById('emp-rol').value)
             };
+
+            // 2. Crear el objeto FormData
+            const formData = new FormData();
+
+            // 3. Adjuntar el JSON como un Blob (¡MUY IMPORTANTE!)
+            formData.append('empleado', new Blob([JSON.stringify(empleadoData)], { type: 'application/json' }));
+
+            // 4. Adjuntar la imagen si el usuario seleccionó una
+            const imagenInput = document.getElementById('emp-imagen');
+            if (imagenInput.files.length > 0) {
+                formData.append('imagen', imagenInput.files[0]);
+            }
+
             try {
-                const res = await fetch(`${getBaseUrl()}/api/usuarios/empleados`, { method: 'POST', headers: getHeaders(false, true), body: JSON.stringify(body) });
+                // 5. Enviar con isMultipart=true
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/empleados`, { 
+                    method: 'POST', 
+                    headers: getHeaders(false, true, true), 
+                    body: formData 
+                });
                 const data = await res.json();
                 renderResponse(res.status, data);
             } catch (e) { renderResponse(500, { error: e.message }); }
@@ -365,7 +409,6 @@
 
         async function listarEmpleados() {
             try {
-                // requiresAuth=true, requiresEmpresa=true
                 const res = await fetch(`${getBaseUrl()}/api/usuarios/clientes`, { method: 'GET', headers: getHeaders(true, true) });
                 const data = await res.json();
                 renderResponse(res.status, data);
@@ -390,20 +433,42 @@
             } catch (e) { renderResponse(500, { error: e.message }); }
         }
 
+        // --- EMPLEADOS (ACTUALIZAR - MULTIPART) ---
         async function actualizarEmpleado() {
             const id = document.getElementById('target-user-id').value;
             if (!id) { alert("Ingresa el ID del usuario"); return; }
-            const body = {
+
+            // 1. Recolectar datos de texto
+            const empleadoData = {
                 nombres: document.getElementById('upd-nombres').value,
                 apellidos: document.getElementById('emp-apellidos').value,
                 email: document.getElementById('emp-email').value,
-                password: document.getElementById('emp-password').value,
+                password: document.getElementById('emp-password').value, // Cuidado con enviar vacío si tu backend exige que no lo sea
                 telefono: document.getElementById('emp-telefono').value,
                 fechaNacimiento: document.getElementById('emp-fecha').value,
-                idRol: parseInt(document.getElementById('emp-rol').value)
+                idRol: parseInt(document.getElementById('emp-rol').value),
+                eliminarImagen: document.getElementById('upd-eliminar-imagen').checked // Booleano para el backend
             };
+
+            // 2. Crear FormData
+            const formData = new FormData();
+
+            // 3. Adjuntar el JSON como Blob
+            formData.append('empleado', new Blob([JSON.stringify(empleadoData)], { type: 'application/json' }));
+
+            // 4. Adjuntar la nueva imagen si se seleccionó
+            const imagenInput = document.getElementById('upd-imagen');
+            if (imagenInput.files.length > 0) {
+                formData.append('imagen', imagenInput.files[0]);
+            }
+
             try {
-                const res = await fetch(`${getBaseUrl()}/api/usuarios/${id}`, { method: 'PUT', headers: getHeaders(true, true), body: JSON.stringify(body) });
+                // 5. Enviar con isMultipart=true
+                const res = await fetch(`${getBaseUrl()}/api/usuarios/${id}`, { 
+                    method: 'PUT', 
+                    headers: getHeaders(true, true, true), 
+                    body: formData 
+                });
                 const data = await res.json();
                 renderResponse(res.status, data);
             } catch (e) { renderResponse(500, { error: e.message }); }

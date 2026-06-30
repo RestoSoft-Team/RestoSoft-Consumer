@@ -10,8 +10,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../css/mesas.css">
-  <link rel="stylesheet" href="../css/sidebar.css">
+  <link rel="stylesheet" href="css/mesas.css">
+  <link rel="stylesheet" href="css/sidebar.css">
 </head>
 
 <body>
@@ -49,20 +49,17 @@
       <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i>
     </button>
     <div class="submenu">
-
-      <a class="" href="../Pedidos/pedidos.html">Pedidos</a><a class="" href="../Pedidos/pedido-crear.html">Crear
-        Pedido</a><a class="" href="../Pedidos/pedido-detalle.html">Detalle Pedido</a><a class=""
-        href="../Pedidos/pedido-cocina.html">Pedido Cocina</a><a class=""
-        href="../Pedidos/seguimiento-pedidos.html">Seguimiento</a>
+      <a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear Pedido</a><a class=""
+        href="pedido-detalle.html">Detalle Pedido</a><a class="" href="pedido-cocina.html">Pedido Cocina</a><a class=""
+        href="seguimiento-pedidos.html">Seguimiento</a>
     </div>
     <button class="menu-group-btn">
       <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
         class="fa-solid fa-chevron-right chevron"></i>
     </button>
     <div class="submenu open">
-      <a class="active" href="../Mesas/mesas.html">Mesas</a><a class="" href="../Mesas/mapa-mesas.html">Mapa Mesas</a><a
-        class="" href="../Mesas/transferir-mesa.html">Transferir Mesa</a><a class=""
-        href="../Mesas/dividir-cuenta.html">Dividir Cuenta</a>
+      <a class="active" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa Mesas</a><a class=""
+        href="transferir-mesa.html">Transferir Mesa</a><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
     </div>
     <button class="menu-group-btn">
       <span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i class="fa-solid fa-chevron-right chevron"></i>
@@ -234,9 +231,15 @@
     </div>
   </div>
 
-  <script type="module" src="../js/datos/sidebar.js"></script>
-  <script type="module" src="../js/datos/topbar.js"></script>
-  <script type="module" src="../js/datos/mesas.js"></script>
+
+
+
+  <script type="module" src="js/datos/sidebar.js"></script>
+  <script src="js/datos/topbar.js"></script>
+  <script type="module" src="js/datos/mesas.js"></script>
+  <script type="module" src="js/datos/notificaciones.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </body>
 
 </html>
