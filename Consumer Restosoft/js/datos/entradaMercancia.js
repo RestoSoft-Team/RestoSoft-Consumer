@@ -1,19 +1,60 @@
+import { EntradasConsumer } from '../consumo/apiEntradaMercancia.js';
+import { apiProfile } from "../consumo/apiProfile.js";
+
 // ── ESTADO GLOBAL ──────────────────────────────────────────
 let entradasRegistradas = [];
 let insumos = [];
-let proveedores = [];
+let todasLasRelaciones = []; // ¡NUEVO! Guardar las relaciones insumo-proveedor
 
-// ── NOTIFICACIONES ────────────────────────────────────────
-function mostrarNotificacion(titulo, texto, esError = false) {
-    const notif = document.getElementById('notification');
-    const icon = document.getElementById('notificationIcon');
-    document.getElementById('notificationTitle').textContent = titulo;
-    document.getElementById('notificationText').textContent = texto;
-    notif.classList.toggle('is-error', esError);
-    icon.className = esError ? 'fa-solid fa-xmark' : 'fa-solid fa-check';
-    notif.classList.add('show');
-    setTimeout(() => notif.classList.remove('show'), 3500);
-}
+// ══════════════════════════════════════════════════════════════
+// NOTIFICACIÓN MODERNA
+// ══════════════════════════════════════════════════════════════
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
+    }
+
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
+
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
+};
 
 // ── HELPERS FORMATO FECHA ─────────────────────────────────
 function parseFecha(raw) {
@@ -22,10 +63,19 @@ function parseFecha(raw) {
     if (Array.isArray(raw)) fechaStr = raw[0];
     if (typeof raw === 'number') fechaStr = new Date(raw).toISOString();
     try {
-        return new Date(fechaStr).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+        const d = new Date(fechaStr);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
     } catch (err) {
         return String(raw).substring(0, 10);
     }
+}
+
+// ── HELPER NOMBRE PROVEEDOR ────
+function getProveedorNombre(e) {
+    return e?.proveedor?.nombre || e?.proveedorNombre || e?.nombreProveedor || '—';
 }
 
 // ── OBTENER STOCK DE UN INSUMO DEL ARRAY LOCAL ───────────
@@ -36,9 +86,10 @@ function obtenerStockInsumo(insumoId) {
     return found.stockActual ?? found.stock ?? found.cantidad ?? found.stockDisponible ?? 0;
 }
 
-// ── AL SELECCIONAR INSUMO → LLENA STOCK ANTERIOR ────────
+// ── AL SELECCIONAR INSUMO → LLENAR PROVEEDORES Y STOCK ────────
 function onInsumoChange() {
     const insumoId = document.getElementById('selectInsumo').value;
+    const selProv = document.getElementById('selectProveedor');
     const preview = document.getElementById('stockPreview');
 
     if (!insumoId) {
@@ -48,9 +99,33 @@ function onInsumoChange() {
         document.getElementById('spStockAnterior').textContent = '0';
         document.getElementById('spCantidad').textContent = '0';
         document.getElementById('spStockNuevo').textContent = '0';
+
+        selProv.innerHTML = '<option value="">Seleccione un insumo primero...</option>';
+        selProv.disabled = true;
         return;
     }
 
+    // Filtrar proveedores para este insumo específico
+    const proveedoresDeEsteInsumo = todasLasRelaciones.filter(r => r.idInsumo == insumoId);
+
+    if (proveedoresDeEsteInsumo.length === 0) {
+        selProv.innerHTML = '<option value="">Sin proveedores asignados</option>';
+        selProv.innerHTML += '<option value="GESTIONAR">➕ Ir a asignar proveedores...</option>';
+        selProv.disabled = false;
+        window.showNotification('Este insumo no tiene proveedores. Por favor, asignale uno.', 'warning');
+    } else {
+        selProv.innerHTML = '<option value="">Seleccionar proveedor...</option>';
+        proveedoresDeEsteInsumo.forEach(p => {
+            const op = document.createElement('option');
+            op.value = p.idProveedor;
+            op.textContent = p.nombreProveedor || 'Proveedor #' + p.idProveedor;
+            selProv.appendChild(op);
+        });
+        selProv.innerHTML += '<option value="GESTIONAR">➕ Asignar/Quitar proveedores...</option>';
+        selProv.disabled = false;
+    }
+
+    // Llenar stock anterior
     const stockActual = obtenerStockInsumo(insumoId);
     document.getElementById('inputStockAnterior').value = stockActual;
     document.getElementById('spStockAnterior').textContent = stockActual;
@@ -58,6 +133,13 @@ function onInsumoChange() {
     preview.style.display = 'flex';
     recalcularStockNuevo();
 }
+
+// Listener para redirigir si selecciona "GESTIONAR"
+document.getElementById('selectProveedor')?.addEventListener('change', function () {
+    if (this.value === 'GESTIONAR') {
+        window.location.href = 'ProveedorInsumo.html';
+    }
+});
 
 // ── RECALCULAR STOCK NUEVO ───────────────────────────────
 function recalcularStockNuevo() {
@@ -82,11 +164,24 @@ function calcularTotal() {
     recalcularStockNuevo();
 }
 
-// ── CARGAR INSUMOS ────────────────────────────────────────
-async function cargarInsumos() {
+// ── CARGAR INSUMOS Y RELACIONES ────────────────────────────────
+async function cargarInsumosYRelaciones() {
     const sel = document.getElementById('selectInsumo');
+    const selProv = document.getElementById('selectProveedor');
+
+    selProv.innerHTML = '<option value="">Seleccione un insumo primero...</option>';
+    selProv.disabled = true;
+
     try {
-        insumos = await EntradasConsumer.obtenerInsumos();
+        // Cargamos insumos y relaciones al mismo tiempo
+        const [insumosData, relacionesData] = await Promise.all([
+            EntradasConsumer.obtenerInsumos(),
+            EntradasConsumer.obtenerRelaciones()
+        ]);
+
+        insumos = insumosData;
+        todasLasRelaciones = relacionesData;
+
         sel.innerHTML = '<option value="">Seleccionar insumo</option>';
         insumos.forEach(i => {
             const op = document.createElement('option');
@@ -94,31 +189,14 @@ async function cargarInsumos() {
             op.textContent = i.nombre || i.name || 'Insumo #' + i.id;
             sel.appendChild(op);
         });
+
         document.getElementById('statTotalInsumos').textContent = insumos.length;
+        document.getElementById('statTotalProveedores').textContent = new Set(relacionesData.map(r => r.idProveedor)).size;
+
     } catch (error) {
-        console.error('[Insumos] ' + error.message);
+        console.error('[Error carga inicial] ' + error.message);
         sel.innerHTML = '<option value="">Error al cargar insumos</option>';
         document.getElementById('statTotalInsumos').textContent = '0';
-    }
-}
-
-// ── CARGAR PROVEEDORES ────────────────────────────────────
-async function cargarProveedores() {
-    const sel = document.getElementById('selectProveedor');
-    try {
-        proveedores = await EntradasConsumer.obtenerProveedores();
-        sel.innerHTML = '<option value="">Seleccionar proveedor</option>';
-        proveedores.forEach(p => {
-            const op = document.createElement('option');
-            op.value = p.id;
-            op.textContent = p.nombre || p.name || 'Proveedor #' + p.id;
-            sel.appendChild(op);
-        });
-        document.getElementById('statTotalProveedores').textContent = proveedores.length;
-    } catch (error) {
-        console.error('[Proveedores] ' + error.message);
-        sel.innerHTML = '<option value="">Error al cargar proveedores</option>';
-        document.getElementById('statTotalProveedores').textContent = '0';
     }
 }
 
@@ -135,11 +213,10 @@ async function cargarEntradas() {
     actualizarTimeline(entradasRegistradas);
 }
 
-// ── GENERADORES DE HTML (TABLA VS CARDS) ──────────────────
 function generarFilaHTML(e) {
     const insumoNombre = e.nombreInsumo || 'Insumo #—';
-    const proveedorNombre = e.proveedorNombre || 'Proveedor';
-    const inicial = proveedorNombre !== 'Proveedor' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
+    const proveedorNombre = getProveedorNombre(e);
+    const inicial = proveedorNombre !== '—' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
     const stockAnt = e.stockAnterior != null ? e.stockAnterior : '—';
     const stockNue = e.stockNuevo != null ? e.stockNuevo : '—';
     const fechaFormato = parseFecha(e.fechaMovimiento);
@@ -156,8 +233,8 @@ function generarFilaHTML(e) {
 
 function generarCardHTML(e) {
     const insumoNombre = e.nombreInsumo || 'Insumo #—';
-    const proveedorNombre = e.proveedorNombre || 'Proveedor';
-    const inicial = proveedorNombre !== 'Proveedor' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
+    const proveedorNombre = getProveedorNombre(e);
+    const inicial = proveedorNombre !== '—' ? proveedorNombre.charAt(0).toUpperCase() : 'P';
     const stockAnt = e.stockAnterior != null ? e.stockAnterior : '—';
     const stockNue = e.stockNuevo != null ? e.stockNuevo : '—';
     const fechaFormato = parseFecha(e.fechaMovimiento);
@@ -231,7 +308,7 @@ function actualizarResumen(lista) {
     document.getElementById('resumenUnidades').textContent = totalUnidades.toLocaleString('es-CO') + ' uds';
     document.getElementById('resumenValor').textContent = '$' + totalValor.toLocaleString('es-CO', { minimumFractionDigits: 0 });
     document.getElementById('resumenUltima').textContent = ultima
-        ? (ultima.insumoNombre || ultima.nombreInsumo || ultima.insumo?.nombre || 'Movimiento #' + (ultima.idmovimiento || '—'))
+        ? (ultima.nombreInsumo || ultima.insumoNombre || ultima.insumo?.nombre || 'Movimiento #' + (ultima.id || '—'))
         : '—';
     document.getElementById('statTotalEntradas').textContent = lista.length;
 }
@@ -245,7 +322,7 @@ function actualizarTimeline(lista) {
     }
     timeline.innerHTML = lista.slice(0, 5).map(e => {
         const insumoNombre = e.nombreInsumo || 'Insumo';
-        const proveedorNombre = e.proveedorNombre || 'Proveedor';
+        const proveedorNombre = getProveedorNombre(e);
         const fechaRelativa = parseFecha(e.fechaMovimiento);
         const stockNue = e.stockNuevo != null ? e.stockNuevo : '';
         return '<div class="timeline-item"><h6>' + insumoNombre + ' • +' + (e.cantidad || 0) + ' uds' + (stockNue ? ' → ' + stockNue : '') + '</h6><p>' + proveedorNombre + ' • ' + fechaRelativa + '</p></div>';
@@ -261,22 +338,11 @@ async function registrarEntrada() {
     const fecha = document.getElementById('inputFecha').value;
     const stockAnterior = document.getElementById('inputStockAnterior').value;
 
-    let valido = true;
-    [
-        ['selectInsumo', !insumoId],
-        ['selectProveedor', !proveedorId],
-        ['inputCantidad', !cantidad || Number(cantidad) <= 0],
-        ['inputCostoUnitario', !costoUnit || Number(costoUnit) < 0],
-        ['inputFecha', !fecha]
-    ].forEach(([id, cond]) => {
-        document.getElementById(id).classList.toggle('is-invalid', cond);
-        if (cond) valido = false;
-    });
-
-    if (!valido) {
-        mostrarNotificacion('Campos incompletos', 'Completa todos los campos requeridos.', true);
-        return;
-    }
+    if (!insumoId) return window.showNotification('Debes seleccionar un insumo.', 'error');
+    if (!proveedorId || proveedorId === 'GESTIONAR') return window.showNotification('Debes seleccionar un proveedor válido.', 'error');
+    if (!cantidad || Number(cantidad) <= 0) return window.showNotification('La cantidad debe ser mayor a 0.', 'error');
+    if (!costoUnit || Number(costoUnit) < 0) return window.showNotification('El costo no es válido.', 'error');
+    if (!fecha) return window.showNotification('Debes seleccionar una fecha.', 'error');
 
     const cantNum = parseFloat(cantidad);
     const stockAntNum = parseFloat(stockAnterior) || 0;
@@ -288,7 +354,7 @@ async function registrarEntrada() {
 
     const payload = {
         idInsumo: parseInt(insumoId),
-        idEmpresa: 1,
+        idProveedor: parseInt(proveedorId),
         cantidad: cantNum,
         costoUnitario: parseFloat(costoUnit),
         stockAnterior: stockAntNum,
@@ -303,12 +369,16 @@ async function registrarEntrada() {
 
         const insumoSel = document.getElementById('selectInsumo');
         const provSel = document.getElementById('selectProveedor');
-        nuevaEntrada.insumoNombre = insumoSel.options[insumoSel.selectedIndex].text;
-        nuevaEntrada.proveedorNombre = provSel.options[provSel.selectedIndex].text;
+
+        nuevaEntrada.nombreInsumo = insumoSel.options[insumoSel.selectedIndex].text;
+        if (!nuevaEntrada.proveedor) {
+            nuevaEntrada.proveedor = { nombre: provSel.options[provSel.selectedIndex].text };
+        }
+
         nuevaEntrada.costoUnitario = payload.costoUnitario;
-        nuevaEntrada.stock_anterior = payload.stockAnterior;
-        nuevaEntrada.stock_nuevo = payload.stockNuevo;
-        nuevaEntrada.fecha_movimiento = fecha;
+        nuevaEntrada.stockAnterior = payload.stockAnterior;
+        nuevaEntrada.stockNuevo = payload.stockNuevo;
+        nuevaEntrada.fechaMovimiento = fecha;
 
         const idxInsumo = insumos.findIndex(i => i.id === parseInt(insumoId));
         if (idxInsumo !== -1) {
@@ -322,10 +392,11 @@ async function registrarEntrada() {
         actualizarResumen(entradasRegistradas);
         actualizarTimeline(entradasRegistradas);
 
-        mostrarNotificacion('Éxito', 'Entrada registrada: +' + cantNum + ' uds (Stock: ' + stockAntNum + ' → ' + stockNuevoNum + ')');
+        window.showNotification(`Entrada registrada: +${cantNum} uds (Stock: ${stockAntNum} → ${stockNuevoNum})`, 'success');
 
         document.getElementById('selectInsumo').value = '';
-        document.getElementById('selectProveedor').value = '';
+        document.getElementById('selectProveedor').innerHTML = '<option value="">Seleccione un insumo primero...</option>';
+        document.getElementById('selectProveedor').disabled = true;
         document.getElementById('inputCantidad').value = '';
         document.getElementById('inputCostoUnitario').value = '';
         document.getElementById('inputStockAnterior').value = '';
@@ -334,72 +405,137 @@ async function registrarEntrada() {
         document.getElementById('totalCosto').textContent = '$0.00';
         document.getElementById('stockPreview').style.display = 'none';
     } catch (err) {
-        mostrarNotificacion('Error al registrar', err.message, true);
+        window.showNotification(err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-plus me-2"></i>Registrar';
-        ['selectInsumo', 'selectProveedor', 'inputCantidad', 'inputCostoUnitario', 'inputFecha']
-            .forEach(id => document.getElementById(id).classList.remove('is-invalid'));
     }
 }
 
 // ── BÚSQUEDA EN TIEMPO REAL ───────────────────────────────
-document.getElementById('inputBusquedaEntradas').addEventListener('input', function () {
+document.getElementById('inputBusquedaEntradas')?.addEventListener('input', function () {
     const q = this.value.toLowerCase().trim();
     if (!q) { renderizarVista(entradasRegistradas); return; }
     const filtradas = entradasRegistradas.filter(e => {
-        const nombre = (e.insumoNombre || e.nombreInsumo || e.insumo?.nombre || '').toLowerCase();
-        const proveedor = (e.proveedorNombre || e.nombreProveedor || e.proveedor?.nombre || '').toLowerCase();
+        const nombre = (e.nombreInsumo || e.insumoNombre || e.insumo?.nombre || '').toLowerCase();
+        const proveedor = getProveedorNombre(e).toLowerCase();
         return nombre.includes(q) || proveedor.includes(q);
     });
     renderizarVista(filtradas);
 });
 
-// ── EXPORTAR A EXCEL REAL (USA SHEETJS) ──────────────────
+// ── EXPORTAR A EXCEL ──────────────────────────
 function exportarCSV() {
-    if (typeof XLSX === 'undefined') {
-        mostrarNotificacion('Error', 'No se pudo cargar la herramienta de Excel. Recarga la página.', true);
-        return;
-    }
-
-    if (entradasRegistradas.length === 0) {
-        mostrarNotificacion('Sin datos', 'No hay entradas para exportar.', true);
-        return;
-    }
+    if (typeof XLSX === 'undefined') return window.showNotification('Librería Excel no cargada.', 'error');
+    if (entradasRegistradas.length === 0) return window.showNotification('No hay entradas para exportar.', 'error');
 
     const datos = entradasRegistradas.map(e => {
-        const fechaFormato = parseFecha(e.fechaMovimiento || e.fechaEntrada || e.fecha_movimiento || e.fecha);
+        const insumoLocal = insumos.find(i => i.id === e.idInsumo);
         return {
-            'Insumo': e.insumoNombre || e.nombreInsumo || e.insumo?.nombre || '—',
-            'Proveedor': e.proveedorNombre || e.nombreProveedor || e.proveedor?.nombre || '—',
-            'Stock Anterior': e.stock_anterior ?? e.stockAnterior ?? '—',
-            'Cantidad': e.cantidad || 0,
-            'Stock Nuevo': e.stock_nuevo ?? e.stockNuevo ?? '—',
-            'Costo Unitario': e.costoUnitario ?? 0,
-            'Fecha': fechaFormato
+            'Insumo': String(e.nombreInsumo || e.insumoNombre || e.insumo?.nombre || '—'),
+            'Proveedor': String(getProveedorNombre(e)),
+            'Stock Anterior': Number(e.stockAnterior ?? e.stock_anterior ?? 0),
+            'Cantidad': Number(e.cantidad || 0),
+            'Stock Nuevo': Number(e.stockNuevo ?? e.stock_nuevo ?? 0),
+            'Costo Unitario': Number(e.costoUnitario ?? insumoLocal?.costoUnitario ?? 0),
+            'Fecha': String(parseFecha(e.fechaMovimiento || e.fechaEntrada || e.fecha_movimiento || e.fecha))
         };
     });
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(datos);
     ws['!cols'] = [
-        { wch: 22 }, { wch: 22 }, { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 18 }, { wch: 20 }
+        { wch: 25 }, { wch: 22 }, { wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 18 }, { wch: 14 }
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, 'Entradas');
-    const fecha = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `Entradas_Mercancia_${fecha}.xlsx`);
-    mostrarNotificacion('¡Exportación exitosa!', `Se exportaron ${datos.length} registros a Excel correctamente.`);
+    XLSX.writeFile(wb, `Entradas_Mercancia_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    window.showNotification(`Se exportaron ${datos.length} registros.`, 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
+
+    if (nombreEmpresaContainer) {
+        if (nombreRaw.trim() !== "") {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+    }
+
+    if (!infoPerfilContainer) return;
+
+    const urlPerfil = "perfil.html";
+
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
+
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+            : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          ${avatarHTML}
+          <div class="profile-info">
+            <strong>${nombreCompleto}</strong>
+            <div style="font-size: 13px; color: var(--gray)">
+              ${rol}
+            </div>
+          </div>
+        </a>
+      `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          <div class="profile-text-avatar">UA</div>
+          <div class="profile-info">
+            <strong>Usuario Anónimo</strong>
+            <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+          </div>
+        </a>
+      `;
+    }
 }
 
 // ── FECHA POR DEFECTO Y EVENTOS ───────────────────────────
 document.getElementById('inputFecha').value = new Date().toISOString().split('T')[0];
-document.getElementById('selectInsumo').addEventListener('change', onInsumoChange);
+document.getElementById('selectInsumo')?.addEventListener('change', onInsumoChange);
+document.getElementById('btnRegistrar')?.addEventListener('click', registrarEntrada);
+document.getElementById('inputCantidad')?.addEventListener('input', calcularTotal);
+document.getElementById('inputCostoUnitario')?.addEventListener('input', calcularTotal);
+document.getElementById('btnExportar')?.addEventListener('click', exportarCSV);
 
 // ── INICIALIZACIÓN ────────────────────────────────────────
 (async () => {
     console.log('[INIT] Cargando datos...');
-    await Promise.allSettled([cargarInsumos(), cargarProveedores()]);
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        cargarPerfilUsuario(perfilData);
+    } catch (profileError) {
+        console.warn("No se pudo cargar el perfil:", profileError);
+    }
+
+    await cargarInsumosYRelaciones();
     await cargarEntradas();
     console.log('[INIT] Carga finalizada.');
 })();

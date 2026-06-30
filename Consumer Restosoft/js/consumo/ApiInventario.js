@@ -1,11 +1,9 @@
 const API_BASE = "http://localhost:8080/api";
 
-// const token = localStorage.getItem("token");
-const token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI2ODc0MTgsImV4cCI6MTc4Mjc3MzgxOH0.xEOf-8izPT5bu64_oCsojldcaD1mcRTZSI3HJ1Xn8ZE";
+// Lee el token del localStorage o usa el hardcodeado para pruebas
+const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI3NzU0NTAsImV4cCI6MTc4Mjg2MTg1MH0._BpqkCoVVywjjLzChkbPQztPsqmhZZ3k4bkPs8pMvoI";
 
 export const api = {
-    // ✅ CORREGIDO: Se quitó el /empresa/1 (El Controller lo saca del token)
     obtenerInsumos: async () => {
         const response = await fetch(`${API_BASE}/insumos`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -14,7 +12,6 @@ export const api = {
         return response.json();
     },
 
-    // ✅ CORREGIDO: Se quitó el /empresa/1
     obtenerInsumoPorId: async (id) => {
         const response = await fetch(`${API_BASE}/insumos/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -49,7 +46,6 @@ export const api = {
         return response.json();
     },
 
-    // ✅ CORREGIDO: Se quitó el /empresa/1
     eliminarInsumo: async (id) => {
         const response = await fetch(`${API_BASE}/insumos/${id}`, {
             method: "DELETE",

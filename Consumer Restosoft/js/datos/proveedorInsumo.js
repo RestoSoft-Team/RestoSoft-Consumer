@@ -1,4 +1,5 @@
 import api from '../consumo/apiProveedorInsumo.js';
+import { apiProfile } from "../consumo/apiProfile.js"; // <-- Importación añadida
 
 let todosLosInsumos = [];
 let todasLasRelaciones = [];
@@ -37,18 +38,55 @@ function checkMobile() {
 window.addEventListener('resize', checkMobile);
 checkMobile();
 
-// ── NOTIFICACIÓN ──
-function showNotif(titulo, texto, esError = false) {
-    const el = document.getElementById('notification');
-    document.getElementById('notificationTitle').textContent = titulo;
-    document.getElementById('notificationText').textContent = texto;
-    el.classList.toggle('is-error', esError);
-    document.getElementById('notificationIcon').className = esError
-        ? 'fa-solid fa-circle-xmark'
-        : 'fa-solid fa-circle-check';
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 3500);
-}
+// ══════════════════════════════════════════════════════════════
+// NOTIFICACIÓN MODERNA
+// ══════════════════════════════════════════════════════════════
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
+    }
+
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
+
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
+};
 
 // ── FORMATEAR MONEDA ──
 function fmtCOP(val) {
@@ -293,7 +331,7 @@ async function cargarInsumos() {
         renderGrid(todosLosInsumos);
     } catch (error) {
         console.error('[ERROR]', error);
-        showNotif('Error', 'No se pudieron cargar los datos.', true);
+        window.showNotification('No se pudieron cargar los datos.', 'error');
     }
 }
 
@@ -459,7 +497,7 @@ window.abrirModalCrear = async function (idInsumo = null) {
 // ── GUARDAR RELACIÓN ──
 document.getElementById('btnGuardarRelacion').addEventListener('click', async () => {
     if (!seleccionInsumo || !seleccionProveedor) {
-        showNotif('Datos incompletos', 'Debes seleccionar un insumo y un proveedor.', true);
+        window.showNotification('Debes seleccionar un insumo y un proveedor.', 'error');
         return;
     }
 
@@ -468,11 +506,11 @@ document.getElementById('btnGuardarRelacion').addEventListener('click', async ()
             idInsumo: seleccionInsumo.id,
             idProveedor: seleccionProveedor.id
         });
-        showNotif('Creado', 'La relación se creó correctamente.');
+        window.showNotification('La relación se creó correctamente.', 'success');
         bootstrap.Modal.getInstance(document.getElementById('modalForm')).hide();
         cargarInsumos();
     } catch (error) {
-        showNotif('Error', error.message || 'Ocurrió un error en el servidor.', true);
+        window.showNotification(error.message || 'Ocurrió un error en el servidor.', 'error');
     }
 });
 
@@ -488,12 +526,91 @@ window.confirmarEliminar = async function () {
     try {
         await api.eliminarRelacion(idRelacionEliminar);
         bootstrap.Modal.getInstance(document.getElementById('modalDelete')).hide();
-        showNotif('Eliminado', 'La asignación fue removida exitosamente.');
+        window.showNotification('La asignación fue removida exitosamente.', 'success');
         cargarInsumos();
     } catch (error) {
-        showNotif('Error', error.message || 'No se pudo eliminar.', true);
+        window.showNotification(error.message || 'No se pudo eliminar.', 'error');
     }
 };
 
+// ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
+
+    if (nombreEmpresaContainer) {
+        if (nombreRaw.trim() !== "") {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+    }
+
+    if (!infoPerfilContainer) return;
+
+    const urlPerfil = "perfil.html";
+
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
+
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+            : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          ${avatarHTML}
+          <div class="profile-info">
+            <strong>${nombreCompleto}</strong>
+            <div style="font-size: 13px; color: var(--gray)">
+              ${rol}
+            </div>
+          </div>
+        </a>
+      `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          <div class="profile-text-avatar">UA</div>
+          <div class="profile-info">
+            <strong>Usuario Anónimo</strong>
+            <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+          </div>
+        </a>
+      `;
+    }
+}
+
 // ── INICIALIZAR ──
-cargarInsumos();
+async function init() {
+    try {
+        // Intentamos cargar el perfil (si falla, no rompe el resto de la página)
+        try {
+            const perfilData = await apiProfile.obtenerInfoMe();
+            cargarPerfilUsuario(perfilData);
+        } catch (profileError) {
+            console.warn("No se pudo cargar el perfil:", profileError);
+        }
+
+        await cargarInsumos();
+    } catch (error) {
+        console.error('Error al inicializar:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', init);

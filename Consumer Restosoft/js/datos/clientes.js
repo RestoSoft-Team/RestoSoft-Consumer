@@ -1,12 +1,71 @@
 import api from '../consumo/apiClientes.js';
+import { apiProfile } from "../consumo/apiProfile.js"; // <-- Importación añadida
 
 let listaClientes = [];
 let bootstrapModal = null;
+
+// ══════════════════════════════════════════════════════════════
+// NOTIFICACIÓN MODERNA
+// ══════════════════════════════════════════════════════════════
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
+    }
+
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
+
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const modalElement = document.getElementById('modalEditarCliente');
         bootstrapModal = new bootstrap.Modal(modalElement);
+
+        // Intentamos cargar el perfil (si falla, no rompe el resto de la página)
+        try {
+            const perfilData = await apiProfile.obtenerInfoMe();
+            cargarPerfilUsuario(perfilData);
+        } catch (profileError) {
+            console.warn("No se pudo cargar el perfil:", profileError);
+        }
 
         listaClientes = await api.obtenerClientes();
         renderizarTabla(listaClientes);
@@ -15,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error(error);
         document.getElementById('tabla-clientes').innerHTML = `<tr><td colspan="5" class="text-center text-danger p-4">Error al cargar los datos.</td></tr>`;
-        mostrarNotificacion('Error de carga', 'No se pudieron obtener los clientes del servidor.', 'error');
+        window.showNotification('No se pudieron obtener los clientes del servidor.', 'error');
     }
 });
 
@@ -172,10 +231,10 @@ document.getElementById('formEditarCliente').addEventListener('submit', async fu
         renderizarTabla(listaClientes);
         actualizarEstadisticas();
 
-        mostrarNotificacion('¡Éxito!', 'Cliente actualizado correctamente.', 'success');
+        window.showNotification('Cliente actualizado correctamente.', 'success');
     } catch (error) {
         console.error('Error al actualizar:', error);
-        mostrarNotificacion('Error al actualizar', 'No se pudo guardar los cambios del cliente.', 'error');
+        window.showNotification('No se pudo guardar los cambios del cliente.', 'error');
     }
 });
 
@@ -197,7 +256,7 @@ document.getElementById('filtroNombre')?.addEventListener('input', function (e) 
 
 document.getElementById('btnExportar')?.addEventListener('click', () => {
     if (listaClientes.length === 0) {
-        mostrarNotificacion('Sin datos', 'No hay clientes para exportar.', 'warning');
+        window.showNotification('No hay clientes para exportar.', 'warning');
         return;
     }
 
@@ -214,7 +273,7 @@ document.getElementById('btnExportar')?.addEventListener('click', () => {
     XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
     XLSX.writeFile(wb, `Clientes_${new Date().toISOString().slice(0, 10)}.xlsx`);
 
-    mostrarNotificacion('¡Exportado!', 'Archivo descargado exitosamente.', 'success');
+    window.showNotification('Archivo descargado exitosamente.', 'success');
 });
 
 document.getElementById('btnNuevoCliente')?.addEventListener('click', () => {
@@ -225,47 +284,68 @@ document.getElementById('btnNuevoClienteSidebar')?.addEventListener('click', () 
     window.location.href = 'cliente-crear.html';
 });
 
-// --- SISTEMA DE NOTIFICACIONES ---
-const TOAST_ICONOS = {
-    success: 'fa-circle-check',
-    error: 'fa-circle-xmark',
-    warning: 'fa-triangle-exclamation',
-    info: 'fa-circle-info'
-};
+// ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 
-function mostrarNotificacion(titulo, mensaje, tipo = 'success') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
 
-    const toastId = 'toast-' + Date.now();
-    const icono = TOAST_ICONOS[tipo] || TOAST_ICONOS.info;
+    if (nombreEmpresaContainer) {
+        if (nombreRaw.trim() !== "") {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+    }
 
-    const html = `
-        <div id="${toastId}" class="toast-item toast-${tipo}">
-            <div class="toast-icon">
-                <i class="fa-solid ${icono}"></i>
-            </div>
-            <div class="toast-body">
-                <strong>${titulo}</strong>
-                <span>${mensaje}</span>
-            </div>
-            <button class="toast-close" aria-label="Cerrar notificación">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-    `;
+    if (!infoPerfilContainer) return;
 
-    container.insertAdjacentHTML('beforeend', html);
+    const urlPerfil = "perfil.html";
 
-    const toastEl = document.getElementById(toastId);
-    toastEl.querySelector('.toast-close').addEventListener('click', () => cerrarToast(toastId));
+    // Forzamos los estilos del contenedor blanco con sombra
+    const styleBox = "display: flex; align-items: center; gap: 14px; background: #ffffff; padding: 10px 14px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-decoration: none; color: inherit;";
+    
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
 
-    setTimeout(() => cerrarToast(toastId), 4000);
-}
+        const styleImg = "width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; text-transform: uppercase;";
+        
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" style="${styleImg}" />`
+            : `<div style="${styleImg}">${iniciales}</div>`;
 
-function cerrarToast(id) {
-    const el = document.getElementById(id);
-    if (!el || el.classList.contains('toast-out')) return;
-    el.classList.add('toast-out');
-    el.addEventListener('animationend', () => el.remove(), { once: true });
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" style="${styleBox}">
+          ${avatarHTML}
+          <div style="display: flex; flex-direction: column;">
+            <strong style="margin: 0; font-weight: 700;">${nombreCompleto}</strong>
+            <span style="color: var(--gray); font-size: 14px;">${rol}</span>
+          </div>
+        </a>
+      `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" style="${styleBox}">
+          <div style="width: 48px; height: 48px; border-radius: 50%; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">UA</div>
+          <div style="display: flex; flex-direction: column;">
+            <strong style="margin: 0; font-weight: 700;">Usuario Anónimo</strong>
+            <span style="color: var(--gray); font-size: 14px;">Invitado</span>
+          </div>
+        </a>
+      `;
+    }
 }

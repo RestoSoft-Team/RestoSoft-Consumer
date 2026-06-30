@@ -12,20 +12,43 @@
     <link rel="stylesheet" href="/css/sidebar.css">
     <style>
         :root {
-            --background: #fbfcfb;
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-            --dark: #262f3c;
-            --dark-light: #39485c;
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
-            --white: #ffffff;
-            --gray: #6f7782;
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-            --radius: 24px;
+            --primary-soft: rgba(107, 30, 40, 0.08);
+
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
+
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
+
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
+
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
 
         * {
@@ -173,31 +196,58 @@
             outline: none;
         }
 
-        .profile-box {
+        .profile {
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 50px;
-            height: 50px;
-            border-radius: 18px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-        .profile-box span {
-            color: var(--gray);
-            font-size: 13px;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .premium-card {
@@ -525,65 +575,102 @@
         }
 
         /* ── NOTIFICACIÓN (OCULTA POR DEFECTO) ── */
-        .notification {
+        .notification-container {
             position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 380px;
-            background: white;
-            border-left: 6px solid var(--success);
-            border-radius: 22px;
-            padding: 22px;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
             display: flex;
             align-items: flex-start;
-            gap: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            z-index: 9999;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
             transform: translateX(420px);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
         .notification.show {
             transform: translateX(0);
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
         }
 
-        .notification.is-error {
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
             border-left-color: var(--danger);
         }
 
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         .notification-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, .10);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--success);
-            font-size: 20px;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
-        .notification.is-error .notification-icon {
-            background: rgba(187, 58, 75, .10);
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
             color: var(--danger);
         }
 
-        .notification h6 {
-            margin-bottom: 6px;
-            font-weight: 700;
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
         }
 
-        .notification p {
-            margin: 0;
-            color: var(--gray);
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
             font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
         }
 
         #totalCosto {
@@ -706,14 +793,15 @@
             }
         }
     </style>
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
-
+    <div class="notification-container" id="notificationContainer"></div>
     <div class="sidebar">
         <div class="logo">
             <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-            <h3>RestSoft</h3>
+            <h3 id="nombreEmpresa"></h3>
         </div>
         <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
                 class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
@@ -795,12 +883,10 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input id="inputBusquedaEntradas" placeholder="Buscar entrada o insumo..." type="text" />
                 </div>
-                <div class="profile-box">
-                    <img src="https://i.pravatar.cc/100?img=33" alt="Avatar" />
-                    <div>
-                        <h6>Camila Rojas</h6>
-                        <span>Warehouse Manager</span>
-                    </div>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
                 </div>
             </div>
         </div>
@@ -852,7 +938,7 @@
                             <h3>Registrar Entrada</h3>
                             <p>Agrega nuevas mercancías y actualiza el stock automáticamente.</p>
                         </div>
-                        <button class="btn btn-premium" id="btnRegistrar" onclick="registrarEntrada()">
+                        <button class="btn btn-premium" id="btnRegistrar">
                             <i class="fa-solid fa-plus me-2"></i>Registrar
                         </button>
                     </div>
@@ -871,13 +957,12 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Cantidad a Ingresar</label>
-                            <input class="form-control" id="inputCantidad" placeholder="0" type="number" min="1"
-                                oninput="calcularTotal()" />
+                            <input class="form-control" id="inputCantidad" placeholder="0" type="number" min="1" />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Costo Unitario ($)</label>
                             <input class="form-control" id="inputCostoUnitario" placeholder="0.00" type="number" min="0"
-                                step="0.01" oninput="calcularTotal()" />
+                                step="0.01" />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Fecha de Entrada</label>
@@ -925,7 +1010,7 @@
                             <h3>Historial de Entradas</h3>
                             <p>Movimientos de ingreso registrados en el sistema.</p>
                         </div>
-                        <button class="btn btn-outline-premium" onclick="exportarCSV()">
+                        <button class="btn btn-outline-premium" id="btnExportar">
                             <i class="fa-solid fa-download me-2"></i>Exportar
                         </button>
                     </div>
@@ -996,19 +1081,9 @@
         </div>
     </main>
 
-    <!-- NOTIFICATION -->
-    <div class="notification" id="notification">
-        <div class="notification-icon"><i class="fa-solid fa-check" id="notificationIcon"></i></div>
-        <div>
-            <h6 id="notificationTitle">Operación Realizada</h6>
-            <p id="notificationText">La entrada fue registrada correctamente.</p>
-        </div>
-    </div>
-
     <script src="/js/datos/sidebar.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <script src="/js/consumo/apiEntradaMercancia.js"></script>
-    <script src="/js/datos/entradaMercancia.js"></script>
+    <script type="module" src="/js/datos/entradaMercancia.js"></script>
 
 </body>
 

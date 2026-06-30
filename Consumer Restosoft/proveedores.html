@@ -13,17 +13,43 @@
 
     <style>
         :root {
-            --background: #fbfcfb;
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-            --dark: #262f3c;
-            --dark-light: #39485c;
-            --gray: #6f7782;
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-            --radius: 24px;
+            --primary-soft: rgba(107, 30, 40, 0.08);
+
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
+
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
+
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
+
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
 
         * {
@@ -220,31 +246,57 @@
         }
 
         .profile {
-            background: white;
-            border-radius: 20px;
-            padding: 10px 14px;
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
         }
 
         .profile img {
             width: 48px;
             height: 48px;
-            border-radius: 16px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile h6 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 15px;
-        }
-
-        .profile span {
-            color: var(--gray);
-            font-size: 13px;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── BUTTONS ── */
@@ -483,66 +535,103 @@
             color: var(--gray);
         }
 
-        /* ── NOTIFICACIÓN (OCULTA POR DEFECTO) ── */
-        .notification {
+        /* ── NOTIFICACIÓN ── */
+        .notification-container {
             position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 380px;
-            background: white;
-            border-left: 6px solid var(--success);
-            border-radius: 22px;
-            padding: 22px;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
             display: flex;
             align-items: flex-start;
-            gap: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            z-index: 99999;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
             transform: translateX(420px);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: .4s cubic-bezier(.34, 1.56, .64, 1);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
         .notification.show {
             transform: translateX(0);
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
         }
 
-        .notification.is-error {
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
             border-left-color: var(--danger);
         }
 
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         .notification-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, .10);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--success);
-            font-size: 20px;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
-        .notification.is-error .notification-icon {
-            background: rgba(187, 58, 75, .10);
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
             color: var(--danger);
         }
 
-        .notification h6 {
-            margin-bottom: 6px;
-            font-weight: 700;
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
         }
 
-        .notification p {
-            margin: 0;
-            color: var(--gray);
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
             font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
         }
 
         /* ── MODALES ── */
@@ -818,17 +907,11 @@
             }
         }
     </style>
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
-
-    <div class="notification" id="notification">
-        <div class="notification-icon"><i class="fa-solid fa-circle-check" id="notificationIcon"></i></div>
-        <div>
-            <h6 id="notificationTitle">Operación realizada</h6>
-            <p id="notificationText">El sistema se ha actualizado correctamente.</p>
-        </div>
-    </div>
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div class="confirm-overlay" id="confirmOverlay">
         <div class="confirm-modal">
@@ -874,15 +957,7 @@
                             style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Dirección</label>
                         <input class="input-premium" id="edit-direccion" type="text" required />
                     </div>
-                    <div class="col-12 col-md-6">
-                        <label
-                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Empresa
-                            asociada</label>
-                        <select class="input-premium" id="edit-empresa" required>
-                            <option value="" disabled selected>Seleccione una empresa...</option>
-                        </select>
-                    </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         <label
                             style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Estado</label>
                         <select class="input-premium" id="edit-estado" required>
@@ -904,7 +979,7 @@
         <div class="sidebar">
             <div class="logo">
                 <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-                <h3>RestSoft</h3>
+                <h3 id="nombreEmpresa"></h3>
             </div>
             <div class="menu-title">Navegación</div>
             <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
@@ -956,7 +1031,7 @@
                     class="fa-solid fa-chevron-right chevron"></i></button>
             <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
                     href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
-                    href="tiempos-preparacion.html">Tiempos</a><a class=""
+                    href="tiempos-preparation.html">Tiempos</a><a class=""
                     href="notificaciones-cocina.html">Notificaciones</a></div>
             <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
                     class="fa-solid fa-chevron-right chevron"></i></button>
@@ -995,11 +1070,10 @@
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input placeholder="Buscar proveedores..." type="text" id="input-busqueda" />
                     </div>
-                    <div class="profile">
-                        <img alt="" src="https://i.pravatar.cc/100" />
-                        <div>
-                            <h6>Valentina Ruiz</h6><span>Supply Manager</span>
-                        </div>
+                    <div id="infoPerfilContainer" class="profile">
+                        <p style="color: var(--gray); text-align: center; padding: 20px">
+                            Cargando perfil...
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1058,7 +1132,7 @@
             <div class="card-premium form-section">
                 <div class="form-title">
                     <h4>Registrar Nuevo Proveedor</h4>
-                    <p>Agrega distribuidores vinculándolos a una empresa registrada.</p>
+                    <p>Agrega distribuidores vinculándolos automáticamente a tu empresa.</p>
                 </div>
                 <form id="form-proveedor">
                     <div class="row g-4">
@@ -1077,12 +1151,7 @@
                             <input class="input-premium" id="input-direccion" placeholder="Dirección" type="text"
                                 required />
                         </div>
-                        <div class="col-lg-6">
-                            <select class="input-premium" id="select-empresa" required>
-                                <option value="" disabled selected>Seleccione una empresa asociada...</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-6">
+                        <div class="col-12">
                             <select class="input-premium" id="select-estado" required>
                                 <option value="true" selected>Disponible</option>
                                 <option value="false">No Disponible</option>

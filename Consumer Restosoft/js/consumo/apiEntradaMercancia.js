@@ -1,26 +1,30 @@
 const API = 'http://localhost:8080/api';
 
-// const token = localStorage.getItem("token");
-const token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI2ODc0MTgsImV4cCI6MTc4Mjc3MzgxOH0.xEOf-8izPT5bu64_oCsojldcaD1mcRTZSI3HJ1Xn8ZE";
+// Lee el token del localStorage o usa el hardcodeado para pruebas
+const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI3NzU0NTAsImV4cCI6MTc4Mjg2MTg1MH0._BpqkCoVVywjjLzChkbPQztPsqmhZZ3k4bkPs8pMvoI";
 
-const EntradasConsumer = {
+export const EntradasConsumer = {
 
     async obtenerInsumos() {
         const res = await fetch(`${API}/insumos`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Error al cargar insumos (HTTP ' + res.status + ')');
         return await res.json();
     },
 
+    // ¡NUEVO! Obtener las relaciones para saber qué proveedor pertenece a qué insumo
+    async obtenerRelaciones() {
+        const res = await fetch(`${API}/proveedor-insumos`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error('Error al cargar relaciones (HTTP ' + res.status + ')');
+        return await res.json();
+    },
+
     async obtenerProveedores() {
         const res = await fetch(`${API}/proveedores`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Error al cargar proveedores (HTTP ' + res.status + ')');
         return await res.json();
@@ -28,9 +32,7 @@ const EntradasConsumer = {
 
     async obtenerEntradas() {
         const res = await fetch(`${API}/movimientos`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error('Error al obtener movimientos (HTTP ' + res.status + ')');
         const todos = await res.json();

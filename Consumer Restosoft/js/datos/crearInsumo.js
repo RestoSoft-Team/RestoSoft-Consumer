@@ -1,6 +1,57 @@
 import api from '../consumo/apiCrearInsumo.js';
+import { apiProfile } from "../consumo/apiProfile.js"; // <-- Importación añadida
 
 const $ = id => document.getElementById(id);
+
+// ══════════════════════════════════════════════════════════════
+// NOTIFICACIÓN MODERNA
+// ══════════════════════════════════════════════════════════════
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
+    }
+
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
+
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
+};
 
 // ══════════════════════════════════════════════════════════════
 // SEARCHABLE SELECT - Componente reutilizable
@@ -169,24 +220,6 @@ function fmtCOP(valor) {
     return '$' + n.toLocaleString('es-CO', { minimumFractionDigits: 0 });
 }
 
-function showToast(titulo, mensaje, esError = false) {
-    const el = $('notification');
-    $('notificationTitle').textContent = titulo;
-    $('notificationText').textContent = mensaje;
-    const icon = $('notificationIcon');
-
-    if (esError) {
-        el.classList.add('is-error');
-        icon.className = 'fa-solid fa-xmark text-danger';
-    } else {
-        el.classList.remove('is-error');
-        icon.className = 'fa-solid fa-check text-success';
-    }
-
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 3500);
-}
-
 // ══════════════════════════════════════════════════════════════
 // RESUMEN EN VIVO
 // ══════════════════════════════════════════════════════════════
@@ -316,7 +349,7 @@ function validar() {
 // ══════════════════════════════════════════════════════════════
 $('btnGuardar').addEventListener('click', async () => {
     if (!validar()) {
-        showToast('Campos incompletos', 'Revisa los campos obligatorios marcados en rojo.', true);
+        window.showNotification('Revisa los campos obligatorios marcados en rojo.', 'error');
         return;
     }
 
@@ -337,17 +370,16 @@ $('btnGuardar').addEventListener('click', async () => {
         estado: $('estado').value,
         fechaVencimiento: $('fechaVencimiento').value || null,
         descripcion: $('descripcion').value.trim() || null,
-        idEmpresa: provDd.data?.idEmpresa ? parseInt(provDd.data.idEmpresa) : null,
         idProveedor: provDd.value ? parseInt(provDd.value) : null
     };
 
     try {
         await api.crearInsumo(payload);
-        showToast('¡Guardado Exitoso!', 'El insumo fue registrado en el inventario correctamente.');
+        window.showNotification('El insumo fue registrado en el inventario correctamente.', 'success');
         setTimeout(() => { window.location.href = 'inventario.html'; }, 1800);
     } catch (err) {
         console.error(err);
-        showToast('Error al guardar', 'Ocurrió un problema. Verifica la conexión con la base de datos.', true);
+        window.showNotification('Ocurrió un problema. Verifica la conexión con la base de datos.', 'error');
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Insumo';
     }
@@ -368,8 +400,7 @@ async function cargarProveedores() {
         dd.setOptions(lista.map(p => ({
             value: String(p.id),
             text: p.nombre,
-            sub: p.email || '',
-            data: { idEmpresa: p.idEmpresa }
+            sub: p.email || ''
         })));
     } catch {
         dd.setOptions([]);
@@ -383,6 +414,7 @@ async function cargarCategoriasDropdown() {
     try {
         const categorias = await api.obtenerCategorias();
 
+        // ESTE FILTRO ES EL QUE OCULTA LAS INACTIVAS
         const validadas = categorias.filter(cat => {
             if (!cat.estado) return true;
             const e = cat.estado.trim().toLowerCase();
@@ -396,8 +428,7 @@ async function cargarCategoriasDropdown() {
 
         dd.setOptions(validadas.map(cat => ({
             value: String(cat.idcategoria || cat.id),
-            text: cat.nombre,
-            data: {}
+            text: cat.nombre
         })));
     } catch (error) {
         console.error("Error al cargar categorías:", error);
@@ -406,12 +437,88 @@ async function cargarCategoriasDropdown() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
+
+    if (nombreEmpresaContainer) {
+        if (nombreRaw.trim() !== "") {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+    }
+
+    if (!infoPerfilContainer) return;
+
+    const urlPerfil = "perfil.html";
+
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
+
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+            : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          ${avatarHTML}
+          <div class="profile-info">
+            <strong>${nombreCompleto}</strong>
+            <div style="font-size: 13px; color: var(--gray)">
+              ${rol}
+            </div>
+          </div>
+        </a>
+      `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          <div class="profile-text-avatar">UA</div>
+          <div class="profile-info">
+            <strong>Usuario Anónimo</strong>
+            <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+          </div>
+        </a>
+      `;
+    }
+}
+
+// ══════════════════════════════════════════════════════════════
 // INICIALIZACIÓN
 // ══════════════════════════════════════════════════════════════
 async function inicializar() {
-    crearSearchableSelect('productoCategoria', 'Buscar categoría...');
-    crearSearchableSelect('idProveedor', 'Buscar proveedor...');
-    await Promise.allSettled([cargarProveedores(), cargarCategoriasDropdown()]);
+    try {
+        // Cargar perfil primero (si falla, no rompe el resto de la página)
+        try {
+            const perfilData = await apiProfile.obtenerInfoMe();
+            cargarPerfilUsuario(perfilData);
+        } catch (profileError) {
+            console.warn("No se pudo cargar el perfil:", profileError);
+        }
+
+        crearSearchableSelect('productoCategoria', 'Buscar categoría...');
+        crearSearchableSelect('idProveedor', 'Buscar proveedor...');
+        await Promise.allSettled([cargarProveedores(), cargarCategoriasDropdown()]);
+    } catch (error) {
+        console.error('Error al inicializar el módulo:', error);
+        window.showNotification('No fue posible conectar con el servidor.', 'error');
+    }
 }
 
 window.addEventListener('DOMContentLoaded', inicializar);

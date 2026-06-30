@@ -12,18 +12,45 @@
     <link rel="stylesheet" href="/css/sidebar.css">
     <style>
         :root {
-            --background: #fbfcfb;
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-            --dark: #262f3c;
-            --dark-light: #39485c;
-            --gray: #6f7782;
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-            --radius: 24px;
+            --primary-soft: rgba(107, 30, 40, 0.08);
+
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
+
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
+
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
+
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
+
 
         * {
             margin: 0;
@@ -48,99 +75,10 @@
             transition: 0.3s;
         }
 
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
 
-        .sidebar {
-            width: 280px;
-            background: var(--dark);
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            padding: 28px 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 1000;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-        }
-
-        .brand {
-            margin-bottom: 42px;
-        }
-
-        .brand h2 {
-            color: white;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .brand span {
-            color: #d4dae2;
-            font-size: 14px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 18px;
-            border-radius: 18px;
-            color: #d7dce5;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateX(4px);
-            color: white;
-        }
-
-        .menu-item.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .menu-item i {
-            width: 22px;
-            font-size: 18px;
-        }
-
-        .sidebar-footer {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 24px;
-            color: white;
-        }
-
-        .sidebar-footer h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .sidebar-footer p {
-            color: #d7dde4;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 18px;
-        }
 
         .content {
-            margin-left: 280px;
-            width: calc(100% - 280px);
+            width: 100%;
             padding: 32px;
         }
 
@@ -176,31 +114,58 @@
             gap: 18px;
         }
 
-        .profile-box {
+        .profile {
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 52px;
-            height: 52px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-        .profile-box span {
-            color: var(--gray);
-            font-size: 14px;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .stats-grid {
@@ -602,158 +567,107 @@
             box-shadow: 0 0 0 0.25rem rgba(107, 30, 40, 0.25);
         }
 
-        /* ── TOASTS (ARRIBA, GRANDES) ───────────────────────────── */
-        #toast-container {
+        /* ── NOTIFICACIÓN ── */
+        .notification-container {
             position: fixed;
-            top: 28px;
-            right: 28px;
-            z-index: 9999;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            pointer-events: none;
+            gap: 12px;
         }
 
-        .toast-item {
+        .notification {
             display: flex;
-            align-items: center;
-            gap: 18px;
-            padding: 22px 26px;
-            border-radius: 20px;
-            background: white;
-            box-shadow: 0 12px 48px rgba(38, 47, 60, 0.22);
-            min-width: 420px;
-            max-width: 500px;
-            pointer-events: all;
-            animation: toastIn 0.4s cubic-bezier(.22, 1, .36, 1);
-            border-left: 6px solid var(--primary);
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
+            transform: translateX(420px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
-        .toast-item.toast-success {
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
             border-left-color: var(--success);
         }
 
-        .toast-item.toast-error {
+        .notification.error {
             border-left-color: var(--danger);
         }
 
-        .toast-item.toast-warning {
+        .notification.warning {
             border-left-color: var(--warning);
         }
 
-        .toast-item.toast-info {
-            border-left-color: var(--primary);
-        }
-
-        .toast-item.toast-out {
-            animation: toastOut 0.35s ease forwards;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(80px) scale(0.92);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
-        }
-
-        @keyframes toastOut {
-            from {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateX(80px) scale(0.92);
-            }
-        }
-
-        .toast-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
-        .toast-success .toast-icon {
-            background: rgba(61, 139, 92, .12);
+        .notification.success .notification-icon {
+            background: var(--success-soft);
             color: var(--success);
         }
 
-        .toast-error .toast-icon {
-            background: rgba(187, 58, 75, .12);
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
             color: var(--danger);
         }
 
-        .toast-warning .toast-icon {
-            background: rgba(217, 164, 65, .15);
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
             color: var(--warning);
         }
 
-        .toast-info .toast-icon {
-            background: rgba(107, 30, 40, .12);
-            color: var(--primary);
-        }
-
-        .toast-body {
+        .notification-content {
             flex: 1;
         }
 
-        .toast-body strong {
-            display: block;
-            font-size: 16px;
+        .notification-title {
+            font-size: 14px;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 4px;
         }
 
-        .toast-body span {
-            font-size: 14px;
+        .notification-message {
+            font-size: 13px;
             color: var(--gray);
-            line-height: 1.5;
+            margin-top: 2px;
         }
 
-        .toast-close {
+        .notification-close {
             background: none;
             border: none;
-            color: var(--gray);
-            font-size: 16px;
-            padding: 6px;
+            color: var(--soft);
             cursor: pointer;
-            border-radius: 10px;
-            transition: 0.2s;
-            flex-shrink: 0;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
         }
 
-        .toast-close:hover {
-            background: #f0f0f0;
+        .notification-close:hover {
             color: var(--dark);
         }
 
         /* ── RESPONSIVE ─────────────────────────────────────────── */
         @media (max-width: 992px) {
-            .sidebar {
-                width: 90px;
-                padding: 28px 14px;
-            }
-
-            .sidebar .brand span,
-            .sidebar .menu-item span,
-            .sidebar .menu-title,
-            .sidebar .menu-group-btn span,
-            .sidebar .submenu,
-            .sidebar-footer {
-                display: none;
-            }
 
             .menu-item {
                 justify-content: center;
@@ -765,31 +679,11 @@
             }
 
             .content {
-                margin-left: 90px;
-                width: calc(100% - 90px);
+                width: 100%;
             }
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                left: -280px !important;
-                z-index: 999;
-                width: 280px !important;
-            }
-
-            .sidebar.open {
-                left: 0 !important;
-            }
-
-            .sidebar .brand span,
-            .sidebar .menu-item span,
-            .sidebar .menu-title,
-            .sidebar .menu-group-btn span,
-            .sidebar .submenu,
-            .sidebar-footer {
-                display: block;
-            }
-
             .content {
                 margin-left: 0 !important;
                 width: 100%;
@@ -857,30 +751,30 @@
                 color: #555;
             }
 
-            #toast-container {
+            .notification-container {
                 top: 16px;
                 right: 16px;
                 left: 16px;
             }
 
-            .toast-item {
+            .notification {
                 min-width: unset;
                 max-width: 100%;
             }
         }
     </style>
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
 
-    <!-- ── CONTENEDOR DE TOASTS ────────────────────────────────── -->
-    <div id="toast-container"></div>
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div class="main-wrapper">
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar">
             <div class="logo">
                 <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-                <h3>RestSoft</h3>
+                <h3 id="nombreEmpresa"></h3>
             </div>
             <div class="menu-title">Navegación</div>
             <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
@@ -1004,12 +898,10 @@
                     </div>
                 </div>
                 <div class="topbar-actions">
-                    <div class="profile-box">
-                        <div>
-                            <h6>Camila Torres</h6>
-                            <span>Gerente CRM</span>
-                        </div>
-                        <img src="https://i.pravatar.cc/150?img=32" />
+                    <div id="infoPerfilContainer" class="profile-box">
+                        <p style="color: var(--gray); text-align: center; padding: 20px">
+                            Cargando perfil...
+                        </p>
                     </div>
                 </div>
             </div>

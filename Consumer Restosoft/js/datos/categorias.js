@@ -1,28 +1,59 @@
 import api from '../consumo/apiCategoria.js';
+import { apiProfile } from "../consumo/apiProfile.js"; // <-- Importación añadida
 
 // ── Estado en memoria ──────────────────────────────────────────
 let listaCategorias = [];
 let idParaEliminar = null;
 
 // ══════════════════════════════════════════════════════════════
-// NOTIFICACIÓN NATIVA
+// NOTIFICACIÓN MODERNA
 // ══════════════════════════════════════════════════════════════
-function showNotification(tipo, titulo, texto, duracion = 3500) {
-    const notif = document.getElementById('notification');
-    const icon = document.getElementById('notificationIcon');
-    const titleEl = document.getElementById('notificationTitle');
-    const textEl = document.getElementById('notificationText');
-    if (!notif) return;
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
+    }
 
-    const esError = tipo === 'error' || tipo === 'delete';
-    notif.classList.toggle('is-error', esError);
-    icon.className = esError ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check';
-    titleEl.textContent = titulo;
-    textEl.textContent = texto;
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
 
-    notif.classList.add('show');
-    setTimeout(() => notif.classList.remove('show'), duracion);
-}
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
+};
 
 // ══════════════════════════════════════════════════════════════
 // ÍCONOS POR NOMBRE
@@ -63,6 +94,7 @@ function actualizarEstadisticas() {
     if (txtProductos) txtProductos.innerText = 0;
 }
 
+
 // ══════════════════════════════════════════════════════════════
 // RENDERIZAR GRID
 // ══════════════════════════════════════════════════════════════
@@ -86,6 +118,17 @@ function renderizarGrid() {
         const card = document.createElement("div");
         card.className = "card-premium category-card";
 
+        // Lógica para el estado y colores
+        const estadoRaw = (cat.estado || 'ACTIVO').toUpperCase();
+        const esActivo = estadoRaw === 'ACTIVO' || estadoRaw === 'ACTIVA' || estadoRaw === 'DISPONIBLE';
+        
+        // Colores directo en el estilo para garantizar que se vean
+        const badgeStyle = esActivo 
+            ? 'background:var(--success-soft); color:var(--success);' 
+            : 'background:var(--danger-soft); color:var(--danger);';
+            
+        const badgeText = estadoRaw.charAt(0).toUpperCase() + estadoRaw.slice(1).toLowerCase();
+
         card.innerHTML = `
             <div class="category-top">
                 <div class="category-icon ${cfg.style}">
@@ -106,8 +149,8 @@ function renderizarGrid() {
                 ${cat.descripcion || 'Sin descripción'}
             </p>
             <div class="category-meta">
-                <span class="badge-soft badge-${cat.estado || 'activa'}">
-                    ${(cat.estado || 'activa').replace('-', ' ')}
+                <span class="badge-soft" style="${badgeStyle} padding: 6px 12px; border-radius: 10px; font-size: 13px; font-weight: 600;">
+                    ${badgeText}
                 </span>
                 <span class="category-count">
                     ${cat.cantidadInsumos ?? 0} producto${cat.cantidadInsumos !== 1 ? 's' : ''}
@@ -165,7 +208,7 @@ document.getElementById('form-editar-cat')?.addEventListener('submit', async (e)
     const estado = document.getElementById('edit-cat-estado').value;
 
     if (!nombre) {
-        showNotification('error', 'Faltan datos', 'El nombre de la categoría es obligatorio.');
+        window.showNotification('El nombre de la categoría es obligatorio.', 'error');
         return;
     }
 
@@ -173,16 +216,16 @@ document.getElementById('form-editar-cat')?.addEventListener('submit', async (e)
         const response = await api.actualizarCategoria(id, { nombre, descripcion, estado });
         if (response.ok) {
             cerrarModalEditar();
-            showNotification('success', 'Categoría actualizada', `"${nombre}" fue modificada correctamente.`);
+            window.showNotification(`"${nombre}" fue modificada correctamente.`, 'success');
             listaCategorias = await api.obtenerCategorias();
             renderizarGrid();
         } else {
             const msg = await response.text();
-            showNotification('error', 'No se pudo actualizar', msg || 'Verifica los datos e inténtalo de nuevo.');
+            window.showNotification(msg || 'Verifica los datos e inténtalo de nuevo.', 'error');
         }
     } catch (error) {
         console.error('Error actualizando categoría:', error);
-        showNotification('error', 'Ocurrió un problema', 'No fue posible conectar con el servidor.');
+        window.showNotification('No fue posible conectar con el servidor.', 'error');
     }
 });
 
@@ -214,16 +257,16 @@ document.getElementById('btnConfirmDeleteCat')?.addEventListener('click', async 
         cerrarModalEliminar();
 
         if (response.ok || response.status === 204) {
-            showNotification('delete', 'Categoría eliminada', `"${nombreEl}" fue removida del sistema.`);
+            window.showNotification(`"${nombreEl}" fue removida del sistema.`, 'success');
             listaCategorias = await api.obtenerCategorias();
             renderizarGrid();
         } else {
-            showNotification('error', 'No se pudo eliminar', 'Verifica que la categoría no tenga productos asociados.');
+            window.showNotification('Verifica que la categoría no tenga productos asociados.', 'error');
         }
     } catch (error) {
         cerrarModalEliminar();
         console.error('Error eliminando categoría:', error);
-        showNotification('error', 'Ocurrió un problema', 'No fue posible conectar con el servidor.');
+        window.showNotification('No fue posible conectar con el servidor.', 'error');
     }
 });
 
@@ -241,17 +284,17 @@ document.getElementById('formCategoria')?.addEventListener('submit', async (e) =
         const response = await api.crearCategoria({ nombre, estado, descripcion });
 
         if (response.ok) {
-            showNotification('success', 'Categoría registrada', `"${nombre}" fue agregada correctamente al sistema.`);
+            window.showNotification(`"${nombre}" fue agregada correctamente al sistema.`, 'success');
             listaCategorias = await api.obtenerCategorias();
             renderizarGrid();
             limpiarFormulario();
         } else {
             const msg = await response.text();
-            showNotification('error', 'No se pudo registrar', msg || 'Ese nombre ya existe en el sistema.');
+            window.showNotification(msg || 'Ese nombre ya existe en el sistema.', 'error');
         }
     } catch (error) {
         console.error("Error:", error);
-        showNotification('error', 'Ocurrió un problema', 'No fue posible conectar con el servidor.');
+        window.showNotification('No fue posible conectar con el servidor.', 'error');
     }
 });
 
@@ -264,11 +307,73 @@ async function cargarCategorias() {
         renderizarGrid();
     } catch (error) {
         console.error("Error cargando categorías:", error);
-        showNotification('error', 'Error al cargar', 'No se pudieron obtener las categorías del servidor.');
+        window.showNotification('No se pudieron obtener las categorías del servidor.', 'error');
     }
 }
 
-// ── Sidebar responsive ────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
+
+    if (nombreEmpresaContainer) {
+        if (nombreRaw.trim() !== "") {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+    }
+
+    if (!infoPerfilContainer) return;
+
+    const urlPerfil = "perfil.html";
+
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
+
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+            : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          ${avatarHTML}
+          <div class="profile-info">
+            <strong>${nombreCompleto}</strong>
+            <div style="font-size: 13px; color: var(--gray)">
+              ${rol}
+            </div>
+          </div>
+        </a>
+      `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+        <a href="${urlPerfil}" class="profile-link">
+          <div class="profile-text-avatar">UA</div>
+          <div class="profile-info">
+            <strong>Usuario Anónimo</strong>
+            <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+          </div>
+        </a>
+      `;
+    }
+}
+
 // ── Sidebar responsive ────────────────────────────────────────
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.querySelector(".sidebar");
@@ -290,4 +395,21 @@ function limpiarFormulario() {
 }
 window.limpiarFormulario = limpiarFormulario;
 
-document.addEventListener("DOMContentLoaded", cargarCategorias);
+// ── INICIALIZACIÓN ────────────────────────────────────────
+async function init() {
+    try {
+        // Intentamos cargar el perfil (si falla, no rompe el resto de la página)
+        try {
+            const perfilData = await apiProfile.obtenerInfoMe();
+            cargarPerfilUsuario(perfilData);
+        } catch (profileError) {
+            console.warn("No se pudo cargar el perfil:", profileError);
+        }
+
+        await cargarCategorias();
+    } catch (error) {
+        console.error('Error al inicializar:', error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", init);

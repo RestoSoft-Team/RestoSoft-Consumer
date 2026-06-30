@@ -1,15 +1,13 @@
 // /js/consumo/apiProveedores.js
 
 const API_PROVEEDORES = "http://localhost:8080/api/proveedores";
-const API_EMPRESAS = "http://localhost:8080/api/empresa";
 
-// const token = localStorage.getItem("token");
-const token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI2ODc0MTgsImV4cCI6MTc4Mjc3MzgxOH0.xEOf-8izPT5bu64_oCsojldcaD1mcRTZSI3HJ1Xn8ZE";
+// Lee el token del localStorage o usa el hardcodeado para pruebas
+const token ="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI3NzU0NTAsImV4cCI6MTc4Mjg2MTg1MH0._BpqkCoVVywjjLzChkbPQztPsqmhZZ3k4bkPs8pMvoI";
 
 const ApiProveedores = {
     /**
-     * Obtiene todos los proveedores
+     * Obtiene todos los proveedores (El backend filtrará por el idEmpresa del token)
      */
     obtenerProveedores: async () => {
         const response = await fetch(API_PROVEEDORES, {
@@ -22,20 +20,7 @@ const ApiProveedores = {
     },
 
     /**
-     * Obtiene todas las empresas para el dropdown
-     */
-    obtenerEmpresas: async () => {
-        const response = await fetch(API_EMPRESAS, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        if (!response.ok) throw new Error("Error al consultar las empresas");
-        return await response.json();
-    },
-
-    /**
-     * Crea un nuevo proveedor
+     * Crea un nuevo proveedor (Sin idEmpresa en el body, el backend lo infiere del token)
      */
     crearProveedor: async (proveedorData) => {
         return await fetch(API_PROVEEDORES, {

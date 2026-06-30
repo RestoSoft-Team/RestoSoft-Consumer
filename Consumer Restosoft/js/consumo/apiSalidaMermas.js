@@ -1,11 +1,9 @@
 const API_BASE = "http://localhost:8080/api";
 
-// const token = localStorage.getItem("token");
-const token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI2ODc0MTgsImV4cCI6MTc4Mjc3MzgxOH0.xEOf-8izPT5bu64_oCsojldcaD1mcRTZSI3HJ1Xn8ZE";
+// Lee el token del localStorage o usa el hardcodeado para pruebas
+const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI3NzU0NTAsImV4cCI6MTc4Mjg2MTg1MH0._BpqkCoVVywjjLzChkbPQztPsqmhZZ3k4bkPs8pMvoI";
 
 export const apiSalidas = {
-    // ✅ CORREGIDO: Se quitó el /empresa/1 (El Controller lo saca del token)
     obtenerInsumos: async () => {
         const res = await fetch(`${API_BASE}/insumos`, {
             headers: {
@@ -16,7 +14,6 @@ export const apiSalidas = {
         return await res.json();
     },
 
-    // ✅ APUNTA AL ENDPOINT QUE SÍ EXISTE: /api/movimientos
     obtenerSalidas: async () => {
         const res = await fetch(`${API_BASE}/movimientos`, {
             headers: {
@@ -24,21 +21,20 @@ export const apiSalidas = {
             },
         });
         if (!res.ok) throw new Error('Error al cargar salidas (HTTP ' + res.status + ')');
-        
+
         const todos = await res.json();
-        
+
         // Filtramos en el navegador solo los de tipo SALIDA, MERMA, CONSUMO_INTERNO o DAÑO
         return todos.filter(mov => {
             const tipo = (mov.tipoMovimiento || "").toUpperCase();
-            return tipo === 'SALIDA' || tipo === 'MERMA' || tipo === 'CONSUMO_INTERNO' || tipo === 'DANO';
+            return tipo === 'SALIDA' || tipo === 'MERMA' || tipo === 'CONSUMO_INTERNO' || tipo === 'DANO' || tipo === 'DAÑO';
         });
     },
 
-    // Registra una nueva salida
     registrarSalida: async (payload) => {
         const res = await fetch(`${API_BASE}/movimientos`, {
             method: "POST",
-            headers: { 
+            headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
             },

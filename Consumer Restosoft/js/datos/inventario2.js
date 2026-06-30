@@ -1,7 +1,9 @@
- import { api } from '../consumo/ApiInventario2.js';
+import { api } from '../consumo/ApiInventario2.js';
+import { apiProfile } from "../consumo/apiProfile.js";
 
 let productosExportar = [];
 let productosCargados = [];
+let perfilData = null; // ← Perfil del usuario logueado (nivel módulo)
 
 const iconos = {
     'lácteos': 'fa-cheese', 'lacteos': 'fa-cheese',
@@ -231,33 +233,51 @@ window.toggleRow = function (mainRow) {
 };
 
 // ─── NOTIFICACIÓN MODERNA ────────────────────────────────────────────
-const notification = document.getElementById('notification');
-
-window.showNotification = function (text = 'Operación realizada', tipo = 'success') {
-    const title = document.getElementById('notificationTitle');
-    const icon = document.getElementById('notificationIcon');
-    const textNode = document.getElementById('notificationText');
-    if (textNode) textNode.innerHTML = text;
-    if (!notification || !title || !icon) return;
-
-    notification.classList.remove('is-error', 'is-warning');
-
-    if (tipo === true || tipo === 'error') {
-        title.textContent = 'Error';
-        icon.className = 'fa-solid fa-xmark';
-        notification.classList.add('is-error');
-    } else if (tipo === 'warning') {
-        title.textContent = 'Alerta de Stock';
-        icon.className = 'fa-solid fa-triangle-exclamation';
-        notification.classList.add('is-warning');
-    } else {
-        title.textContent = 'Operación Realizada';
-        icon.className = 'fa-solid fa-check';
+window.showNotification = (text, type = "success") => {
+    const contenedor = document.getElementById("notificationContainer");
+    if (!contenedor) {
+        console.warn("Contenedor de notificaciones no encontrado:", text);
+        return;
     }
 
-    notification.classList.add('show');
-    const t = tipo === 'warning' ? 4500 : 3500;
-    setTimeout(() => notification.classList.remove('show'), t);
+    const config = {
+        success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+        warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+        error: { icon: "fa-circle-xmark", title: "Error" },
+    };
+
+    const { icon, title } = config[type] || config.success;
+
+    const notif = document.createElement("div");
+    notif.className = `notification ${type}`;
+    notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+
+    contenedor.appendChild(notif);
+    void notif.offsetWidth;
+
+    setTimeout(() => notif.classList.add("show"), 10);
+
+    const cerrarNotif = () => {
+        notif.classList.remove("show");
+        setTimeout(() => notif.remove(), 400);
+    };
+
+    notif
+        .querySelector(".notification-close")
+        .addEventListener("click", cerrarNotif);
+
+    setTimeout(cerrarNotif, 4000);
 };
 
 // ─── SIDEBAR: ABRIR Y CERRAR AL CLIC FUERA ────────────────────────────
@@ -473,4 +493,83 @@ document.querySelector('[data-accion="exportar"]')?.addEventListener('click', ()
     window.showNotification(`Se exportaron ${datos.length} productos a Excel correctamente.`);
 });
 
-document.addEventListener('DOMContentLoaded', cargarInventario);
+// ══════════════════════════════════════════════════════════════
+// PERFIL DE USUARIO (BARRA SUPERIOR)
+// ══════════════════════════════════════════════════════════════
+function cargarPerfilUsuario(perfilData) {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+    const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+    const nombreRaw = empresaData?.nombre || "";
+
+    if (nombreRaw.trim() !== "") {
+        nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+    } else {
+        nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+    }
+
+    const urlPerfil = "perfil.html";
+
+    if (perfilData) {
+        const iniciales =
+            (
+                (perfilData.usuario.nombres || "").substring(0, 1) +
+                (perfilData.usuario.apellidos || "").substring(0, 1)
+            ).toUpperCase() || "EP";
+
+        const avatarHTML = perfilData.usuario.imagenUrl
+            ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+            : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+        const nombreCompleto =
+            `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+            "Usuario sin nombre";
+
+        const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+        infoPerfilContainer.innerHTML = `
+    <a href="${urlPerfil}" class="profile-link">
+      ${avatarHTML}
+      <div class="profile-info">
+        <strong>${nombreCompleto}</strong>
+        <div style="font-size: 13px; color: var(--gray)">
+          ${rol}
+        </div>
+      </div>
+    </a>
+  `;
+    } else {
+        infoPerfilContainer.innerHTML = `
+    <a href="${urlPerfil}" class="profile-link">
+      <div class="profile-text-avatar">UA</div>
+      <div class="profile-info">
+        <strong>Usuario Anónimo</strong>
+        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+      </div>
+    </a>
+  `;
+    }
+}
+
+// ══════════════════════════════════════════════════════════════
+// INICIALIZACIÓN
+// ══════════════════════════════════════════════════════════════
+async function inicializarModulo() {
+    try {
+        // Intentamos cargar el perfil (si falla, no rompe el resto)
+        try {
+            perfilData = await apiProfile.obtenerInfoMe();
+            cargarPerfilUsuario(perfilData);
+        } catch (profileError) {
+            console.warn("No se pudo cargar el perfil:", profileError);
+        }
+
+        await cargarInventario();
+    } catch (error) {
+        console.error('Error al inicializar el módulo:', error);
+        window.showNotification('No fue posible conectar con el servidor.', 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', inicializarModulo);

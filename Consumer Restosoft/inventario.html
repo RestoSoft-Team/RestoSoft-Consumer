@@ -12,20 +12,43 @@
     <link rel="stylesheet" href="/css/sidebar.css">
     <style>
         :root {
-            --background: #fbfcfb;
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
-            --dark: #262f3c;
-            --dark-light: #39485c;
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
-            --white: #ffffff;
-            --gray: #6f7782;
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-            --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-            --radius: 24px;
+            --primary-soft: rgba(107, 30, 40, 0.08);
+
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
+
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
+
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
+
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
 
         * {
@@ -177,32 +200,58 @@
             border: 1px solid var(--primary);
             background: white;
         }
+        .profile {
+            background: transparent;
+        }
 
-        .profile-box {
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 50px;
-            height: 50px;
-            border-radius: 18px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
-        }
-
-        .profile-box span {
-            color: var(--gray);
-            font-size: 13px;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .premium-card {
@@ -959,14 +1008,15 @@
             }
         }
     </style>
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
-
+    <div class="notification-container" id="notificationContainer"></div>
     <div class="sidebar">
         <div class="logo">
             <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-            <h3>RestSoft</h3>
+            <h3 id="nombreEmpresa"></h3>
         </div>
         <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
                 class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
@@ -1043,11 +1093,10 @@
                 <p>Controla existencias, alertas y movimientos de productos en tiempo real.</p>
             </div>
             <div class="topbar-actions">
-                <div class="profile-box">
-                    <img src="https://i.pravatar.cc/100?img=15" alt="Avatar" />
-                    <div>
-                        <h6>Valentina Cruz</h6><span>Inventory Manager</span>
-                    </div>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
                 </div>
             </div>
         </div>
