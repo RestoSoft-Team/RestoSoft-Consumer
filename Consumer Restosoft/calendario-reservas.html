@@ -17,8 +17,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/calendario-reservas.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+
+    <script type="module" src="js/datos/theme-loader.js"></script>
   </head>
 
   <body>
@@ -27,7 +29,7 @@
     <div class="sidebar">
       <div class="logo">
         <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-        <h3>RestSoft</h3>
+        <h3 id="nombreEmpresa"></h3>
       </div>
       <div class="menu-title">Navegación</div>
       <a class="menu-item" href="Dashboard-example.html"
@@ -151,8 +153,9 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu">
-        <a class="" href="configuracion-general.html">General</a
-        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="perfil.html">Mi Perfil</a>
+        <a class="" href="usuarios-sistema.html">Usuarios</a
         ><a class="" href="impresoras.html">Impresoras</a
         ><a class="" href="metodos-pago.html">Métodos Pago</a
         ><a class="" href="alertas.html">Alertas</a
@@ -169,6 +172,11 @@
           <h1>Calendario de Reservas</h1>
           <p>
             Visualiza la ocupación y gestiona la disponibilidad del restaurante
+          </p>
+        </div>
+        <div id="infoPerfilContainer" class="profile">
+          <p style="color: var(--gray); text-align: center; padding: 20px">
+            Cargando perfil...
           </p>
         </div>
       </div>
@@ -423,13 +431,7 @@
       </div>
     </div>
 
-    <div id="notification" class="notification">
-      <i id="notificationIcon"></i>
-      <div class="notification-text-content">
-        <strong id="notificationTitle"></strong>
-        <p id="notificationText"></p>
-      </div>
-    </div>
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div id="pantalla-carga" class="loader-overlay oculto">
       <lottie-player
@@ -443,7 +445,7 @@
       </lottie-player>
       <p>Cargando datos...</p>
     </div>
-    
+
     <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js"></script>
     <script type="module" src="js/datos/calendario-reservas.js"></script>
     <script type="module" src="js/datos/sidebar.js"></script>

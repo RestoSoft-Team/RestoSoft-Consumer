@@ -22,6 +22,8 @@
     />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/reservas.css" />
+
+     <script type="module" src="js/datos/theme-loader.js"></script>
   </head>
 
   <body>
@@ -30,7 +32,7 @@
     <div class="sidebar">
       <div class="logo">
         <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-        <h3>RestSoft</h3>
+        <h3 id="nombreEmpresa"></h3>
       </div>
       <div class="menu-title">Navegación</div>
       <a class="menu-item" href="Dashboard-example.html"
@@ -154,8 +156,9 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu">
-        <a class="" href="configuracion-general.html">General</a
-        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="perfil.html">Mi Perfil</a>
+        <a class="" href="usuarios-sistema.html">Usuarios</a
         ><a class="" href="impresoras.html">Impresoras</a
         ><a class="" href="metodos-pago.html">Métodos Pago</a
         ><a class="" href="alertas.html">Alertas</a
@@ -173,16 +176,10 @@
           <p>Gestión de reservas en tiempo real del restaurante</p>
         </div>
         <div class="topbar-right">
-          <div class="search">
-            <i class="fa-solid fa-search"></i>
-            <input type="text" placeholder="Buscar reserva..." />
-          </div>
-          <div class="profile">
-            <img src="https://i.pravatar.cc/100?img=12" alt="Perfil" />
-            <div>
-              <strong>Admin</strong>
-              <div style="font-size: 13px; color: var(--gray)">Manager</div>
-            </div>
+          <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando perfil...
+            </p>
           </div>
         </div>
       </div>
@@ -359,15 +356,7 @@
       </div>
     </div>
 
-    <div id="notification" class="notification">
-      <div class="notification-body">
-        <i id="notificationIcon"></i>
-        <div class="notification-text-content">
-          <strong id="notificationTitle"></strong>
-          <p id="notificationText"></p>
-        </div>
-      </div>
-    </div>
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div id="pantalla-carga" class="loader-overlay oculto">
       <lottie-player
@@ -381,7 +370,7 @@
       </lottie-player>
       <p>Cargando datos...</p>
     </div>
-    
+
     <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js"></script>
     <script type="module" src="js/datos/reservas.js"></script>
     <script type="module" src="js/datos/sidebar.js"></script>

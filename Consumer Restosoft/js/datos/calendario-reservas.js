@@ -1,5 +1,6 @@
 import { apiReserva } from "../consumo/apiReservas.js";
 import { api as apiMesas } from "../consumo/apiMesas.js";
+import { apiProfile } from "../consumo/apiProfile.js";
 
 const ID_EMPRESA = 1;
 
@@ -21,13 +22,16 @@ const state = {
 
 const dom = {
   viewCalendar: document.getElementById("viewCalendar"),
+  infoPerfilContainer: document.getElementById("infoPerfilContainer"),
   viewDayDetail: document.getElementById("viewDayDetail"),
   mesAnioTitulo: document.getElementById("mesAnioTitulo"),
   btnPrevMonth: document.getElementById("btnPrevMonth"),
   btnNextMonth: document.getElementById("btnNextMonth"),
   calendarDaysGrid: document.getElementById("calendarDaysGrid"),
   diaSeleccionadoTitulo: document.getElementById("diaSeleccionadoTitulo"),
-  listaReservasDiaContainer: document.getElementById("listaReservasDiaContainer"),
+  listaReservasDiaContainer: document.getElementById(
+    "listaReservasDiaContainer",
+  ),
   btnVolverCalendario: document.getElementById("btnVolverCalendario"),
   btnNuevaReservaLateral: document.getElementById("btnNuevaReservaLateral"),
   panelFormulario: document.getElementById("panelFormulario"),
@@ -70,25 +74,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function cargarDatosEstaticos() {
-  const loader = document.getElementById("pantalla-carga");
   try {
-    if (loader) loader.classList.remove("oculto");
-    const [mesasData, zonasData, clientesData] = await Promise.all([
+    const [mesasData, zonasData, clientesData, perfilData] = await Promise.all([
       apiMesas.obtenerMesas(ID_EMPRESA),
       apiMesas.obtenerZonas(ID_EMPRESA),
       apiReserva.listarClientes(),
+      apiProfile.obtenerInfoMe(),
     ]);
-   
+
     state.mesas = mesasData;
     state.zonas = zonasData;
     state.clientes = clientesData;
+    cargarPerfilUsuario(perfilData);
   } catch (error) {
     console.error("Error crítico al cargar datos estáticos:", error);
     const codigo = "503";
-    const mensaje = encodeURIComponent("El sistema está caído o no se pudieron cargar los datos. Por favor, consulta a los administradores.");
+    const mensaje = encodeURIComponent(
+      "El sistema está caído o no se pudieron cargar los datos. Por favor, consulta a los administradores.",
+    );
     window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
   } finally {
-    if (loader) loader.classList.add("oculto");
   }
 }
 
@@ -99,8 +104,65 @@ async function cargarReservasGeneral() {
   } catch (error) {
     console.error("Error crítico al cargar reservas generales:", error);
     const codigo = "503";
-    const mensaje = encodeURIComponent("La API está caída y no se pudieron cargar las reservas. Por favor, consulta a los administradores.");
+    const mensaje = encodeURIComponent(
+      "La API está caída y no se pudieron cargar las reservas. Por favor, consulta a los administradores.",
+    );
     window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+  }
+}
+
+function cargarPerfilUsuario(perfilData) {
+  const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+  const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+  const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+  const nombreRaw = empresaData?.nombre || "";
+
+  if (nombreRaw.trim() !== "") {
+    nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+  } else {
+    nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+  }
+
+  const urlPerfil = "perfil.html";
+
+  if (perfilData) {
+    const iniciales =
+      (
+        (perfilData.usuario.nombres || "").substring(0, 1) +
+        (perfilData.usuario.apellidos || "").substring(0, 1)
+      ).toUpperCase() || "EP";
+
+    const avatarHTML = perfilData.usuario.imagenUrl
+      ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+      : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+    const nombreCompleto =
+      `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+      "Usuario sin nombre";
+    const rol = perfilData.rol.nombre || "Sin rol asignado";
+
+    infoPerfilContainer.innerHTML = `
+    <a href="${urlPerfil}" class="profile-link">
+      ${avatarHTML}
+      <div class="profile-info">
+        <strong>${nombreCompleto}</strong>
+        <div style="font-size: 13px; color: var(--gray)">
+          ${rol}
+        </div>
+      </div>
+    </a>
+  `;
+  } else {
+    infoPerfilContainer.innerHTML = `
+    <a href="${urlPerfil}" class="profile-link">
+      <div class="profile-text-avatar">UA</div>
+      <div class="profile-info">
+        <strong>Usuario Anónimo</strong>
+        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+      </div>
+    </a>
+  `;
   }
 }
 
@@ -116,66 +178,79 @@ function agruparReservas(reservaMesasRaw) {
   return Array.from(mapa.values());
 }
 
+// Sistema de Notificaciones Moderno (Apolado)
 window.showNotification = (text, type = "success") => {
-  const notification = document.getElementById("notification");
-  const notificationText = document.getElementById("notificationText");
-  const notificationIcon = document.getElementById("notificationIcon");
-  const notificationTitle = document.getElementById("notificationTitle");
-
-  if (!notification || !notificationText) {
-    console.warn(text);
+  const contenedor = document.getElementById("notificationContainer");
+  if (!contenedor) {
+    console.warn("Contenedor de notificaciones no encontrado:", text);
     return;
   }
 
-  if (window.notificationTimeout) {
-    clearTimeout(window.notificationTimeout);
-  }
+  // Mapear iconos y títulos según el tipo de alerta
+  const config = {
+    success: { icon: "fa-circle-check", title: "Operación Exitosa" },
+    warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
+    error: { icon: "fa-circle-xmark", title: "Error" },
+  };
 
-  notification.style.transition = "none";
-  notification.classList.remove("show");
-  void notification.offsetWidth;
-  notification.style.transition = "";
+  const { icon, title } = config[type] || config.success;
 
-  notificationText.textContent = text;
-  notification.className = "notification";
+  // Crear el elemento de la notificación
+  const notif = document.createElement("div");
+  notif.className = `notification ${type}`;
+  notif.innerHTML = `
+    <div class="notification-icon">
+      <i class="fa-solid ${icon}"></i>
+    </div>
+    <div class="notification-content">
+      <div class="notification-title">${title}</div>
+      <div class="notification-message">${text}</div>
+    </div>
+    <button class="notification-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
 
-  if (type === "success") {
-    notification.classList.add("success");
-    notificationIcon.className = "fa-solid fa-circle-check";
-    notificationTitle.textContent = "Operación Exitosa";
-  } else if (type === "warning") {
-    notification.classList.add("warning");
-    notificationIcon.className = "fa-solid fa-triangle-exclamation";
-    notificationTitle.textContent = "Aviso";
-  } else if (type === "error") {
-    notification.classList.add("error");
-    notificationIcon.className = "fa-solid fa-circle-xmark";
-    notificationTitle.textContent = "Error";
-  }
+  // Agregar al DOM
+  contenedor.appendChild(notif);
 
-  notification.classList.add("show");
+  // Forzar reflow para que la animación de entrada funcione correctamente
+  void notif.offsetWidth;
 
-  window.notificationTimeout = setTimeout(() => {
-    notification.classList.remove("show");
-    
-    setTimeout(() => {
-      notification.style.display = "none";
-      setTimeout(() => {
-        notification.style.display = "";
-      }, 50);
-    }, 500); 
-  }, 3000);
+  // Mostrar con animación
+  setTimeout(() => notif.classList.add("show"), 10);
+
+  // Función para cerrar y eliminar
+  const cerrarNotif = () => {
+    notif.classList.remove("show");
+    setTimeout(() => notif.remove(), 400); // 400ms = tiempo de la animación CSS
+  };
+
+  // Cerrar al hacer clic en la X
+  notif
+    .querySelector(".notification-close")
+    .addEventListener("click", cerrarNotif);
+
+  // Auto-cerrar a los 4 segundos
+  setTimeout(cerrarNotif, 4000);
 };
 
 function limpiarErroresFormulario() {
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  document.querySelectorAll('.error-message-text').forEach(el => el.remove());
+  document
+    .querySelectorAll(".input-error")
+    .forEach((el) => el.classList.remove("input-error"));
+  document.querySelectorAll(".error-message-text").forEach((el) => el.remove());
 }
 
 function agregarMensajeErrorBajoInput(inputEl, mensaje) {
-  if(inputEl.nextSibling && inputEl.nextSibling.classList && inputEl.nextSibling.classList.contains('error-message-text')) return;
-  const errorSpan = document.createElement('span');
-  errorSpan.className = 'error-message-text';
+  if (
+    inputEl.nextSibling &&
+    inputEl.nextSibling.classList &&
+    inputEl.nextSibling.classList.contains("error-message-text")
+  )
+    return;
+  const errorSpan = document.createElement("span");
+  errorSpan.className = "error-message-text";
   errorSpan.textContent = mensaje;
   inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
 }
@@ -188,9 +263,11 @@ function manejarErroresDeValidacion(errorResponse) {
       "reserva.fecha": "fechaReserva",
       "reserva.hora": "horaReserva",
       "reserva.usuario": "idCliente",
-      "reserva.cantidadPersonas": "infoComensales"
+      "reserva.cantidadPersonas": "infoComensales",
     };
-    for (const [campoBackend, mensaje] of Object.entries(errorResponse.validations)) {
+    for (const [campoBackend, mensaje] of Object.entries(
+      errorResponse.validations,
+    )) {
       mensajes.push(mensaje);
       const idInput = mapeoCampos[campoBackend];
       if (idInput) {
@@ -203,14 +280,22 @@ function manejarErroresDeValidacion(errorResponse) {
     }
     showNotification(mensajes.join(" | "), "error");
   } else {
-    showNotification(errorResponse.message || "Ocurrió un error inesperado en el servidor.", "error");
+    showNotification(
+      errorResponse.message || "Ocurrió un error inesperado en el servidor.",
+      "error",
+    );
   }
 }
 
 function formatFechaLocal(fechaStr) {
   const partes = fechaStr.split("-");
   const f = new Date(partes[0], partes[1] - 1, partes[2]);
-  const opciones = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+  const opciones = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
   return f.toLocaleDateString("es-ES", opciones);
 }
 
@@ -223,7 +308,12 @@ function esFechaPasada(fechaStr) {
   return fechaSeleccionada < hoy;
 }
 
-function mostrarConfirmacion(titulo = "¿Descartar cambios?", mensaje = "Tienes información sin guardar. Si continúas perderás todos los cambios realizados.", txtCancelar = "Seguir editando", txtConfirmar = "Descartar") {
+function mostrarConfirmacion(
+  titulo = "¿Descartar cambios?",
+  mensaje = "Tienes información sin guardar. Si continúas perderás todos los cambios realizados.",
+  txtCancelar = "Seguir editando",
+  txtConfirmar = "Descartar",
+) {
   return new Promise((resolve) => {
     const modal = document.createElement("div");
     modal.className = "modal-confirmacion";
@@ -262,7 +352,20 @@ function renderCalendar() {
   dom.calendarDaysGrid.innerHTML = "";
   const year = state.currentDate.getFullYear();
   const month = state.currentDate.getMonth();
-  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
   dom.mesAnioTitulo.textContent = `${monthNames[month]} ${year}`;
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -275,11 +378,16 @@ function renderCalendar() {
   }
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    const reservasDelDia = state.reservasGeneralData.filter((r) => r.reserva.fecha === dateStr);
+    const reservasDelDia = state.reservasGeneralData.filter(
+      (r) => r.reserva.fecha === dateStr,
+    );
     const count = reservasDelDia.length;
     const div = document.createElement("div");
     div.className = "day";
-    let badgeHtml = count > 0 ? `<div class="res-count">${count} reserva${count > 1 ? "s" : ""}</div>` : "";
+    let badgeHtml =
+      count > 0
+        ? `<div class="res-count">${count} reserva${count > 1 ? "s" : ""}</div>`
+        : "";
     div.innerHTML = `
       <div class="day-number">${day}</div>
       ${badgeHtml}
@@ -308,7 +416,11 @@ function abrirDetalleDia(dateStr) {
 function tieneCambiosSinGuardar() {
   if (state.modoActivo === "EDITAR") return true;
   if (state.modoActivo === "CREAR") {
-    if (state.clienteSeleccionado !== null || state.mesasSeleccionadas.length > 0 || dom.horaReserva.value !== "") {
+    if (
+      state.clienteSeleccionado !== null ||
+      state.mesasSeleccionadas.length > 0 ||
+      dom.horaReserva.value !== ""
+    ) {
       return true;
     }
   }
@@ -329,7 +441,9 @@ async function volverAlCalendario() {
 
 function renderListaReservasDia() {
   dom.listaReservasDiaContainer.innerHTML = "";
-  const reservasDia = state.reservasGeneralData.filter((r) => r.reserva.fecha === state.selectedDateStr);
+  const reservasDia = state.reservasGeneralData.filter(
+    (r) => r.reserva.fecha === state.selectedDateStr,
+  );
   if (reservasDia.length === 0) {
     dom.listaReservasDiaContainer.innerHTML = `<p style="color:var(--gray); text-align:center;">No hay reservas registradas para esta fecha.</p>`;
     return;
@@ -337,23 +451,36 @@ function renderListaReservasDia() {
   const html = reservasDia.map((agrupada) => {
     const res = agrupada.reserva;
     const mesasNum = agrupada.mesas.map((m) => m.numeroMesa).join(", ");
-    
+
     const nombres = res.usuario?.nombres || "";
     const apellidos = res.usuario?.apellidos || "";
-    const nombreCliente = `${nombres} ${apellidos}`.trim() || "Cliente Desconocido";
-    const iniciales = (nombres.substring(0, 1) + (apellidos.substring(0, 1) || "")).toUpperCase() || "CL";
+    const nombreCliente =
+      `${nombres} ${apellidos}`.trim() || "Cliente Desconocido";
+    const iniciales =
+      (
+        nombres.substring(0, 1) + (apellidos.substring(0, 1) || "")
+      ).toUpperCase() || "CL";
+    const imagenAvatar = res.usuario?.imagenUrl || null;
 
     let badgeClass = "booking-pending";
     switch (res.estado) {
-      case "CONFIRMADA": badgeClass = "booking-confirmed"; break;
-      case "ACTIVA": badgeClass = "booking-active"; break;
-      case "CANCELADA": badgeClass = "booking-cancelled"; break;
-      case "FINALIZADA": badgeClass = "booking-finalized"; break;
+      case "CONFIRMADA":
+        badgeClass = "booking-confirmed";
+        break;
+      case "ACTIVA":
+        badgeClass = "booking-active";
+        break;
+      case "CANCELADA":
+        badgeClass = "booking-cancelled";
+        break;
+      case "FINALIZADA":
+        badgeClass = "booking-finalized";
+        break;
     }
     return `
       <div class="reserva-item" onclick="abrirOpcionesReserva(${res.id})">
           <div class="reserva-left">
-              <div class="avatar">${iniciales}</div>
+               ${imagenAvatar ? `<img src="${imagenAvatar}" alt="Avatar" class="avatar">` : `<div class="avatar">${iniciales}</div>`}
               <div class="reserva-info">
                   <h5>${nombreCliente}</h5>
                   <span>Mesas: ${mesasNum} · ${res.hora.substring(0, 5)} · ${res.cantidadPersonas} pax</span>
@@ -371,9 +498,15 @@ function renderZonas() {
   calcularComensalesActuales();
   const html = state.zonas.map((zona) => {
     const mesasZona = state.mesas.filter((m) => m.idZona === zona.id);
-    const seleccionadasEnZona = mesasZona.filter((m) => state.mesasSeleccionadas.includes(m.id)).length;
-    let badgeHtml = seleccionadasEnZona > 0 ? `<div style="position: absolute; top: -8px; right: -8px;" class="zona-badge">${seleccionadasEnZona}</div>` : "";
-    let borderStyle = seleccionadasEnZona > 0 ? "border: 2px solid var(--primary);" : "";
+    const seleccionadasEnZona = mesasZona.filter((m) =>
+      state.mesasSeleccionadas.includes(m.id),
+    ).length;
+    let badgeHtml =
+      seleccionadasEnZona > 0
+        ? `<div style="position: absolute; top: -8px; right: -8px;" class="zona-badge">${seleccionadasEnZona}</div>`
+        : "";
+    let borderStyle =
+      seleccionadasEnZona > 0 ? "border: 2px solid var(--primary);" : "";
     return `
       <div class="zona-card" style="${borderStyle}" onclick="abrirZona(${zona.id})">
           ${badgeHtml}
@@ -408,10 +541,11 @@ window.abrirZona = function (idZona) {
 function actualizarDisponibilidadMesas() {
   const fecha = dom.fechaReserva.value;
   const hora = dom.horaReserva.value;
-  
+
   if (!fecha || !hora) {
     state.mesasOcupadas = [];
-    if (dom.mesasView.style.display === "block" && state.zonaActiva) renderPlanoZona(state.zonaActiva);
+    if (dom.mesasView.style.display === "block" && state.zonaActiva)
+      renderPlanoZona(state.zonaActiva);
     renderZonas();
     return;
   }
@@ -423,7 +557,7 @@ function actualizarDisponibilidadMesas() {
 
   state.reservasGeneralData.forEach((agrupada) => {
     const res = agrupada.reserva;
-    
+
     if (state.reservaEnEdicion && res.id === state.reservaEnEdicion) return;
     if (res.estado === "CANCELADA" || res.estado === "FINALIZADA") return;
     if (res.fecha !== fecha) return;
@@ -432,7 +566,7 @@ function actualizarDisponibilidadMesas() {
     const minutosReserva = hRes * 60 + mRes;
 
     if (Math.abs(minutosSeleccionados - minutosReserva) <= 90) {
-      agrupada.mesas.forEach(mesa => {
+      agrupada.mesas.forEach((mesa) => {
         if (!state.mesasOcupadas.includes(mesa.id)) {
           state.mesasOcupadas.push(mesa.id);
         }
@@ -440,8 +574,10 @@ function actualizarDisponibilidadMesas() {
     }
   });
 
-  state.mesasSeleccionadas = state.mesasSeleccionadas.filter(idMesa => !state.mesasOcupadas.includes(idMesa));
-  
+  state.mesasSeleccionadas = state.mesasSeleccionadas.filter(
+    (idMesa) => !state.mesasOcupadas.includes(idMesa),
+  );
+
   if (dom.mesasView.style.display === "block" && state.zonaActiva) {
     renderPlanoZona(state.zonaActiva);
   }
@@ -452,31 +588,36 @@ function actualizarDisponibilidadMesas() {
 function renderPlanoZona(idZona) {
   dom.layoutMesas.innerHTML = "";
   const mesasZona = state.mesas.filter((m) => m.idZona === idZona);
-  const esModoSoloLectura = state.modoActivo === "VER" || esFechaPasada(state.selectedDateStr);
+  const esModoSoloLectura =
+    state.modoActivo === "VER" || esFechaPasada(state.selectedDateStr);
 
   mesasZona.forEach((mesa) => {
     const el = document.createElement("div");
-    
+
     const ocupadaPorOtra = state.mesasOcupadas.includes(mesa.id);
 
     let estadoClase = mesa.estado.toLowerCase();
     if (ocupadaPorOtra) estadoClase = "ocupada";
-    
+
     el.className = `mesa ${estadoClase}`;
     if (state.mesasSeleccionadas.includes(mesa.id)) {
       el.classList.add("selected");
     }
-    el.style.left = (mesa.posicionX || Math.floor(Math.random() * 200) + 20) + "px";
-    el.style.top = (mesa.posicionY || Math.floor(Math.random() * 200) + 20) + "px";
+    el.style.left =
+      (mesa.posicionX || Math.floor(Math.random() * 200) + 20) + "px";
+    el.style.top =
+      (mesa.posicionY || Math.floor(Math.random() * 200) + 20) + "px";
     el.innerHTML = `<strong>${mesa.numeroMesa}</strong><small>${mesa.disponibilidadPersonas} pax</small>`;
-    
+
     if (!ocupadaPorOtra && !esModoSoloLectura) {
       el.addEventListener("click", () => {
         el.classList.toggle("selected");
         if (el.classList.contains("selected")) {
           state.mesasSeleccionadas.push(mesa.id);
         } else {
-          state.mesasSeleccionadas = state.mesasSeleccionadas.filter((id) => id !== mesa.id);
+          state.mesasSeleccionadas = state.mesasSeleccionadas.filter(
+            (id) => id !== mesa.id,
+          );
         }
         calcularComensalesActuales();
       });
@@ -489,16 +630,23 @@ function renderPlanoZona(idZona) {
 
 window.abrirOpcionesReserva = async function (idReserva) {
   if (tieneCambiosSinGuardar()) {
-    const confirmar = await mostrarConfirmacion("¿Abrir reserva?", "Tienes cambios sin guardar en la vista actual. ¿Deseas descartarlos para ver esta reserva?", "Cancelar", "Descartar y abrir");
+    const confirmar = await mostrarConfirmacion(
+      "¿Abrir reserva?",
+      "Tienes cambios sin guardar en la vista actual. ¿Deseas descartarlos para ver esta reserva?",
+      "Cancelar",
+      "Descartar y abrir",
+    );
     if (!confirmar) return;
   }
-  const agrupada = state.reservasGeneralData.find((r) => r.reserva.id === idReserva);
+  const agrupada = state.reservasGeneralData.find(
+    (r) => r.reserva.id === idReserva,
+  );
   if (!agrupada) return;
-  
+
   const esPasada = esFechaPasada(agrupada.reserva.fecha);
   const estaFinalizada = agrupada.reserva.estado === "FINALIZADA";
   const esSoloLectura = esPasada || estaFinalizada;
-  
+
   state.modoActivo = esSoloLectura ? "VER" : "EDITAR";
   state.reservaEnEdicion = idReserva;
   state.mesasSeleccionadas = agrupada.mesas.map((m) => m.id);
@@ -525,7 +673,9 @@ window.abrirOpcionesReserva = async function (idReserva) {
 
   if (esSoloLectura) {
     dom.formTitulo.textContent = `Reserva #${idReserva} (Solo Lectura)`;
-    dom.formSubtitulo.textContent = estaFinalizada ? "Esta reserva ya se encuentra finalizada." : "Esta reserva pertenece a una fecha pasada.";
+    dom.formSubtitulo.textContent = estaFinalizada
+      ? "Esta reserva ya se encuentra finalizada."
+      : "Esta reserva pertenece a una fecha pasada.";
     dom.btnCancelarEdicion.style.display = "none";
     dom.contenedorBotonesForm.innerHTML = `
         <button type="button" class="btn-primary" style="background-color: var(--gray); width:100%;" onclick="volverAlCalendario()">
@@ -547,11 +697,15 @@ window.abrirOpcionesReserva = async function (idReserva) {
             <button id="btnAbrirEliminar" class="btn-danger" style="flex:1;"><i class="fa-solid fa-trash"></i></button>
         </div>
     `;
-    document.getElementById("btnActualizarReserva").addEventListener("click", procesarGuardado);
-    document.getElementById("btnAbrirEliminar").addEventListener("click", () => {
-      dom.panelFormulario.classList.remove("active");
-      dom.panelEliminar.classList.add("active");
-    });
+    document
+      .getElementById("btnActualizarReserva")
+      .addEventListener("click", procesarGuardado);
+    document
+      .getElementById("btnAbrirEliminar")
+      .addEventListener("click", () => {
+        dom.panelFormulario.classList.remove("active");
+        dom.panelEliminar.classList.add("active");
+      });
   }
   actualizarDisponibilidadMesas();
   mostrarPanelPrincipalForm();
@@ -577,13 +731,16 @@ function resetearFormulario() {
   dom.selectorCliente.style.pointerEvents = "auto";
   if (esFechaPasada(state.selectedDateStr)) {
     dom.formTitulo.textContent = "Consulta de Fecha Pasada";
-    dom.formSubtitulo.textContent = "No se pueden crear reservas en días anteriores.";
+    dom.formSubtitulo.textContent =
+      "No se pueden crear reservas en días anteriores.";
     dom.contenedorBotonesForm.innerHTML = `<p style="color:var(--gray); text-align:center; font-style:italic;">Modo lectura</p>`;
   } else {
     dom.formTitulo.textContent = "Nueva Reserva";
     dom.formSubtitulo.textContent = "Completar datos de la reserva";
     dom.contenedorBotonesForm.innerHTML = `<button id="btnGuardarReserva" class="btn-primary">Crear Reserva</button>`;
-    document.getElementById("btnGuardarReserva").addEventListener("click", procesarGuardado);
+    document
+      .getElementById("btnGuardarReserva")
+      .addEventListener("click", procesarGuardado);
   }
   actualizarDisponibilidadMesas();
   mostrarPanelPrincipalForm();
@@ -601,7 +758,10 @@ async function procesarGuardado() {
 
   if (state.modoActivo === "CREAR") {
     if (!state.clienteSeleccionado || !state.clienteSeleccionado.id) {
-      showNotification("Debes seleccionar un cliente para la reserva.", "warning");
+      showNotification(
+        "Debes seleccionar un cliente para la reserva.",
+        "warning",
+      );
       dom.selectorCliente.focus();
       return;
     }
@@ -619,30 +779,43 @@ async function procesarGuardado() {
     }
 
     if (!state.mesasSeleccionadas || state.mesasSeleccionadas.length === 0) {
-      showNotification("Debes seleccionar al menos una mesa para la reserva.", "warning");
+      showNotification(
+        "Debes seleccionar al menos una mesa para la reserva.",
+        "warning",
+      );
       return;
     }
 
     if (state.cantidadPersonasCalculada <= 0) {
-      showNotification("La capacidad de comensales debe ser mayor a 0. Selecciona mesas válidas.", "warning");
+      showNotification(
+        "La capacidad de comensales debe ser mayor a 0. Selecciona mesas válidas.",
+        "warning",
+      );
       return;
     }
   }
 
   const requestData = {
     fecha: dom.fechaReserva.value,
-    hora: dom.horaReserva.value + (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
+    hora:
+      dom.horaReserva.value +
+      (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
     idusuario: parseInt(state.clienteSeleccionado.id),
     cantidadPersonas: state.cantidadPersonasCalculada,
     idempresa: ID_EMPRESA,
-    estado: state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
+    estado:
+      state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
   };
   try {
     if (state.modoActivo === "CREAR") {
       await apiReserva.guardarReserva(requestData, state.mesasSeleccionadas);
       showNotification("Reserva creada exitosamente.", "success");
     } else {
-      await apiReserva.actualizarReserva(state.reservaEnEdicion, requestData, state.mesasSeleccionadas);
+      await apiReserva.actualizarReserva(
+        state.reservaEnEdicion,
+        requestData,
+        state.mesasSeleccionadas,
+      );
       showNotification("Reserva actualizada correctamente.", "success");
     }
     await cargarReservasGeneral();
@@ -654,7 +827,10 @@ async function procesarGuardado() {
     } else if (e.message) {
       showNotification(e.message, "error");
     } else {
-      showNotification("Error al procesar la reserva, verifica la conexión.", "error");
+      showNotification(
+        "Error al procesar la reserva, verifica la conexión.",
+        "error",
+      );
     }
   }
 }
@@ -684,7 +860,12 @@ function configurarEventosGenerales() {
   dom.btnVolverCalendario.addEventListener("click", volverAlCalendario);
   dom.btnNuevaReservaLateral.addEventListener("click", async () => {
     if (tieneCambiosSinGuardar()) {
-      const confirmar = await mostrarConfirmacion("¿Crear nueva reserva?", "Estás a punto de crear una nueva reserva, ¿deseas descartar la información actual?", "Cancelar", "Descartar y crear");
+      const confirmar = await mostrarConfirmacion(
+        "¿Crear nueva reserva?",
+        "Estás a punto de crear una nueva reserva, ¿deseas descartar la información actual?",
+        "Cancelar",
+        "Descartar y crear",
+      );
       if (!confirmar) return;
     }
     resetearFormulario();
@@ -700,7 +881,12 @@ function configurarEventosGenerales() {
     renderZonas();
   });
   dom.btnCancelarEdicion.addEventListener("click", async () => {
-    const confirmar = await mostrarConfirmacion("¿Cancelar edición?", "¿Estás seguro de que deseas descartar los cambios actuales?", "Volver", "Descartar");
+    const confirmar = await mostrarConfirmacion(
+      "¿Cancelar edición?",
+      "¿Estás seguro de que deseas descartar los cambios actuales?",
+      "Volver",
+      "Descartar",
+    );
     if (confirmar) {
       resetearFormulario();
     }
@@ -717,7 +903,8 @@ function configurarEventosGenerales() {
   dom.buscarCliente.addEventListener("input", () => {
     const texto = dom.buscarCliente.value.toLowerCase();
     const filtrados = state.clientes.filter((c) => {
-      const nombre = (`${c.usuario.nombres} ${c.usuario.apellidos}`).toLowerCase();
+      const nombre =
+        `${c.usuario.nombres} ${c.usuario.apellidos}`.toLowerCase();
       return nombre.includes(texto);
     });
     renderClientesModal(filtrados);
