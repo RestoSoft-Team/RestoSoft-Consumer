@@ -1,9 +1,7 @@
-const API_BASE = "http://localhost:8080/api";
-const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxNiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzgyNjkxMjQwLCJleHAiOjE3ODI3Nzc2NDB9.32d5LzAaR52loAERHojAkbFPakFWXD5qJncPGnMB_qk";
+import { API_BASE, token } from "../consumo/config.js";
 
 export const apiProfile = {
- 
+
   obtenerInfoMe: async () => {
     const response = await fetch(`${API_BASE}/usuarios/me`, {
       headers: {
@@ -18,7 +16,7 @@ export const apiProfile = {
     return await response.json();
   },
 
-  
+
   actualizarEmpleado: async (idEmpleado, empleadoRequest, imagenFile) => {
     const formData = new FormData();
 
