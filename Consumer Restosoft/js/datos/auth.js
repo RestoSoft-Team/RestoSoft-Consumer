@@ -1,5 +1,6 @@
 import { apiAuth } from "../consumo/apiAuth.js";
 
+
 const AuthApp = (function () {
   function iniciar() {
     initLogin();
@@ -16,8 +17,7 @@ const AuthApp = (function () {
       const email = document.getElementById("login-email").value;
       const password = document.getElementById("login-password").value;
 
-      btn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
       btn.disabled = true;
 
       try {
@@ -31,10 +31,10 @@ const AuthApp = (function () {
         setTimeout(() => {
           window.location.href = "/panel-cliente.html";
         }, 1000);
+
       } catch (error) {
         alert("Error: " + error.message);
-        btn.innerHTML =
-          'Iniciar Sesión <i class="fa-solid fa-arrow-right-to-bracket"></i>';
+        btn.innerHTML = 'Iniciar Sesión <i class="fa-solid fa-arrow-right-to-bracket"></i>';
         btn.disabled = false;
       }
     });
@@ -72,35 +72,31 @@ const AuthApp = (function () {
       e.preventDefault();
       const btn = registerForm.querySelector(".btn-register");
 
-      // 1. Leer el idEmpresa del localStorage (guardado previamente en cliente.js)
-      // Si no existe, ponemos 1 por defecto para que no rompa en pruebas locales
+      // 1. Leer el idEmpresa del localStorage
       const idEmpresa = localStorage.getItem("idEmpresaActual") || 1;
 
-      // 2. Construimos el JSON SIN el idEmpresa (ya va en la URL)
+      // 2. Construimos el JSON EXACTAMENTE como lo pide el DTO ClienteRequest
       const clienteData = {
-        nombre: document.getElementById("reg-nombre").value,
-        apellido: document.getElementById("reg-apellido").value,
+        nombres: document.getElementById("reg-nombres").value,
+        apellidos: document.getElementById("reg-apellidos").value,
         email: document.getElementById("reg-email").value,
         password: document.getElementById("reg-password").value,
         telefono: document.getElementById("reg-telefono").value,
+        fechaNacimiento: document.getElementById("reg-fecha-nacimiento").value
       };
 
-      btn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Creando cuenta...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creando cuenta...';
       btn.disabled = true;
 
       try {
         // 3. Enviamos el idEmpresa como primer parámetro
-        await apiAuth.registrarCliente(
-          idEmpresa,
-          clienteData,
-          imagenSeleccionada,
-        );
+        await apiAuth.registrarCliente(idEmpresa, clienteData, imagenSeleccionada);
 
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Cuenta Creada';
         setTimeout(() => {
           window.location.href = "/login-cliente.html";
         }, 1500);
+
       } catch (error) {
         alert("Error: " + error.message);
         btn.innerHTML = 'Crear Cuenta <i class="fa-solid fa-user-plus"></i>';
