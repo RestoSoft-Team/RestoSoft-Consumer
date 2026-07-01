@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --c-primary: #6b1e28;
+            --c-primary-hover: #8a3b47;
+            --c-dark: #111827;
+            --c-bg: #f8f9fb;
+            --c-bg-alt: #f1f3f6;
+            --c-card: #ffffff;
+            --c-text: #111827;
+            --c-text-sec: #6b7280;
+            --c-border: #e8ebf0;
+            --font-main: 'Inter', sans-serif;
+            --r-card: 28px;
+            --r-btn: 16px;
+            --sh-soft: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --sh-hover: 0 10px 30px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--c-bg);
+            color: var(--c-text);
+            overflow-x: hidden;
+            letter-spacing: -0.01em;
+        }
+
+        .loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--c-card);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        .loader-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 0, 0, 0.05);
+            border-top-color: var(--c-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-overlay p {
+            color: var(--c-text-sec);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .topbar-client {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--c-border);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: var(--sh-soft);
+        }
+
+        .brand h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--c-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--c-card);
+            padding: 8px 16px 8px 8px;
+            border-radius: 100px;
+            box-shadow: var(--sh-soft);
+            border: 1px solid var(--c-border);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--c-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .user-details strong {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--c-dark);
+        }
+
+        .user-details span {
+            font-size: 0.75rem;
+            color: var(--c-text-sec);
+        }
+
+        .btn-logout {
+            background: rgba(220, 38, 38, 0.05);
+            border: none;
+            color: var(--danger);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-client {
+            background: var(--c-card);
+            border-radius: var(--r-card);
+            padding: 32px;
+            box-shadow: var(--sh-soft);
+            border: 1px solid var(--c-border);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card-header-info {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-client h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: var(--c-dark);
+            letter-spacing: -0.03em;
+        }
+
+        .card-client p.sub {
+            color: var(--c-text-sec);
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .lista-scroll {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .lista-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .lista-scroll::-webkit-scrollbar-thumb {
+            background: var(--c-border);
+            border-radius: 10px;
+        }
+
+        .reserva-card-client {
+            background: var(--c-bg-alt);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .reserva-card-client::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--c-primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .reserva-card-client:hover {
+            background: var(--c-card);
+            border-color: var(--c-border);
+            box-shadow: var(--sh-hover);
+            transform: translateX(4px);
+        }
+
+        .reserva-header {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            padding-left: 8px;
+        }
+
+        .reserva-fecha {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--c-card);
+            padding: 10px 14px;
+            border-radius: 14px;
+            min-width: 65px;
+            box-shadow: var(--sh-soft);
+            border: 1px solid var(--c-border);
+        }
+
+        .reserva-fecha .dia {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--c-primary);
+            text-transform: uppercase;
+        }
+
+        .reserva-fecha .numero {
+            font-size: 1.6rem;
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--c-dark);
+        }
+
+        .reserva-fecha .mes {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--c-text-sec);
+            text-transform: uppercase;
+        }
+
+        .reserva-info h5 {
+            margin: 0 0 4px 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--c-dark);
+        }
+
+        .reserva-info span {
+            font-size: 0.85rem;
+            color: var(--c-text-sec);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reserva-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .reserva-actions-mini {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-confirmed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .badge-cancelled {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-finalized {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+
+        .btn-confirm-mini {
+            background: rgba(5, 150, 105, 0.1);
+            border: 1px solid rgba(5, 150, 105, 0.3);
+            color: var(--success);
+            border-radius: 100px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-confirm-mini:hover {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .btn-cancel-mini {
+            background: transparent;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: var(--danger);
+            border-radius: 100px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-cancel-mini:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--c-text-sec);
+            padding: 60px 20px;
+            font-size: 0.95rem;
+            background: var(--c-bg-alt);
+            border-radius: 20px;
+            border: 1px dashed var(--c-border);
+        }
+
+        /* WIZARD FORM */
+        .stepper {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--c-border);
+            padding-bottom: 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--c-text-sec);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .step span {
+            width: 28px;
+            height: 28px;
+            background: var(--c-bg-alt);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .step.active {
+            color: var(--c-dark);
+        }
+
+        .step.active span {
+            background: var(--c-primary);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--c-dark);
+        }
+
+        .premium-input {
+            width: 100%;
+            background: var(--c-bg-alt);
+            border: 1px solid transparent;
+            border-radius: var(--r-btn);
+            min-height: 54px;
+            padding: 0 18px;
+            font-family: var(--font-main);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: 0.3s;
+            color: var(--c-text);
+        }
+
+        .premium-input:focus {
+            background: var(--c-card);
+            border-color: var(--c-primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(107, 30, 40, 0.05);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .summary-box {
+            background: var(--c-bg-alt);
+            border: 1px dashed var(--c-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .pills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .table-pill {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--c-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--sh-soft);
+        }
+
+        .table-pill i {
+            color: var(--c-primary);
+            font-size: 0.7rem;
+        }
+
+        .total-pax {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--c-text-sec);
+            font-weight: 500;
+        }
+
+        .empty-summary {
+            color: var(--c-text-sec);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .zonas-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .zona-card-client {
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            padding: 24px 16px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--sh-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .zona-card-client:hover {
+            border-color: var(--c-primary);
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, var(--c-card) 0%, var(--c-bg-alt) 100%);
+        }
+
+        .zona-icon-client {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .zona-card-client h4 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            font-weight: 700;
+            color: var(--c-dark);
+        }
+
+        .zona-card-client p {
+            font-size: 0.8rem;
+            color: var(--c-text-sec);
+            margin: 0;
+        }
+
+        .layout-mesas {
+            position: relative;
+            height: 450px;
+            background: var(--c-bg-alt);
+            border-radius: 24px;
+            margin-top: 20px;
+            overflow: hidden;
+            background-image: radial-gradient(var(--c-border) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .mesa-client {
+            position: absolute;
+            width: 74px;
+            height: 74px;
+            background: var(--c-card);
+            border: 2px solid var(--c-border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: var(--sh-soft);
+        }
+
+        .mesa-client strong {
+            font-size: 1rem;
+            color: var(--c-dark);
+        }
+
+        .mesa-client small {
+            font-size: 0.65rem;
+            color: var(--c-text-sec);
+        }
+
+        .mesa-client.libre:hover {
+            border-color: var(--c-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .mesa-client.selected {
+            background: var(--c-primary);
+            border-color: var(--c-primary);
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(107, 30, 40, 0.3);
+        }
+
+        .mesa-client.selected strong,
+        .mesa-client.selected small {
+            color: white;
+        }
+
+        .mesa-client.ocupada {
+            background: rgba(220, 38, 38, 0.05);
+            border-color: rgba(220, 38, 38, 0.2);
+            color: var(--danger);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .mesa-client.ocupada strong,
+        .mesa-client.ocupada small {
+            color: var(--danger);
+        }
+
+        .zona-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: var(--c-bg-alt);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            color: var(--c-dark);
+        }
+
+        .back-btn:hover {
+            background: var(--c-dark);
+            color: white;
+        }
+
+        .actions {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--c-dark);
+            color: white;
+            border: none;
+            border-radius: var(--r-btn);
+            padding: 18px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover:not(.disabled) {
+            background: var(--c-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--c-border);
+            color: var(--c-text-sec);
+            border-radius: var(--r-btn);
+            padding: 14px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--c-dark);
+            color: var(--c-dark);
+            background: var(--c-bg-alt);
+        }
+
+        .policy-warning {
+            font-size: 0.8rem;
+            color: var(--c-text-sec);
+            text-align: center;
+            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--c-bg-alt);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .policy-warning i {
+            color: var(--c-primary);
+        }
+
+        .modal-confirmacion {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, 0.55);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-confirmacion-card {
+            width: 90%;
+            max-width: 450px;
+            background: var(--c-card);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--sh-hover);
+            animation: scaleIn 0.25s ease;
+            text-align: center;
+        }
+
+        .modal-confirmacion-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            background: rgba(217, 119, 6, 0.15);
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .modal-confirmacion h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--c-dark);
+        }
+
+        .modal-confirmacion p {
+            color: var(--c-text-sec);
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .modal-confirmacion-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-confirmacion-actions button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+
+        .modal-confirmacion-cancelar {
+            background: #f5f5f5;
+            color: var(--c-dark);
+        }
+
+        .modal-confirmacion-cancelar:hover {
+            background: #ececec;
+        }
+
+        .modal-confirmacion-confirmar {
+            background: var(--c-primary);
+            color: white;
+        }
+
+        .modal-confirmacion-confirmar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(107, 30, 40, 0.25);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification-client {
+            padding: 16px 20px;
+            border-radius: 16px;
+            background: var(--c-card);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 4px solid var(--c-primary);
+            min-width: 280px;
+        }
+
+        .notification-client.show {
+            transform: translateX(0);
+        }
+
+        .notification-client.success {
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+
+        .notification-client.error {
+            border-left-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .notification-client.warning {
+            border-left-color: var(--warning);
+            color: var(--warning);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loader-overlay" id="appLoader">
+        <div class="spinner"></div>
+        <p>Cargando tu panel...</p>
+    </div>
+
+    <header class="topbar-client">
+        <div class="brand">
+            <img id="topbarLogo" src="https://via.placeholder.com/40" alt="Logo">
+            <h3 id="topbarNombre">Restaurante</h3>
+        </div>
+        <div class="user-box" id="userInfo"></div>
+    </header>
+
+    <div class="main-container">
+        <!-- Columna Izquierda: Mis Reservas -->
+        <div>
+            <div class="card-client">
+                <div class="card-header-info">
+                    <div>
+                        <h2>Mis Próximas Reservas</h2>
+                        <p class="sub">Gestiona y revisa el estado de tus visitas.</p>
+                    </div>
+                </div>
+                <div id="listaReservas" class="lista-scroll">
+                    <p class="empty-state">Cargando tus reservas...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Wizard Nueva Reserva -->
+        <div>
+            <div class="card-client" id="formReserva">
+                <div class="card-header-info">
+                    <div>
+                        <h2 id="formTitulo">Nueva Reserva</h2>
+                        <p class="sub" style="margin:0">Sigue los pasos para reservar tu mesa.</p>
+                    </div>
+                    <button id="btnCancelarEdicion" class="btn-outline"
+                        style="display:none; margin-left:auto; padding:8px 16px;">Salir</button>
+                </div>
+
+                <!-- Stepper Header -->
+                <div class="stepper">
+                    <div class="step active" id="step1-indicator"><span>1</span> Detalles</div>
+                    <div class="step" id="step2-indicator"><span>2</span> Mesas</div>
+                </div>
+
+                <!-- Paso 1: Detalles -->
+                <div id="step1View">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input id="fechaReserva" type="date" class="premium-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Hora</label>
+                            <input id="horaReserva" type="time" class="premium-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mesas Seleccionadas</label>
+                        <div class="summary-box" id="tablesSummary">
+                            <div class="empty-summary">Aún no has seleccionado mesas.</div>
+                        </div>
+                    </div>
+
+                    <button id="btnGoToTables" class="btn-outline" style="width:100%;">
+                        <i class="fa-solid fa-map-location-dot"></i> Seleccionar Mesas en el Plano
+                    </button>
+
+                    <div class="actions">
+                        <button id="btnGuardarReserva" class="btn-primary disabled" disabled>
+                            Confirmar Reserva <i class="fa-solid fa-check"></i>
+                        </button>
+                        <div class="policy-warning">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>La reserva debe confirmarse al menos una hora antes de la hora seleccionada o se
+                                cancelará automáticamente.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Selección de Mesas -->
+                <div id="step2View" style="display:none;">
+                    <div id="zonasView">
+                        <div class="zona-header" style="margin-bottom:20px;">
+                            <button id="volverBtn" class="back-btn"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div>
+                                <h3 style="margin:0; font-size:1.2rem; font-weight:800;">Selecciona una Zona</h3>
+                                <p style="margin:0; font-size:0.85rem; color:var(--c-text-sec);">Elige el salón del
+                                    restaurante</p>
+                            </div>
+                        </div>
+                        <div class="zonas-map" id="tablesGrid"></div>
+                    </div>
+
+                    <div id="mesasView" style="display:none;">
+                        <div class="zona-header">
+                            <button id="volverZonasBtn" class="back-btn"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div>
+                                <h3 id="zonaTitulo" style="margin:0; font-size:1.2rem; font-weight:800;">Zona</h3>
+                                <p style="margin:0; font-size:0.85rem; color:var(--c-text-sec);">Haz clic en las mesas
+                                    disponibles</p>
+                            </div>
+                        </div>
+                        <div id="layoutMesas" class="layout-mesas"></div>
+                        <button id="btnConfirmarMesas" class="btn-primary" style="margin-top:20px;">
+                            Confirmar Selección (<span id="infoComensales">0</span> pax)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/datos/panel-cliente.js"></script>
+</body>
+
+</html>

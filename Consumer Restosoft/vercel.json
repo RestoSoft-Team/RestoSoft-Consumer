@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/((?!api|css|js|img|assets|admin|login-cliente|no-encontrado|404|favicon\\.ico).*)",
+      "source": "/((?!api|css|js|img|assets|admin|login-cliente|registro-cliente|panel-cliente|no-encontrado|404|favicon\\.ico).*)",
       "destination": "/cliente.html"
     },
     {

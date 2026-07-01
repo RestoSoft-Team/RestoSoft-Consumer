@@ -1,872 +1,587 @@
-import { apiReserva } from "../consumo/apiReservas.js";
-import { api as apiMesas } from "../consumo/apiMesas.js";
-import { apiProfile } from "../consumo/apiProfile.js";
+import { apiReservaCliente, apiMesas, apiProfile } from "../consumo/apiReservasCliente.js";
+import { ApiCliente } from "../consumo/apiCliente.js";
 
-const ID_EMPRESA = 1;
-
-const state = {
-  mesas: [],
-  zonas: [],
-  clientes: [],
-  reservasAgrupadas: [],
-  mesasOcupadas: [],
-
-  modoActivo: "CREAR",
-  reservaEnEdicion: null,
-  clienteSeleccionado: null,
-  zonaActiva: null,
-  mesasSeleccionadas: [],
-  cantidadPersonasCalculada: 0,
-};
-
-const dom = {
-  listaReservasContainer: document.getElementById("listaReservasContainer"),
-  infoPerfilContainer: document.getElementById("infoPerfilContainer"),
-  panelFormulario: document.getElementById("panelFormulario"),
-  panelEliminar: document.getElementById("panelEliminar"),
-  vistaPrincipalForm: document.getElementById("vistaPrincipalForm"),
-  zonasView: document.getElementById("zonasView"),
-  mesasView: document.getElementById("mesasView"),
-  tablesGrid: document.getElementById("tablesGrid"),
-  layoutMesas: document.getElementById("layoutMesas"),
-  zonaTitulo: document.getElementById("zonaTitulo"),
-
-  formTitulo: document.getElementById("formTitulo"),
-  formSubtitulo: document.getElementById("formSubtitulo"),
-  fechaReserva: document.getElementById("fechaReserva"),
-  horaReserva: document.getElementById("horaReserva"),
-  estadoReserva: document.getElementById("estadoReserva"),
-  contenedorEstado: document.getElementById("contenedorEstado"),
-  infoComensales: document.getElementById("infoComensales"),
-
-  selectorCliente: document.getElementById("selectorCliente"),
-  clienteSeleccionado: document.getElementById("clienteSeleccionado"),
-  idCliente: document.getElementById("idCliente"),
-  modalClientes: document.getElementById("modalClientes"),
-  cerrarModalClientes: document.getElementById("cerrarModalClientes"),
-  buscarCliente: document.getElementById("buscarCliente"),
-  clientesList: document.getElementById("clientesList"),
-
-  volverBtn: document.getElementById("volverBtn"),
-  btnConfirmarMesas: document.getElementById("btnConfirmarMesas"),
-  btnGuardarReserva: document.getElementById("btnGuardarReserva"),
-  btnCancelarEdicion: document.getElementById("btnCancelarEdicion"),
-  btnConfirmarEliminar: document.getElementById("btnConfirmarEliminar"),
-  btnCancelarEliminar: document.getElementById("btnCancelarEliminar"),
-  infoEliminarContenedor: document.getElementById("infoEliminarContenedor"),
-};
-
-// =========================================
-// UTILIDADES UI / ALERTAS / VALIDACIONES
-// =========================================
-// Sistema de Notificaciones Moderno
-window.showNotification = (text, type = "success") => {
-  const contenedor = document.getElementById("notificationContainer");
-  if (!contenedor) {
-    console.warn("Contenedor de notificaciones no encontrado:", text);
-    return;
-  }
-
-  // Mapear iconos y títulos según el tipo de alerta
-  const config = {
-    success: { icon: "fa-circle-check", title: "Operación Exitosa" },
-    warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
-    error: { icon: "fa-circle-xmark", title: "Error" },
+const PanelClienteApp = (function () {
+  let state = {
+    perfil: null, idEmpresa: null, mesas: [], zonas: [],
+    reservasAgrupadas: [], misReservas: [], mesasOcupadas: [],
+    mesasSeleccionadas: [], cantidadPersonasCalculada: 0,
+    zonaActiva: null, reservaEnEdicion: null, modoActivo: "CREAR",
+    reservaOriginal: null,
+    hayCambios: false
   };
 
-  const { icon, title } = config[type] || config.success;
+  const dom = {};
 
-  // Crear el elemento de la notificación
-  const notif = document.createElement("div");
-  notif.className = `notification ${type}`;
-  notif.innerHTML = `
-    <div class="notification-icon">
-      <i class="fa-solid ${icon}"></i>
-    </div>
-    <div class="notification-content">
-      <div class="notification-title">${title}</div>
-      <div class="notification-message">${text}</div>
-    </div>
-    <button class="notification-close">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-  `;
-
-  // Agregar al DOM
-  contenedor.appendChild(notif);
-
-  // Forzar reflow para que la animación de entrada funcione
-  void notif.offsetWidth;
-
-  // Mostrar con animación
-  setTimeout(() => notif.classList.add("show"), 10);
-
-  // Función para cerrar y eliminar
-  const cerrarNotif = () => {
-    notif.classList.remove("show");
-    setTimeout(() => notif.remove(), 400);
-  };
-
-  // Cerrar al hacer clic en la X
-  notif
-    .querySelector(".notification-close")
-    .addEventListener("click", cerrarNotif);
-
-  // Auto-cerrar a los 4 segundos
-  setTimeout(cerrarNotif, 4000);
-};
-
-function limpiarErroresFormulario() {
-  document
-    .querySelectorAll(".input-error")
-    .forEach((el) => el.classList.remove("input-error"));
-  document.querySelectorAll(".error-message-text").forEach((el) => el.remove());
-}
-
-function agregarMensajeErrorBajoInput(inputEl, mensaje) {
-  if (
-    inputEl.nextSibling &&
-    inputEl.nextSibling.classList &&
-    inputEl.nextSibling.classList.contains("error-message-text")
-  )
-    return;
-  const errorSpan = document.createElement("span");
-  errorSpan.className = "error-message-text";
-  errorSpan.textContent = mensaje;
-  inputEl.parentNode.insertBefore(errorSpan, inputEl.nextSibling);
-}
-
-function manejarErroresDeValidacion(errorResponse) {
-  limpiarErroresFormulario();
-  if (errorResponse.validations) {
-    let mensajes = [];
-    const mapeoCampos = {
-      "reserva.fecha": "fechaReserva",
-      "reserva.hora": "horaReserva",
-      "reserva.idusuario": "idCliente",
-      "reserva.cantidadPersonas": "infoComensales",
-    };
-    for (const [campoBackend, mensaje] of Object.entries(
-      errorResponse.validations,
-    )) {
-      mensajes.push(mensaje);
-      const idInput = mapeoCampos[campoBackend];
-      if (idInput) {
-        const inputEl = document.getElementById(idInput);
-        if (inputEl) {
-          inputEl.classList.add("input-error");
-          agregarMensajeErrorBajoInput(inputEl, mensaje);
-        }
-      }
-    }
-    showNotification(mensajes.join(" | "), "error");
-  } else {
-    showNotification(
-      errorResponse.message || "Ocurrió un error inesperado en el servidor.",
-      "error",
-    );
+  function iniciar() {
+    cacheDom();
+    configurarEventos();
+    cargarDatosIniciales();
   }
-}
 
-function esFechaPasada(fechaStr) {
-  if (!fechaStr) return false;
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const partes = fechaStr.split("-");
-  const fechaSeleccionada = new Date(partes[0], partes[1] - 1, partes[2]);
-  return fechaSeleccionada < hoy;
-}
+  function cacheDom() {
+    dom.appLoader = document.getElementById("appLoader");
+    dom.topbarLogo = document.getElementById("topbarLogo");
+    dom.topbarNombre = document.getElementById("topbarNombre");
+    dom.userInfo = document.getElementById("userInfo");
+    dom.listaReservas = document.getElementById("listaReservas");
 
-function tieneCambiosSinGuardar() {
-  if (state.modoActivo === "EDITAR") return true;
-  if (state.modoActivo === "CREAR") {
-    if (
-      state.clienteSeleccionado !== null ||
-      state.mesasSeleccionadas.length > 0 ||
-      dom.horaReserva.value !== ""
-    ) {
-      return true;
-    }
+    dom.step1View = document.getElementById("step1View");
+    dom.step2View = document.getElementById("step2View");
+    dom.step1Indicator = document.getElementById("step1-indicator");
+    dom.step2Indicator = document.getElementById("step2-indicator");
+    dom.tablesSummary = document.getElementById("tablesSummary");
+    dom.btnGoToTables = document.getElementById("btnGoToTables");
+
+    dom.fechaReserva = document.getElementById("fechaReserva");
+    dom.horaReserva = document.getElementById("horaReserva");
+    dom.btnGuardar = document.getElementById("btnGuardarReserva");
+    dom.btnCancelar = document.getElementById("btnCancelarEdicion");
+    dom.formTitulo = document.getElementById("formTitulo");
+
+    dom.zonasView = document.getElementById("zonasView");
+    dom.mesasView = document.getElementById("mesasView");
+    dom.tablesGrid = document.getElementById("tablesGrid");
+    dom.layoutMesas = document.getElementById("layoutMesas");
+    dom.zonaTitulo = document.getElementById("zonaTitulo");
+    dom.volverBtn = document.getElementById("volverBtn");
+    dom.volverZonasBtn = document.getElementById("volverZonasBtn");
+    dom.btnConfirmarMesas = document.getElementById("btnConfirmarMesas");
+    dom.infoComensales = document.getElementById("infoComensales");
+
+    dom.notifContainer = document.getElementById("notificationContainer");
   }
-  return false;
-}
 
-function mostrarConfirmacion(
-  titulo = "¿Descartar cambios?",
-  mensaje = "Tienes información sin guardar. Si continúas perderás todos los cambios realizados.",
-  txtCancelar = "Seguir editando",
-  txtConfirmar = "Descartar",
-) {
-  return new Promise((resolve) => {
-    const modal = document.createElement("div");
-    modal.className = "modal-confirmacion";
-    modal.innerHTML = `
-      <div class="modal-confirmacion-card">
-         <div class="modal-confirmacion-icon">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-          </div> 
-          <h3>${titulo}</h3>
-          <p>${mensaje}</p>
-          <div class="modal-confirmacion-actions">
-              <button class="modal-confirmacion-cancelar">${txtCancelar}</button>
-              <button class="modal-confirmacion-confirmar">${txtConfirmar}</button>
-          </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    modal.querySelector(".modal-confirmacion-cancelar").onclick = () => {
-      modal.remove();
-      resolve(false);
-    };
-    modal.querySelector(".modal-confirmacion-confirmar").onclick = () => {
-      modal.remove();
-      resolve(true);
-    };
-    modal.onclick = (e) => {
-      if (e.target === modal) {
-        modal.remove();
-        resolve(false);
+  async function cargarDatosIniciales() {
+    try {
+      const slug = localStorage.getItem("slugEmpresaActual") || "restosoft";
+      const configData = await ApiCliente.obtenerEmpresa(slug);
+
+      if (configData) {
+        state.idEmpresa = configData.idEmpresa;
+        aplicarBranding(configData);
+        dom.topbarNombre.textContent = configData.brandingNombre || "Restaurante";
+        dom.topbarLogo.src = configData.brandingLogo || "https://via.placeholder.com/40";
+        document.title = `Mis Reservas | ${configData.brandingNombre || ""}`;
       }
-    };
-  });
-}
 
-// =========================================
-// INICIALIZACIÓN
-// =========================================
-document.addEventListener("DOMContentLoaded", async () => {
-  await cargarDatosIniciales();
-  configurarEventosGenerales();
-});
-
-async function cargarDatosIniciales() {
-  try {
-    const [mesasData, zonasData, clientesData, reservasDiariasRaw, perfilData] =
-      await Promise.all([
-        apiMesas.obtenerMesas(ID_EMPRESA),
-        apiMesas.obtenerZonas(ID_EMPRESA),
-        apiReserva.listarClientes(),
-        apiReserva.listarPorEmpresaDiario(ID_EMPRESA),
+      const [perfilData, misReservasData, mesasData, zonasData] = await Promise.all([
         apiProfile.obtenerInfoMe(),
+        apiReservaCliente.listarMisReservas(),
+        apiMesas.obtenerMesas(state.idEmpresa),
+        apiMesas.obtenerZonas(state.idEmpresa)
       ]);
 
-    state.mesas = mesasData;
-    state.zonas = zonasData;
-    state.clientes = clientesData;
+      state.perfil = perfilData;
+      state.mesas = mesasData;
+      state.zonas = zonasData;
 
-    agruparReservas(reservasDiariasRaw);
-    renderListaReservas();
-    renderZonas();
-    cargarPerfilUsuario(perfilData);
+      agruparReservas(misReservasData);
 
-    dom.fechaReserva.value = new Date().toISOString().split("T")[0];
-  } catch (error) {
-    console.error("Error crítico al cargar la aplicación:", error);
-    const codigo = "503";
-    const mensaje = encodeURIComponent(
-      "El sistema está caído o no se pudieron cargar los datos. Por favor, consulta a los administradores.",
-    );
-    window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
-  } finally {
-  }
-}
+      cargarPerfilUsuario(perfilData);
+      renderListaReservas();
+      renderZonas();
 
-// =========================================
-// LÓGICA DE AGRUPACIÓN (JAVA DTOs)
-// =========================================
-function agruparReservas(reservaMesasRaw) {
-  const mapa = new Map();
-  reservaMesasRaw.forEach((rm) => {
-    const idRes = rm.reserva.id;
-    if (!mapa.has(idRes)) {
-      mapa.set(idRes, { reserva: rm.reserva, mesas: [] });
+      dom.fechaReserva.value = new Date().toISOString().split("T")[0];
+      dom.appLoader.style.display = "none";
+      goToStep(1);
+      actualizarUI();
+
+    } catch (error) {
+      console.error("Error al cargar el panel:", error);
+      showNotification("Error al cargar datos. ¿Iniciaste sesión?", "error");
+      setTimeout(() => window.location.href = "/login-cliente.html", 2000);
     }
-    mapa.get(idRes).mesas.push(rm.mesa);
-  });
-  state.reservasAgrupadas = Array.from(mapa.values());
-}
-
-// =========================================
-// RENDERIZADOS
-// =========================================
-function cargarPerfilUsuario(perfilData) {
-  const infoPerfilContainer = document.getElementById("infoPerfilContainer");
-  const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
-
-  const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
-  const nombreRaw = empresaData?.nombre || "";
-
-  if (nombreRaw.trim() !== "") {
-    nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
-  } else {
-    nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
   }
 
-  const urlPerfil = "perfil.html";
-
-  if (perfilData) {
-    const iniciales =
-      (
-        (perfilData.usuario.nombres || "").substring(0, 1) +
-        (perfilData.usuario.apellidos || "").substring(0, 1)
-      ).toUpperCase() || "EP";
-
-    const avatarHTML = perfilData.usuario.imagenUrl
-      ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
-      : `<div class="profile-text-avatar">${iniciales}</div>`;
-
-    const nombreCompleto =
-      `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
-      "Usuario sin nombre";
-
-    const rol = perfilData.rol.nombre || "Sin rol asignado";
-
-    infoPerfilContainer.innerHTML = `
-    <a href="${urlPerfil}" class="profile-link">
-      ${avatarHTML}
-      <div class="profile-info">
-        <strong>${nombreCompleto}</strong>
-        <div style="font-size: 13px; color: var(--gray)">
-          ${rol}
-        </div>
-      </div>
-    </a>
-  `;
-  } else {
-    // Estado de Fallback si no hay datos
-    infoPerfilContainer.innerHTML = `
-    <a href="${urlPerfil}" class="profile-link">
-      <div class="profile-text-avatar">UA</div>
-      <div class="profile-info">
-        <strong>Usuario Anónimo</strong>
-        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
-      </div>
-    </a>
-  `;
-  }
-}
-
-function renderListaReservas() {
-  dom.listaReservasContainer.innerHTML = "";
-  if (state.reservasAgrupadas.length === 0) {
-    dom.listaReservasContainer.innerHTML = `<p style="color:var(--gray); text-align:center;">No hay reservas para hoy.</p>`;
-    return;
+  function aplicarBranding(data) {
+    const root = document.documentElement;
+    if (data.tipografiaFuenteGoogle) {
+      const fontName = data.tipografiaFuenteGoogle.replace(/ /g, "+");
+      const fontLink = document.createElement("link");
+      fontLink.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@300;400;500;600;700;800;900&display=swap`;
+      fontLink.rel = "stylesheet";
+      document.head.appendChild(fontLink);
+    }
+    const setVar = (name, val) => { if (val) root.style.setProperty(name, val); };
+    setVar("--c-primary", data.colorPrimario);
+    setVar("--c-primary-hover", data.colorPrimarioHover);
+    setVar("--c-dark", data.colorOscuro);
+    setVar("--c-bg", data.colorBg);
+    setVar("--c-bg-alt", data.colorBgAlt);
+    setVar("--c-card", data.colorCard);
+    setVar("--c-text", data.colorTexto);
+    setVar("--c-text-sec", data.colorTextoSec);
+    setVar("--c-border", data.colorBorde);
+    setVar("--font-main", data.tipografiaFuente);
+    setVar("--r-card", data.bordeTarjeta);
+    setVar("--r-btn", data.bordeBoton);
+    setVar("--sh-soft", data.sombraSuave);
   }
 
-  const html = state.reservasAgrupadas.map((agrupada) => {
-    const res = agrupada.reserva;
-    const mesasNum = agrupada.mesas.map((m) => m.numeroMesa).join(", ");
+  function cargarPerfilUsuario(perfil) {
+    const user = perfil.usuario || {};
+    const iniciales = ((user.nombres || "U").substring(0, 1) + (user.apellidos || "C").substring(0, 1)).toUpperCase();
+    const imagen = user.imagenUrl ? `<img src="${user.imagenUrl}" alt="Perfil" />` : `<div>${iniciales}</div>`;
 
-    const nombres = res.usuario?.nombres || "";
-    const apellidos = res.usuario?.apellidos || "";
-    const nombreCliente =
-      `${nombres} ${apellidos}`.trim() || "Cliente Desconocido";
-    const iniciales =
-      (
-        nombres.substring(0, 1) + (apellidos.substring(0, 1) || "")
-      ).toUpperCase() || "CL";
-    const imagenAvatar = res.usuario?.imagenUrl || null;
+    dom.userInfo.innerHTML = `
+            <div class="user-avatar">${imagen}</div>
+            <div class="user-details">
+                <strong>${user.nombres || ""} ${user.apellidos || ""}</strong>
+                <span>Cliente</span>
+            </div>
+            <button id="btnLogout" class="btn-logout" title="Cerrar sesión">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        `;
+    document.getElementById("btnLogout").addEventListener("click", cerrarSesion);
+  }
 
-    let badgeClass = "booking-pending";
-    switch (res.estado) {
-      case "CONFIRMADA":
-        badgeClass = "booking-confirmed";
-        break;
-      case "ACTIVA":
-        badgeClass = "booking-active";
-        break;
-      case "CANCELADA":
-        badgeClass = "booking-cancelled";
-        break;
-      case "FINALIZADA":
-        badgeClass = "booking-finalized";
-        break;
+  function cerrarSesion() {
+    localStorage.removeItem("token_cliente");
+    window.location.href = "/login-cliente.html";
+  }
+
+  function agruparReservas(raw) {
+    const mapa = new Map();
+    raw.forEach(rm => {
+      const id = rm.reserva.id;
+      if (!mapa.has(id)) mapa.set(id, { reserva: rm.reserva, mesas: [] });
+      mapa.get(id).mesas.push(rm.mesa);
+    });
+    state.reservasAgrupadas = Array.from(mapa.values());
+  }
+
+  function renderListaReservas() {
+    dom.listaReservas.innerHTML = "";
+    const activas = state.reservasAgrupadas.filter(r => r.reserva.estado !== "CANCELADA" && r.reserva.estado !== "FINALIZADA");
+
+    if (activas.length === 0) {
+      dom.listaReservas.innerHTML = `<p class="empty-state">No tienes reservas activas.<br>¡Crea una nueva en el panel derecho!</p>`;
+      return;
     }
 
-    return `
-      <div class="reserva reserva-item" onclick="abrirOpcionesReserva(${res.id})">
-        <div class="reserva-left">
-          ${imagenAvatar ? `<img src="${imagenAvatar}" alt="Avatar" class="avatar">` : `<div class="avatar">${iniciales}</div>`}
-          <div class="reserva-info">
-            <h5>${nombreCliente}</h5>
-            <span>Mesas: ${mesasNum} · ${res.hora.substring(0, 5)} · ${res.cantidadPersonas} personas</span>
-          </div>
-        </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="badge-status ${badgeClass}">${res.estado}</div>
-            <i class="fa-solid fa-ellipsis-vertical" style="color:var(--gray);"></i>
-        </div>
-      </div>
-    `;
-  });
-  dom.listaReservasContainer.innerHTML = html.join("");
-}
+    const html = activas.map(agrupada => {
+      const res = agrupada.reserva;
+      const mesasNum = agrupada.mesas.map(m => m.numeroMesa).join(", ");
+      let badgeClass = "badge-pending";
+      if (res.estado === "CONFIRMADA") badgeClass = "badge-confirmed";
+      else if (res.estado === "CANCELADA") badgeClass = "badge-cancelled";
+      else if (res.estado === "FINALIZADA") badgeClass = "badge-finalized";
 
-function renderZonas() {
-  dom.tablesGrid.innerHTML = "";
-  calcularComensalesActuales();
+      const puedeCancelar = res.estado === "PENDIENTE" || res.estado === "CONFIRMADA";
+      const puedeConfirmar = res.estado === "PENDIENTE";
+      const fechaObj = new Date(res.fecha + "T00:00:00");
 
-  const html = state.zonas.map((zona) => {
-    const mesasZona = state.mesas.filter((m) => m.idZona === zona.id);
-    const seleccionadasEnZona = mesasZona.filter((m) =>
-      state.mesasSeleccionadas.includes(m.id),
-    ).length;
+      return `
+                <div class="reserva-card-client" onclick="PanelClienteApp.verDetalles(${res.id})">
+                    <div class="reserva-header">
+                        <div class="reserva-fecha">
+                            <span class="dia">${fechaObj.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase()}</span>
+                            <span class="numero">${fechaObj.getDate()}</span>
+                            <span class="mes">${fechaObj.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase()}</span>
+                        </div>
+                        <div class="reserva-info">
+                            <h5>${res.hora.substring(0, 5)} · ${res.cantidadPersonas} personas</h5>
+                            <span>Mesas: ${mesasNum}</span>
+                        </div>
+                    </div>
+                    <div class="reserva-footer">
+                        <div class="badge-status ${badgeClass}">${res.estado}</div>
+                        <div class="reserva-actions-mini">
+                            ${puedeConfirmar ? `<button class="btn-confirm-mini" onclick="event.stopPropagation(); PanelClienteApp.confirmar(${res.id})">Confirmar</button>` : ''}
+                            ${puedeCancelar ? `<button class="btn-cancel-mini" onclick="event.stopPropagation(); PanelClienteApp.cancelar(${res.id})">Cancelar</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+    });
+    dom.listaReservas.innerHTML = html.join("");
+  }
 
-    let badgeHtml =
-      seleccionadasEnZona > 0
-        ? `<div style="position: absolute; top: 12px; right: 12px;" class="zona-badge">${seleccionadasEnZona}</div>`
-        : "";
-    let borderStyle =
-      seleccionadasEnZona > 0 ? "border: 2px solid var(--primary);" : "";
+  function renderZonas() {
+    dom.tablesGrid.innerHTML = "";
+    const html = state.zonas.map(zona => {
+      const mesasZona = state.mesas.filter(m => m.idZona === zona.id);
+      const seleccionadasEnZona = mesasZona.filter(m => state.mesasSeleccionadas.includes(m.id)).length;
+      let badgeHtml = seleccionadasEnZona > 0 ? `<div style="position: absolute; top: 12px; right: 12px; background: var(--c-primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">${seleccionadasEnZona}</div>` : "";
 
-    return `
-      <div class="zona-card" style="${borderStyle}" onclick="abrirZona(${zona.id})">
-        ${badgeHtml}
-        <div class="zona-icon">🍽</div>
-        <h3>${zona.nombreZona}</h3>
-        <p>${mesasZona.length} mesas</p>
-      </div>
-    `;
-  });
-  dom.tablesGrid.innerHTML = html.join("");
-}
+      return `
+                <div class="zona-card-client" onclick="PanelClienteApp.abrirZona(${zona.id})">
+                    ${badgeHtml}
+                    <div class="zona-icon-client">🍽️</div>
+                    <h4>${zona.nombreZona}</h4>
+                    <p>${mesasZona.length} mesas en total</p>
+                </div>
+            `;
+    });
+    dom.tablesGrid.innerHTML = html.join("");
+  }
 
-function calcularComensalesActuales() {
-  let capacidad = 0;
-  state.mesasSeleccionadas.forEach((idMesa) => {
-    const mesa = state.mesas.find((m) => m.id === idMesa);
-    if (mesa) capacidad += mesa.disponibilidadPersonas;
-  });
-  state.cantidadPersonasCalculada = capacidad;
-  dom.infoComensales.textContent = `Capacidad calculada: ${capacidad} personas`;
-}
-
-// =========================================
-// LÓGICA DE MESAS Y ZONAS
-// =========================================
-window.abrirZona = function (idZona) {
-  state.zonaActiva = idZona;
-  const zona = state.zonas.find((z) => z.id === idZona);
-  dom.zonaTitulo.textContent = zona.nombreZona;
-  dom.vistaPrincipalForm.style.display = "none";
-  dom.mesasView.style.display = "block";
-  renderPlanoZona(idZona);
-};
-
-function actualizarDisponibilidadMesas() {
-  const fecha = dom.fechaReserva.value;
-  const hora = dom.horaReserva.value;
-
-  if (!fecha || !hora) {
+  function actualizarDisponibilidadMesas() {
+    const fecha = dom.fechaReserva.value;
+    const hora = dom.horaReserva.value;
     state.mesasOcupadas = [];
+
+    if (!fecha || !hora) {
+      if (state.zonaActiva) renderPlanoZona(state.zonaActiva);
+      return;
+    }
+
+    const [hSel, mSel] = hora.split(":").map(Number);
+    const minSel = hSel * 60 + mSel;
+
+    state.reservasAgrupadas.forEach(agrupada => {
+      const res = agrupada.reserva;
+      if (state.reservaEnEdicion && res.id === state.reservaEnEdicion) return;
+      if (res.estado === "CANCELADA" || res.estado === "FINALIZADA") return;
+      if (res.fecha !== fecha) return;
+
+      const [hRes, mRes] = res.hora.substring(0, 5).split(":").map(Number);
+      const minRes = hRes * 60 + mRes;
+
+      if (Math.abs(minSel - minRes) <= 90) {
+        agrupada.mesas.forEach(mesa => {
+          if (!state.mesasOcupadas.includes(mesa.id)) {
+            state.mesasOcupadas.push(mesa.id);
+          }
+        });
+      }
+    });
+
+    state.mesasSeleccionadas = state.mesasSeleccionadas.filter(id => !state.mesasOcupadas.includes(id));
     if (state.zonaActiva) renderPlanoZona(state.zonaActiva);
-    return;
+    actualizarUI();
   }
 
-  const [hSel, mSel] = hora.split(":").map(Number);
-  const minutosSeleccionados = hSel * 60 + mSel;
-  state.mesasOcupadas = [];
+  function renderPlanoZona(idZona) {
+    dom.layoutMesas.innerHTML = "";
+    const mesasZona = state.mesas.filter(m => m.idZona === idZona);
 
-  state.reservasAgrupadas.forEach((agrupada) => {
-    const res = agrupada.reserva;
-    if (state.reservaEnEdicion && res.id === state.reservaEnEdicion) return;
-    if (res.estado === "CANCELADA" || res.estado === "FINALIZADA") return;
-    if (res.fecha !== fecha) return;
+    mesasZona.forEach(mesa => {
+      const el = document.createElement("div");
+      const ocupada = state.mesasOcupadas.includes(mesa.id);
+      el.className = `mesa-client ${ocupada ? 'ocupada' : 'libre'}`;
+      if (state.mesasSeleccionadas.includes(mesa.id)) el.classList.add("selected");
 
-    const [hRes, mRes] = res.hora.substring(0, 5).split(":").map(Number);
-    const minutosReserva = hRes * 60 + mRes;
+      el.style.left = mesa.posicionX + "px";
+      el.style.top = mesa.posicionY + "px";
+      el.innerHTML = `<strong>${mesa.numeroMesa}</strong><small>${mesa.disponibilidadPersonas} pax</small>`;
 
-    if (Math.abs(minutosSeleccionados - minutosReserva) <= 90) {
-      agrupada.mesas.forEach((mesa) => {
-        if (!state.mesasOcupadas.includes(mesa.id)) {
-          state.mesasOcupadas.push(mesa.id);
-        }
-      });
-    }
-  });
-
-  state.mesasSeleccionadas = state.mesasSeleccionadas.filter(
-    (idMesa) => !state.mesasOcupadas.includes(idMesa),
-  );
-
-  if (state.zonaActiva) {
-    renderPlanoZona(state.zonaActiva);
+      if (!ocupada) {
+        el.addEventListener("click", () => {
+          el.classList.toggle("selected");
+          if (el.classList.contains("selected")) {
+            state.mesasSeleccionadas.push(mesa.id);
+          } else {
+            state.mesasSeleccionadas = state.mesasSeleccionadas.filter(id => id !== mesa.id);
+          }
+          actualizarUI();
+        });
+      } else {
+        el.style.cursor = "not-allowed";
+      }
+      dom.layoutMesas.appendChild(el);
+    });
   }
-  calcularComensalesActuales();
-}
 
-function renderPlanoZona(idZona) {
-  dom.layoutMesas.innerHTML = "";
-  const mesasZona = state.mesas.filter((m) => m.idZona === idZona);
-  const esModoSoloLectura =
-    state.modoActivo === "VER" || esFechaPasada(dom.fechaReserva.value);
-
-  mesasZona.forEach((mesa) => {
-    const el = document.createElement("div");
-    const ocupadaPorOtra = state.mesasOcupadas.includes(mesa.id);
-
-    let estadoClase = mesa.estado.toLowerCase();
-    if (ocupadaPorOtra) estadoClase = "ocupada";
-
-    el.className = `mesa ${estadoClase}`;
-    if (state.mesasSeleccionadas.includes(mesa.id)) {
-      el.classList.add("selected");
+  function verificarCambios() {
+    if (state.modoActivo !== "EDITAR" || !state.reservaOriginal) {
+      state.hayCambios = false;
+      return;
     }
 
-    el.style.left = mesa.posicionX + "px";
-    el.style.top = mesa.posicionY + "px";
-    el.innerHTML = `
-      <strong>${mesa.numeroMesa}</strong>
-      <small>${mesa.disponibilidadPersonas} pax</small>
-    `;
+    const fechaCambiada = dom.fechaReserva.value !== state.reservaOriginal.fecha;
+    const horaCambiada = (dom.horaReserva.value + ":00") !== state.reservaOriginal.hora;
 
-    if (!ocupadaPorOtra && !esModoSoloLectura) {
-      el.addEventListener("click", () => {
-        el.classList.toggle("selected");
-        if (el.classList.contains("selected")) {
-          state.mesasSeleccionadas.push(mesa.id);
-        } else {
-          state.mesasSeleccionadas = state.mesasSeleccionadas.filter(
-            (id) => id !== mesa.id,
-          );
-        }
-        calcularComensalesActuales();
-      });
+    const mesasOriginales = state.reservaOriginal.mesas.map(m => parseInt(m.id)).sort();
+    const mesasActuales = [...state.mesasSeleccionadas].sort();
+    const mesasCambiadas = JSON.stringify(mesasOriginales) !== JSON.stringify(mesasActuales);
+
+    state.hayCambios = fechaCambiada || horaCambiada || mesasCambiadas;
+  }
+
+  function actualizarUI() {
+    verificarCambios();
+
+    let cap = 0;
+    state.mesasSeleccionadas.forEach(id => {
+      const m = state.mesas.find(mesa => parseInt(mesa.id) === parseInt(id));
+      if (m) cap += m.disponibilidadPersonas;
+    });
+    state.cantidadPersonasCalculada = cap;
+    dom.infoComensales.textContent = cap;
+
+    if (state.mesasSeleccionadas.length === 0) {
+      dom.tablesSummary.innerHTML = `<div class="empty-summary">Aún no has seleccionado mesas.</div>`;
     } else {
-      el.style.cursor = "not-allowed";
+      const pills = state.mesasSeleccionadas.map(id => {
+        const m = state.mesas.find(x => parseInt(x.id) === parseInt(id));
+        if (!m) return ''; // Blindaje por si no encuentra la mesa
+        return `<span class="table-pill"><i class="fa-solid fa-chair"></i> Mesa ${m.numeroMesa} (${m.disponibilidadPersonas} pax)</span>`;
+      }).join('');
+      dom.tablesSummary.innerHTML = `<div class="pills-container">${pills}</div><div class="total-pax">Total: ${cap} personas</div>`;
     }
 
-    dom.layoutMesas.appendChild(el);
-  });
-}
+    const formValido = dom.fechaReserva.value && dom.horaReserva.value && state.mesasSeleccionadas.length > 0 && cap > 0;
+    let puedeGuardar = false;
 
-// =========================================
-// WIZARD: TRANSICIONES DE ESTADO
-// =========================================
-window.abrirOpcionesReserva = async function (idReserva) {
-  if (tieneCambiosSinGuardar() && state.reservaEnEdicion !== idReserva) {
-    const confirmar = await mostrarConfirmacion(
-      "¿Abrir reserva?",
-      "Tienes cambios sin guardar en la vista actual. ¿Deseas descartarlos para ver esta reserva?",
-      "Cancelar",
-      "Descartar y abrir",
-    );
-    if (!confirmar) return;
-  }
-
-  const agrupada = state.reservasAgrupadas.find(
-    (r) => r.reserva.id === idReserva,
-  );
-  if (!agrupada) return;
-
-  const esPasada = esFechaPasada(agrupada.reserva.fecha);
-  const estaFinalizada = agrupada.reserva.estado === "FINALIZADA";
-  const esSoloLectura = esPasada || estaFinalizada;
-
-  state.modoActivo = esSoloLectura ? "VER" : "EDITAR";
-  state.reservaEnEdicion = idReserva;
-  state.mesasSeleccionadas = agrupada.mesas.map((m) => m.id);
-
-  const nombres = agrupada.reserva.usuario?.nombres || "";
-  const apellidos = agrupada.reserva.usuario?.apellidos || "";
-  const nombreCompleto = `${nombres} ${apellidos}`.trim();
-
-  state.clienteSeleccionado = {
-    id: agrupada.reserva.usuario.id,
-    nombre: nombreCompleto,
-  };
-
-  dom.idCliente.value = agrupada.reserva.usuario.id;
-  dom.clienteSeleccionado.textContent = nombreCompleto;
-  dom.clienteSeleccionado.style.color = "var(--dark)";
-  dom.fechaReserva.value = agrupada.reserva.fecha;
-  dom.horaReserva.value = agrupada.reserva.hora.substring(0, 5);
-
-  dom.estadoReserva.value = agrupada.reserva.estado;
-  dom.contenedorEstado.style.display = "block";
-
-  dom.horaReserva.disabled = esSoloLectura;
-  dom.estadoReserva.disabled = esSoloLectura;
-  dom.selectorCliente.style.pointerEvents = esSoloLectura ? "none" : "auto";
-
-  const contenedorBotones = document.querySelector("#panelFormulario .actions");
-
-  if (esSoloLectura) {
-    dom.formTitulo.textContent = `Reserva #${idReserva} (Solo Lectura)`;
-    dom.formSubtitulo.textContent = estaFinalizada
-      ? "Esta reserva ya se encuentra finalizada."
-      : "Esta reserva pertenece a una fecha pasada.";
-    dom.btnCancelarEdicion.style.display = "none";
-
-    contenedorBotones.innerHTML = `
-        <button type="button" id="btnCerrarDetalles" class="btn-primary" style="background-color: var(--gray); width:100%;">
-            Nueva Reserva / Cerrar
-        </button>
-    `;
-    document
-      .getElementById("btnCerrarDetalles")
-      .addEventListener("click", resetearFormulario);
-  } else {
-    dom.formTitulo.textContent = `Editar Reserva #${idReserva}`;
-    dom.formSubtitulo.textContent = "Modifica los datos y mesas de la reserva";
-    dom.btnCancelarEdicion.style.display = "block";
-
-    dom.infoEliminarContenedor.innerHTML = `
-          <div class="info-row"><span>Cliente</span><strong>${nombreCompleto}</strong></div>
-          <div class="info-row"><span>Fecha y Hora</span><strong>${agrupada.reserva.fecha} a las ${agrupada.reserva.hora.substring(0, 5)}</strong></div>
-          <div class="info-row"><span>Mesas</span><strong>${agrupada.mesas.map((m) => m.numeroMesa).join(", ")}</strong></div>
-      `;
-
-    contenedorBotones.innerHTML = `
-          <button id="btnActualizarReserva" class="btn-primary" style="flex:1;">Guardar Cambios</button>
-          <button id="btnAbrirEliminar" class="btn-danger" style="margin-left: 10px;"><i class="fa-solid fa-trash"></i></button>
-      `;
-
-    document
-      .getElementById("btnActualizarReserva")
-      .addEventListener("click", procesarGuardado);
-    document
-      .getElementById("btnAbrirEliminar")
-      .addEventListener("click", () => {
-        dom.panelFormulario.classList.remove("active");
-        dom.panelEliminar.classList.add("active");
-      });
-  }
-
-  actualizarDisponibilidadMesas();
-  mostrarPanelPrincipal();
-};
-
-function resetearFormulario() {
-  state.modoActivo = "CREAR";
-  state.reservaEnEdicion = null;
-  state.mesasSeleccionadas = [];
-  state.clienteSeleccionado = null;
-  state.cantidadPersonasCalculada = 0;
-  state.mesasOcupadas = [];
-
-  dom.idCliente.value = "";
-  dom.clienteSeleccionado.textContent = "Seleccionar cliente";
-  dom.clienteSeleccionado.style.color = "var(--gray)";
-  dom.fechaReserva.value = new Date().toISOString().split("T")[0];
-  dom.horaReserva.value = "";
-  dom.contenedorEstado.style.display = "none";
-
-  dom.horaReserva.disabled = false;
-  dom.estadoReserva.disabled = false;
-  dom.selectorCliente.style.pointerEvents = "auto";
-
-  dom.formTitulo.textContent = "Nueva Reserva";
-  dom.formSubtitulo.textContent = "Crear una reserva rápidamente";
-  dom.btnCancelarEdicion.style.display = "none";
-
-  const contenedorBotones = document.querySelector("#panelFormulario .actions");
-  contenedorBotones.innerHTML = `<button id="btnGuardarReserva" class="btn-primary">Crear Reserva</button>`;
-  document
-    .getElementById("btnGuardarReserva")
-    .addEventListener("click", procesarGuardado);
-
-  actualizarDisponibilidadMesas();
-  mostrarPanelPrincipal();
-}
-
-window.resetearFormulario = resetearFormulario;
-
-// =========================================
-// CONTROL DE FLUJO Y API
-// =========================================
-async function procesarGuardado() {
-  limpiarErroresFormulario();
-
-  if (state.modoActivo === "CREAR") {
-    if (!state.clienteSeleccionado || !state.clienteSeleccionado.id) {
-      showNotification(
-        "Debes seleccionar un cliente para la reserva.",
-        "warning",
-      );
-      return;
-    }
-    if (!dom.fechaReserva.value || dom.fechaReserva.value.trim() === "") {
-      showNotification("Debes seleccionar la fecha de la reserva.", "warning");
-      return;
-    }
-    if (!dom.horaReserva.value || dom.horaReserva.value.trim() === "") {
-      showNotification("Debes seleccionar la hora de la reserva.", "warning");
-      return;
-    }
-    if (!state.mesasSeleccionadas || state.mesasSeleccionadas.length === 0) {
-      showNotification(
-        "Debes seleccionar al menos una mesa para la reserva.",
-        "warning",
-      );
-      return;
-    }
-    if (state.cantidadPersonasCalculada <= 0) {
-      showNotification(
-        "La capacidad de comensales debe ser mayor a 0. Selecciona mesas válidas.",
-        "warning",
-      );
-      return;
-    }
-  }
-
-  const requestData = {
-    fecha: dom.fechaReserva.value,
-    hora:
-      dom.horaReserva.value +
-      (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
-    idusuario: parseInt(state.clienteSeleccionado.id),
-    cantidadPersonas: state.cantidadPersonasCalculada,
-    idempresa: ID_EMPRESA,
-    estado:
-      state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
-  };
-
-  try {
     if (state.modoActivo === "CREAR") {
-      await apiReserva.guardarReserva(requestData, state.mesasSeleccionadas);
-      showNotification("La reserva se ha registrado correctamente.", "success");
-    } else {
-      await apiReserva.actualizarReserva(
-        state.reservaEnEdicion,
-        requestData,
-        state.mesasSeleccionadas,
-      );
-      showNotification(
-        "La reserva se ha actualizado correctamente.",
-        "success",
-      );
+      puedeGuardar = formValido;
+      dom.btnGuardar.innerHTML = 'Confirmar Reserva <i class="fa-solid fa-check"></i>';
+    } else if (state.modoActivo === "EDITAR") {
+      puedeGuardar = formValido && state.hayCambios;
+      dom.btnGuardar.innerHTML = 'Guardar Cambios <i class="fa-solid fa-save"></i>';
     }
 
-    const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
-    agruparReservas(reservasDiariasRaw);
-    renderListaReservas();
-    resetearFormulario();
-  } catch (e) {
-    if (e.validations) {
-      manejarErroresDeValidacion(e);
-    } else if (e.message) {
-      showNotification(e.message, "error");
+    if (puedeGuardar) {
+      dom.btnGuardar.classList.remove("disabled");
+      dom.btnGuardar.disabled = false;
     } else {
-      showNotification(
-        "No se pudo guardar la reserva. Verifique su conexión e intente de nuevo.",
-        "error",
-      );
+      dom.btnGuardar.classList.add("disabled");
+      dom.btnGuardar.disabled = true;
+    }
+
+    if (state.zonaActiva && dom.mesasView.style.display === 'block') {
+      renderPlanoZona(state.zonaActiva);
     }
   }
-}
 
-async function procesarEliminado() {
-  if (!state.reservaEnEdicion) return;
-  try {
-    await apiReserva.eliminarReserva(state.reservaEnEdicion);
-    const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
-    agruparReservas(reservasDiariasRaw);
-    renderListaReservas();
-
-    dom.panelEliminar.classList.remove("active");
-    resetearFormulario();
-  } catch (e) {
-    showNotification(
-      "No se pudo eliminar la reserva, intenta de nuevo.",
-      "error",
-    );
+  function goToStep(step) {
+    dom.step1View.style.display = step === 1 ? 'block' : 'none';
+    dom.step2View.style.display = step === 2 ? 'block' : 'none';
+    dom.step1Indicator.classList.toggle('active', step === 1);
+    dom.step2Indicator.classList.toggle('active', step === 2);
+    if (step === 1) actualizarUI();
   }
-}
 
-function mostrarPanelPrincipal() {
-  dom.panelEliminar.classList.remove("active");
-  dom.panelFormulario.classList.add("active");
-  dom.mesasView.style.display = "none";
-  dom.vistaPrincipalForm.style.display = "block";
-}
+  function extraerMensajeError(e) {
+    if (e && e.validations && typeof e.validations === 'object') {
+      return Object.values(e.validations).join(' | ');
+    }
+    if (e && e.message) {
+      return e.message;
+    }
+    return "Ocurrió un error inesperado en el servidor.";
+  }
 
-// =========================================
-// EVENT LISTENERS
-// =========================================
-function configurarEventosGenerales() {
-  dom.volverBtn.addEventListener("click", () => {
-    dom.mesasView.style.display = "none";
-    dom.vistaPrincipalForm.style.display = "block";
-    renderZonas();
-  });
+  async function procesarGuardado() {
+    if (dom.btnGuardar.disabled) return;
 
-  dom.btnConfirmarMesas.addEventListener("click", () => {
-    dom.mesasView.style.display = "none";
-    dom.vistaPrincipalForm.style.display = "block";
-    renderZonas();
-  });
+    const isEdit = state.modoActivo === "EDITAR";
 
-  dom.btnCancelarEdicion.addEventListener("click", async () => {
-    const confirmar = await mostrarConfirmacion(
-      "¿Cancelar edición?",
-      "¿Estás seguro de que deseas descartar los cambios actuales?",
-      "Volver",
-      "Descartar",
-    );
-    if (confirmar) {
+    const tituloModal = isEdit ? "Actualizar Reserva" : "Política de Reserva";
+    const msgModal = isEdit
+      ? "¿Deseas guardar los cambios realizados en tu reserva?"
+      : "Tu reserva quedará en estado pendiente. Recuerda que debe ser confirmada por ti al menos una hora antes de la hora de inicio; de lo contrario, se cancelará automáticamente.";
+    const txtConfirmar = isEdit ? "Sí, actualizar" : "Acepto y Continuar";
+
+    const confirmar = await mostrarConfirmacion(tituloModal, msgModal, "Cancelar", txtConfirmar);
+    if (!confirmar) return;
+
+    const estadoReserva = isEdit ? state.reservaOriginal.estado : "PENDIENTE";
+
+    const requestData = {
+      fecha: dom.fechaReserva.value,
+      hora: dom.horaReserva.value + ":00",
+      idusuario: state.perfil.usuario.id,
+      cantidadPersonas: state.cantidadPersonasCalculada,
+      idempresa: state.idEmpresa,
+      estado: estadoReserva
+    };
+
+    dom.btnGuardar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    dom.btnGuardar.disabled = true;
+
+    try {
+      if (isEdit) {
+        await apiReservaCliente.actualizarReserva(state.reservaEnEdicion, requestData, state.mesasSeleccionadas);
+        showNotification("¡Reserva actualizada con éxito!", "success");
+      } else {
+        await apiReservaCliente.guardarReserva(requestData, state.mesasSeleccionadas);
+        showNotification("¡Reserva creada con éxito!", "success");
+      }
+
+      const data = await apiReservaCliente.listarMisReservas();
+      agruparReservas(data);
+      renderListaReservas();
       resetearFormulario();
+    } catch (e) {
+      showNotification(extraerMensajeError(e), "error");
+      dom.btnGuardar.innerHTML = isEdit ? 'Guardar Cambios <i class="fa-solid fa-save"></i>' : 'Confirmar Reserva <i class="fa-solid fa-check"></i>';
+      dom.btnGuardar.disabled = false;
     }
-  });
-
-  dom.btnCancelarEliminar.addEventListener("click", () => {
-    dom.panelEliminar.classList.remove("active");
-    dom.panelFormulario.classList.add("active");
-  });
-
-  dom.btnConfirmarEliminar.addEventListener("click", procesarEliminado);
-
-  dom.selectorCliente.addEventListener("click", () => {
-    dom.modalClientes.classList.add("show");
-    renderClientesModal(state.clientes);
-  });
-
-  dom.cerrarModalClientes.addEventListener("click", () => {
-    dom.modalClientes.classList.remove("show");
-  });
-
-  dom.buscarCliente.addEventListener("input", () => {
-    const texto = dom.buscarCliente.value.toLowerCase();
-    const filtrados = state.clientes.filter((c) => {
-      const nombre =
-        `${c.usuario.nombres} ${c.usuario.apellidos}`.toLowerCase();
-      return nombre.includes(texto);
-    });
-    renderClientesModal(filtrados);
-  });
-
-  dom.btnGuardarReserva.addEventListener("click", procesarGuardado);
-
-  dom.fechaReserva.addEventListener("change", actualizarDisponibilidadMesas);
-  dom.horaReserva.addEventListener("change", actualizarDisponibilidadMesas);
-}
-
-function renderClientesModal(lista) {
-  dom.clientesList.innerHTML = "";
-  if (lista.length === 0) {
-    dom.clientesList.innerHTML = `<div class="cliente-item">No se encontraron clientes</div>`;
-    return;
   }
 
-  dom.clientesList.innerHTML = lista
-    .map((cliente) => {
-      const nombre = `${cliente.usuario.nombres} ${cliente.usuario.apellidos}`;
-      return `<div class="cliente-item" data-id="${cliente.usuario.id}" data-nombre="${nombre}">${nombre}</div>`;
-    })
-    .join("");
+  function resetearFormulario() {
+    state.mesasSeleccionadas = [];
+    state.cantidadPersonasCalculada = 0;
+    state.mesasOcupadas = [];
+    state.zonaActiva = null;
+    state.reservaEnEdicion = null;
+    state.modoActivo = "CREAR";
+    state.reservaOriginal = null;
+    state.hayCambios = false;
 
-  document.querySelectorAll(".cliente-item").forEach((item) => {
-    item.addEventListener("click", () => {
-      state.clienteSeleccionado = {
-        id: item.dataset.id,
-        nombre: item.dataset.nombre,
-      };
-      dom.idCliente.value = item.dataset.id;
-      dom.clienteSeleccionado.textContent = item.dataset.nombre;
-      dom.clienteSeleccionado.style.color = "var(--dark)";
-      dom.modalClientes.classList.remove("show");
+    dom.horaReserva.value = "";
+    dom.formTitulo.textContent = "Nueva Reserva";
+    dom.btnCancelar.style.display = "none";
+    dom.zonasView.style.display = "block";
+    dom.mesasView.style.display = "none";
+
+    renderZonas();
+    goToStep(1);
+    actualizarUI();
+  }
+
+  window.PanelClienteApp = {
+    abrirZona(idZona) {
+      state.zonaActiva = idZona;
+      const zona = state.zonas.find(z => z.id === idZona);
+      dom.zonaTitulo.textContent = zona.nombreZona;
+      dom.zonasView.style.display = "none";
+      dom.mesasView.style.display = "block";
+      actualizarDisponibilidadMesas();
+    },
+
+    confirmar(idReserva) {
+      mostrarConfirmacion(
+        "Confirmar Reserva",
+        "Al confirmar, aseguras tu mesa. Recuerda llegar a tiempo.",
+        "Volver",
+        "Sí, confirmar reserva"
+      ).then(async (confirmado) => {
+        if (!confirmado) return;
+
+        const r = state.reservaOriginal;
+        const reservaActualizada = {
+          fecha: r.fecha,
+          hora: r.hora,
+          idusuario: r.idusuario,
+          cantidadPersonas: r.cantidadPersonas,
+          idempresa: r.idempresa,
+          estado: "CONFIRMEDA" // <<-- OJO: CORREGIDO A CONFIRMADA
+        };
+        const idsMesas = state.reservaOriginal.mesas.map(m => parseInt(m.id));
+
+        try {
+          await apiReservaCliente.actualizarReserva(idReserva, reservaActualizada, idsMesas);
+          showNotification("¡Reserva confirmada!", "success");
+          const data = await apiReservaCliente.listarMisReservas();
+          agruparReservas(data);
+          renderListaReservas();
+        } catch (e) {
+          showNotification(extraerMensajeError(e), "error");
+        }
+      });
+    },
+
+    cancelar(idReserva) {
+      mostrarConfirmacion("¿Cancelar Reserva?", "¿Seguro que deseas cancelar esta reserva?", "No", "Sí, cancelar")
+        .then(async (confirmado) => {
+          if (!confirmado) return;
+
+          const r = state.reservaOriginal;
+          const reservaActualizada = {
+            fecha: r.fecha,
+            hora: r.hora,
+            idusuario: r.idusuario,
+            cantidadPersonas: r.cantidadPersonas,
+            idempresa: r.idempresa,
+            estado: "CANCELADA"
+          };
+          const idsMesas = state.reservaOriginal.mesas.map(m => parseInt(m.id));
+
+          try {
+            await apiReservaCliente.actualizarReserva(idReserva, reservaActualizada, idsMesas);
+            showNotification("Reserva cancelada", "success");
+            const data = await apiReservaCliente.listarMisReservas();
+            agruparReservas(data);
+            renderListaReservas();
+            resetearFormulario();
+          } catch (e) {
+            showNotification(extraerMensajeError(e), "error");
+          }
+        });
+    },
+
+    verDetalles(idReserva) {
+      const agrupada = state.reservasAgrupadas.find(r => r.reserva.id === idReserva);
+      if (!agrupada) return;
+
+      state.modoActivo = "EDITAR";
+      state.reservaEnEdicion = idReserva;
+      state.reservaOriginal = agrupada.reserva;
+
+      // Forzar conversión a entero para evitar problemas de tipo
+      state.mesasSeleccionadas = agrupada.mesas.map(m => parseInt(m.id));
+      state.zonaActiva = null;
+
+      dom.formTitulo.textContent = `Editar Reserva #${idReserva}`;
+      dom.fechaReserva.value = agrupada.reserva.fecha;
+      dom.horaReserva.value = agrupada.reserva.hora.substring(0, 5);
+      dom.btnCancelar.style.display = "block";
+
+      goToStep(1);
+    }
+  };
+
+  function mostrarConfirmacion(titulo, mensaje, txtCancelar, txtConfirmar) {
+    return new Promise((resolve) => {
+      const modal = document.createElement("div");
+      modal.className = "modal-confirmacion";
+      modal.innerHTML = `
+                <div class="modal-confirmacion-card">
+                    <div class="modal-confirmacion-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <h3>${titulo}</h3>
+                    <p>${mensaje}</p>
+                    <div class="modal-confirmacion-actions">
+                        <button class="modal-confirmacion-cancelar">${txtCancelar}</button>
+                        <button class="modal-confirmacion-confirmar">${txtConfirmar}</button>
+                    </div>
+                </div>
+            `;
+      document.body.appendChild(modal);
+      setTimeout(() => modal.classList.add("show"), 10);
+
+      modal.querySelector(".modal-confirmacion-cancelar").onclick = () => { modal.remove(); resolve(false); };
+      modal.querySelector(".modal-confirmacion-confirmar").onclick = () => { modal.remove(); resolve(true); };
     });
-  });
-}
+  }
+
+  function showNotification(text, type = "success") {
+    const notif = document.createElement("div");
+    notif.className = `notification-client ${type}`;
+    notif.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check' : 'triangle-exclamation'}"></i> <span>${text}</span>`;
+    dom.notifContainer.appendChild(notif);
+    setTimeout(() => notif.classList.add("show"), 10);
+    setTimeout(() => { notif.classList.remove("show"); setTimeout(() => notif.remove(), 300); }, 4000);
+  }
+
+  function configurarEventos() {
+    dom.btnGuardar.addEventListener("click", procesarGuardado);
+
+    dom.btnGoToTables.addEventListener("click", () => goToStep(2));
+    dom.volverBtn.addEventListener("click", () => goToStep(1));
+
+    dom.volverZonasBtn.addEventListener("click", () => {
+      dom.mesasView.style.display = "none";
+      dom.zonasView.style.display = "block";
+      renderZonas();
+    });
+
+    dom.btnConfirmarMesas.addEventListener("click", () => goToStep(1));
+
+    dom.fechaReserva.addEventListener("change", actualizarDisponibilidadMesas);
+    dom.horaReserva.addEventListener("change", actualizarDisponibilidadMesas);
+
+    dom.btnCancelar.addEventListener("click", () => {
+      mostrarConfirmacion("¿Descartar vista?", "Volverás a la pantalla de crear reserva nueva.", "No", "Sí, descartar")
+        .then(confirmar => { if (confirmar) resetearFormulario(); });
+    });
+  }
+
+  return { iniciar };
+})();
+
+document.addEventListener("DOMContentLoaded", PanelClienteApp.iniciar);

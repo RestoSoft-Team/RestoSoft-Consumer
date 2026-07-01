@@ -2,7 +2,7 @@ import { API_BASE } from "./config.js";
 
 export const apiAuth = {
   login: async (email, password) => {
-    const response = await fetch(`${API_BASE}/auth/login`, {
+    const response = await fetch(`${API_BASE}/auth/cliente`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export const apiAuth = {
 
   registrarCliente: async (idEmpresa, clienteData, imagenFile) => {
     const formData = new FormData();
-    
+
     // Adjuntamos el JSON como un Blob bajo la key "cliente"
     const clienteBlob = new Blob([JSON.stringify(clienteData)], { type: "application/json" });
     formData.append("cliente", clienteBlob);
@@ -32,7 +32,6 @@ export const apiAuth = {
     // Inyectamos el idEmpresa directamente en la URL
     const response = await fetch(`${API_BASE}/usuarios/clientes/${idEmpresa}`, {
       method: "POST",
-      // NO poner headers de Content-Type, el navegador lo hace automáticamente
       body: formData,
     });
 
