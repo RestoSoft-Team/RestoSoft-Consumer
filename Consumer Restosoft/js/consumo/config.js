@@ -1,6 +1,6 @@
 export const API_BASE = "http://localhost:8080/api";
 
-export const token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4MjkwNTczOCwiZXhwIjoxNzgyOTkyMTM4fQ.KK7_nVC9414cPkHAk9D5To9fSP9qyKR98M9tGkXrMDc"
+// export const token =
+//   "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxNiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzgyOTQwODQ0LCJleHAiOjE3ODMwMjcyNDR9.rmSS8Gj8hqFm1oQt3CvE3AhImznGGBmPvVpvZOf1RpU";
 
-
-// const token = localStorage.getItem("token");
+export const token = localStorage.getItem("token");

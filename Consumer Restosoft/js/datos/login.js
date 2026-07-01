@@ -3,28 +3,25 @@
 // ====================================================
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Referencias del DOM
   const loginForm = document.getElementById("loginForm");
   const loginBtn = document.getElementById("loginBtn");
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
   const emailInput = document.getElementById("email");
 
-  // URL base de tu API
   const API_BASE_URL = "http://localhost:8080";
-  const REDIRECT_URL = "dashboard.html"; 
+  const REDIRECT_URL = "dashboard.html";
 
-  // Si el formulario no existe, detenemos el script
   if (!loginForm) return;
 
   // ====================================================
-  // MICROINTERACCIÓN: Mostrar/Ocultar Contraseña
+  // Mostrar/Ocultar Contraseña
   // ====================================================
   if (togglePassword && passwordInput) {
     togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      const type =
+        passwordInput.getAttribute("type") === "password" ? "text" : "password";
       passwordInput.setAttribute("type", type);
-
       const icon = togglePassword.querySelector("i");
       if (icon) {
         if (type === "password") {
@@ -47,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const notif = document.createElement("div");
     notif.className = `notification ${type}`;
-
     const iconClass = type === "success" ? "fa-check" : "fa-exclamation";
 
     notif.innerHTML = `
@@ -59,18 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     container.appendChild(notif);
-
-    setTimeout(() => {
-      hideNotification(notif);
-    }, 4000);
+    setTimeout(() => hideNotification(notif), 4000);
   };
 
   window.hideNotification = function (notifElement) {
     if (!notifElement) return;
     notifElement.classList.add("hide");
-    setTimeout(() => {
-      notifElement.remove();
-    }, 400);
+    setTimeout(() => notifElement.remove(), 400);
   };
 
   // ====================================================
@@ -104,15 +95,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ====================================================
-  // MANEJO DEL SUBMIT (FETCH A SPRING BOOT)
+  // Limpieza segura de sesión anterior
+  // ====================================================
+  function limpiarSesionAnterior() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("restsoft_user");
+    localStorage.removeItem("restsoft_empresa");
+    localStorage.removeItem("restsoft_rol");
+    // Por si quedan datos residuales de menú, carrito, etc.
+    localStorage.removeItem("restsoft_menu");
+    localStorage.removeItem("restsoft_cart");
+  }
+
+  // Guarda un valor en localStorage solo si no es nulo/undefined
+  function guardarSiExiste(key, value) {
+    if (value !== null && value !== undefined) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  }
+
+  // ====================================================
+  // SUBMIT (FETCH A SPRING BOOT)
   // ====================================================
   loginForm.addEventListener("submit", async (e) => {
-    // ¡CRÍTICO! Prevenimos el envío nativo del formulario.
     e.preventDefault();
 
     let isValid = true;
 
-    // Validar Email
     if (emailInput.value.trim() === "") {
       setError(emailInput, "El correo electrónico es requerido.");
       isValid = false;
@@ -121,18 +130,20 @@ document.addEventListener("DOMContentLoaded", () => {
       isValid = false;
     }
 
-    // Validar Contraseña
     if (passwordInput.value === "") {
       setError(passwordInput, "La contraseña es requerida.");
       isValid = false;
     }
 
     if (!isValid) {
-      showNotification("Error de validación", "Por favor revisa los campos marcados.", "error");
+      showNotification(
+        "Error de validación",
+        "Por favor revisa los campos marcados.",
+        "error",
+      );
       return;
     }
 
-    // Iniciar estado de carga en el botón
     if (loginBtn) loginBtn.classList.add("loading");
 
     const payload = {
@@ -143,13 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      // Parseo seguro del JSON
       const contentType = response.headers.get("content-type");
       let data = null;
       if (contentType && contentType.includes("application/json")) {
@@ -160,51 +168,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!response.ok) {
         let errorMessage = "Ocurrió un error inesperado al iniciar sesión.";
-
         if (data.message) {
           errorMessage = data.message;
         } else if (data.errors && data.errors.length > 0) {
-          errorMessage = data.errors[0].defaultMessage || "Error de validación en el servidor.";
+          errorMessage =
+            data.errors[0].defaultMessage ||
+            "Error de validación en el servidor.";
         }
         throw new Error(errorMessage);
       }
 
-      // ÉXITO: Limpiar sesión anterior
-      localStorage.removeItem("token");
-      localStorage.removeItem("restsoft_user");
-      localStorage.removeItem("restsoft_empresa");
-      localStorage.removeItem("restsoft_rol");
+      // ÉXITO: limpiar sesión previa antes de guardar la nueva
+      limpiarSesionAnterior();
 
-      // Guardar nueva sesión
+      // Guardar nueva sesión de forma segura
       localStorage.setItem("token", data.token);
-      localStorage.setItem("restsoft_user", JSON.stringify(data.usuario));
-      localStorage.setItem("restsoft_empresa", JSON.stringify(data.empresa));
-      localStorage.setItem("restsoft_rol", JSON.stringify(data.rol));
+      guardarSiExiste("restsoft_user", data.usuario);
+      guardarSiExiste("restsoft_empresa", data.empresa);
+      guardarSiExiste("restsoft_rol", data.rol);
 
       showNotification(
         "Acceso concedido",
         `Bienvenido al panel de ${data.empresa?.nombre || "RestSoft"}.`,
-        "success"
+        "success",
       );
 
-      // Redirección fluida a dashboard.html
       setTimeout(() => {
         window.location.href = REDIRECT_URL;
       }, 1000);
-
     } catch (error) {
       if (loginBtn) loginBtn.classList.remove("loading");
 
       let displayMessage = error.message || "Credenciales incorrectas.";
-
-      // Capturar errores de red comunes (ej. backend apagado, CORS)
-      if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
-        displayMessage = "No se pudo conectar con el servidor. Verifica tu conexión o que el backend esté activo.";
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Failed to fetch")
+      ) {
+        displayMessage =
+          "No se pudo conectar con el servidor. Verifica tu conexión o que el backend esté activo.";
       }
 
       showNotification("Error de autenticación", displayMessage, "error");
-
-      // Marcamos los inputs como error
       setError(emailInput, " ");
       setError(passwordInput, "Verifica tus credenciales.");
     }
