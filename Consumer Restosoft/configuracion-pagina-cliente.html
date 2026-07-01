@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RestSoft Admin - Configuración</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link href="css/configuracion-pagina-cliente.css" rel="stylesheet" />
+    <script type="module" src="js/datos/theme-loader.js"></script>
+  </head>
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3 id="nombreEmpresa"></h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="active" href="configuracion-pagina-cliente.html"
+          >Configuracion</a
+        >
+        <a class="" href="perfil.html">Mi Perfil</a>
+      </div>
+    </div>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1 class="topbar-title">Configuración de Página</h1>
+          <p class="topbar-subtitle">Personaliza la vista pública</p>
+          <button id="menuToggle" class="mobile-menu-btn">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+        <div class="topbar-actions">
+          <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando perfil...
+            </p>
+          </div>
+          <button id="btn-delete" class="btn-danger">
+            <i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button id="btn-save" class="btn-primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Cambios
+          </button>
+        </div>
+      </header>
+
+      <div class="config-layout">
+        <section class="config-form-area">
+          <div class="card p-4">
+            <div class="tabs-nav">
+              <button class="tab-btn active" data-tab="branding">
+                <i class="fa-solid fa-id-badge"></i> Branding
+              </button>
+              <button class="tab-btn" data-tab="estilos">
+                <i class="fa-solid fa-palette"></i> Estilos
+              </button>
+              <button class="tab-btn" data-tab="contenido">
+                <i class="fa-solid fa-pen-to-square"></i> Contenido
+              </button>
+              <button class="tab-btn" data-tab="redes">
+                <i class="fa-solid fa-share-nodes"></i> Listas
+              </button>
+            </div>
+
+            <form id="config-form" class="form-container mt-4">
+              <!-- BRANDING -->
+              <div class="tab-content active" id="tab-branding">
+                <h4>Identidad</h4>
+                <div class="form-group">
+                  <label>Nombre</label
+                  ><input
+                    type="text"
+                    data-model="brandingNombre"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Slogan</label
+                  ><input
+                    type="text"
+                    data-model="brandingSlogan"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Descripción</label
+                  ><textarea
+                    data-model="brandingDescripcion"
+                    class="form-control premium-input"
+                    rows="3"
+                  ></textarea>
+                </div>
+
+                <h4>Imágenes</h4>
+                <div class="image-upload-group">
+                  <label>Logo</label>
+                  <div class="upload-box">
+                    <img
+                      data-img-preview="brandingLogo"
+                      src="https://via.placeholder.com/80?text=Logo"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="brandingLogo"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline"
+                      data-img-btn="brandingLogo"
+                    >
+                      <i class="fa-solid fa-upload"></i> Subir
+                    </button>
+                  </div>
+                </div>
+                <div class="image-upload-group">
+                  <label>Favicon</label>
+                  <div class="upload-box">
+                    <img
+                      data-img-preview="brandingFavicon"
+                      src="https://via.placeholder.com/80?text=Icon"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="brandingFavicon"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline"
+                      data-img-btn="brandingFavicon"
+                    >
+                      <i class="fa-solid fa-upload"></i> Subir
+                    </button>
+                  </div>
+                </div>
+
+                <h4>Sección Login</h4>
+                <div class="form-group">
+                  <label>Título Login</label
+                  ><input
+                    type="text"
+                    data-model="loginTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Texto Login</label
+                  ><textarea
+                    data-model="loginTexto"
+                    class="form-control premium-input"
+                    rows="2"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Texto Botón Login</label
+                  ><input
+                    type="text"
+                    data-model="loginTextoBoton"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="toggle-row">
+                  <label>Sección Login Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="loginActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="toggle-row">
+                  <label>Footer: Mostrar "Powered by"</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="footerMostrarPowered" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+              </div>
+
+              <!-- ESTILOS -->
+              <div class="tab-content" id="tab-estilos">
+                <h4>Tipografía</h4>
+                <div class="form-group">
+                  <label>Selecciona Fuente de Google</label
+                  ><select
+                    id="select-fuente"
+                    class="form-control premium-input"
+                  >
+                    <option value="Inter">Inter</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Lato">Lato</option>
+                    <option value="Oswald">Oswald</option>
+                  </select>
+                </div>
+
+                <h4>Colores Principales</h4>
+                <div class="color-grid">
+                  <div class="form-group">
+                    <label>Primario</label
+                    ><input
+                      type="color"
+                      data-model="colorPrimario"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Primario Hover</label
+                    ><input
+                      type="color"
+                      data-model="colorPrimarioHover"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Secundario</label
+                    ><input
+                      type="color"
+                      data-model="colorSecundario"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Oscuro</label
+                    ><input
+                      type="color"
+                      data-model="colorOscuro"
+                      class="premium-color-input"
+                    />
+                  </div>
+                </div>
+
+                <h4>Color Primario (RGB)</h4>
+                <div class="color-grid">
+                  <div class="form-group">
+                    <label>RGB Primario</label
+                    ><input
+                      type="color"
+                      data-rgb-model="colorPrimarioRgb"
+                      class="premium-color-input"
+                    />
+                  </div>
+                </div>
+
+                <h4>Fondos y Textos</h4>
+                <div class="color-grid">
+                  <div class="form-group">
+                    <label>Bg Principal</label
+                    ><input
+                      type="color"
+                      data-model="colorBg"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Bg Alt</label
+                    ><input
+                      type="color"
+                      data-model="colorBgAlt"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Tarjetas</label
+                    ><input
+                      type="color"
+                      data-model="colorCard"
+                      class="premium-color-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Bordes</label
+                    ><input
+                      type="color"
+                      data-model="colorBorde"
+                      class="premium-color-input"
+                    />
+                  </div>
+                </div>
+
+                <h4>Bordes (Ej: 24px)</h4>
+                <div class="color-grid">
+                  <div class="form-group">
+                    <label>Radio Tarjeta</label
+                    ><input
+                      type="text"
+                      data-model="bordeTarjeta"
+                      class="form-control premium-input"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Radio Botón</label
+                    ><input
+                      type="text"
+                      data-model="bordeBoton"
+                      class="form-control premium-input"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- CONTENIDO -->
+              <div class="tab-content" id="tab-contenido">
+                <h4>Sección Hero</h4>
+                <div class="image-upload-group">
+                  <label>Imagen Fondo</label>
+                  <div class="upload-box">
+                    <img
+                      data-img-preview="heroImagen"
+                      src="https://via.placeholder.com/120x80?text=Hero"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="heroImagen"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline"
+                      data-img-btn="heroImagen"
+                    >
+                      <i class="fa-solid fa-upload"></i> Subir
+                    </button>
+                  </div>
+                </div>
+                <div class="toggle-row">
+                  <label>Hero Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="heroActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar Dirección en Hero</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="heroMostrarDireccion" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar Horario en Hero</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="heroMostrarHorario" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+
+                <h4>Sección Acerca De</h4>
+                <div class="toggle-row">
+                  <label>Acerca Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="acercaActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Título</label
+                  ><input
+                    type="text"
+                    data-model="acercaTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Texto</label
+                  ><textarea
+                    data-model="acercaTexto"
+                    class="form-control premium-input"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="image-upload-group">
+                  <label>Imagen</label>
+                  <div class="upload-box">
+                    <img
+                      data-img-preview="acercaImagen"
+                      src="https://via.placeholder.com/120x80?text=About"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="acercaImagen"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline"
+                      data-img-btn="acercaImagen"
+                    >
+                      <i class="fa-solid fa-upload"></i> Subir
+                    </button>
+                  </div>
+                </div>
+
+                <h4>Galería (6 Imágenes)</h4>
+                <div class="toggle-row">
+                  <label>Galería Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="galeriaActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Título Galería</label
+                  ><input
+                    type="text"
+                    data-model="galeriaTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="gallery-grid-admin">
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen1"
+                      src="https://via.placeholder.com/100?text=1"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen1"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen1"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen2"
+                      src="https://via.placeholder.com/100?text=2"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen2"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen2"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen3"
+                      src="https://via.placeholder.com/100?text=3"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen3"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen3"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen4"
+                      src="https://via.placeholder.com/100?text=4"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen4"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen4"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen5"
+                      src="https://via.placeholder.com/100?text=5"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen5"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen5"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                  <div class="upload-box-gallery">
+                    <img
+                      data-img-preview="galeriaImagen6"
+                      src="https://via.placeholder.com/100?text=6"
+                      class="upload-preview"
+                    /><input
+                      type="file"
+                      data-img-input="galeriaImagen6"
+                      accept="image/*"
+                      hidden
+                    /><button
+                      type="button"
+                      class="btn-outline sm"
+                      data-img-btn="galeriaImagen6"
+                    >
+                      <i class="fa-solid fa-upload"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <h4>Contacto</h4>
+                <div class="toggle-row">
+                  <label>Contacto Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="contactoActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Título Contacto</label
+                  ><input
+                    type="text"
+                    data-model="contactoTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar Dirección</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="contactoMostrarDireccion" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Dirección</label
+                  ><input
+                    type="text"
+                    data-model="contactoDireccion"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar Teléfono</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="contactoMostrarTelefono" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Teléfono</label
+                  ><input
+                    type="text"
+                    data-model="contactoTelefono"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar Email</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="contactoMostrarEmail" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Email</label
+                  ><input
+                    type="text"
+                    data-model="contactoEmail"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div class="toggle-row">
+                  <label>Mostrar WhatsApp</label
+                  ><label class="toggle-switch"
+                    ><input
+                      type="checkbox"
+                      data-model="contactoMostrarWhatsapp" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>WhatsApp (Solo números)</label
+                  ><input
+                    type="text"
+                    data-model="contactoWhatsapp"
+                    class="form-control premium-input"
+                  />
+                </div>
+
+                <h4>Footer</h4>
+                <div class="form-group">
+                  <label>Texto Footer</label
+                  ><input
+                    type="text"
+                    data-model="footerTexto"
+                    class="form-control premium-input"
+                  />
+                </div>
+              </div>
+
+              <!-- LISTAS -->
+              <div class="tab-content" id="tab-redes">
+                <h4>Horarios</h4>
+                <div class="toggle-row">
+                  <label>Horarios Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="horariosActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Título Horarios</label
+                  ><input
+                    type="text"
+                    data-model="horariosTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div id="list-horarios" class="dynamic-list"></div>
+                <button type="button" id="btn-add-horario" class="btn-add-item">
+                  <i class="fa-solid fa-plus"></i> Añadir Horario
+                </button>
+
+                <h4>Redes Sociales</h4>
+                <div class="toggle-row">
+                  <label>Redes Activa</label
+                  ><label class="toggle-switch"
+                    ><input type="checkbox" data-model="redesActiva" /><span
+                      class="toggle-slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="form-group">
+                  <label>Título Redes</label
+                  ><input
+                    type="text"
+                    data-model="redesTitulo"
+                    class="form-control premium-input"
+                  />
+                </div>
+                <div id="list-redes" class="dynamic-list"></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="config-preview-area">
+          <div class="preview-toolbar">
+            <span><i class="fa-solid fa-eye"></i> Vista en Tiempo Real</span>
+            <div class="device-toggle">
+              <button class="active">
+                <i class="fa-solid fa-desktop"></i>
+              </button>
+              <button><i class="fa-solid fa-mobile-screen"></i></button>
+            </div>
+          </div>
+          <div class="iframe-wrapper">
+            <iframe id="preview-frame" src="about:blank"></iframe>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script
+      type="module"
+      src="js/datos/configuracion-pagina-cliente.js"
+    ></script>
+    <script type="module" src="js/datos/sidebar.js"></script>
+  </body>
+</html>

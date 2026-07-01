@@ -1,0 +1,2949 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RestSoft — Gestión Restaurantera Inteligente</title>
+
+    <!-- Bootstrap 5.3.3 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome 6.5.2 (Free) -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts: Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ============================================
+           VARIABLES Y SISTEMA DE DISEÑO (IDENTIDAD RESTSOFT)
+           ============================================ */
+      :root {
+        --bg: #fbfcfb;
+        --bg-warm: #f9f9fa;
+        --primary: #6b1e28; /* Vino RestSoft */
+        --primary-light: #8a3b47; /* Vino Claro */
+        --primary-ghost: #f5ecee; /* Vino muy suave (fondos) */
+        --primary-glow: rgba(107, 30, 40, 0.15);
+
+        --accent: #c49a6c; /* Dorado/Bronce */
+        --accent-light: #dbb890;
+        --accent-ghost: #faf3eb;
+
+        --dark: #262f3c; /* Azul Pizarra Oscuro */
+        --dark-light: #364350;
+
+        --soft: #b09da2; /* Gris rosáceo (complementa el vino) */
+        --soft-light: #e8eaef; /* Borde suave */
+
+        --white: #ffffff;
+        --gray: #6f7782;
+        --success: #3d8b5c;
+        --warning: #d9a441;
+        --danger: #bb3a4b;
+
+        --shadow-sm: 0 4px 20px rgba(38, 47, 60, 0.05);
+        --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
+        --shadow-lg: 0 20px 60px rgba(38, 47, 60, 0.12);
+        --shadow-xl: 0 30px 80px rgba(38, 47, 60, 0.16);
+
+        --radius-sm: 14px;
+        --radius: 24px;
+        --radius-lg: 32px;
+      }
+
+      /* ============================================
+           RESET Y BASE
+           ============================================ */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+      ::selection {
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      /* ============================================
+           TIPOGRAFÍA
+           ============================================ */
+      .display-xl {
+        font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        color: var(--dark);
+      }
+      .display-lg {
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        font-weight: 700;
+        line-height: 1.12;
+        letter-spacing: -0.025em;
+        color: var(--dark);
+      }
+      .heading-md {
+        font-size: clamp(1.3rem, 2vw, 1.6rem);
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+      }
+      .text-muted-custom {
+        color: var(--gray);
+        font-weight: 400;
+        line-height: 1.7;
+      }
+      .text-primary-custom {
+        color: var(--primary);
+      }
+      .text-accent {
+        color: var(--accent);
+      }
+
+      /* ============================================
+           NAVBAR
+           ============================================ */
+      .navbar-custom {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 18px 0;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .navbar-custom.scrolled {
+        background: rgba(251, 252, 251, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 12px 0;
+        box-shadow: 0 1px 30px rgba(38, 47, 60, 0.06);
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -0.02em;
+      }
+      .nav-brand-icon {
+        width: 42px;
+        height: 42px;
+        background: var(--primary);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1.1rem;
+        transition:
+          transform 0.3s,
+          background 0.3s;
+      }
+      .nav-brand:hover .nav-brand-icon {
+        transform: rotate(-8deg) scale(1.05);
+        background: var(--primary-light);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: var(--dark-light);
+        font-weight: 500;
+        font-size: 0.92rem;
+        padding: 10px 18px;
+        border-radius: 14px;
+        transition: all 0.3s;
+      }
+      .nav-links a:hover {
+        color: var(--primary);
+        background: var(--primary-ghost);
+      }
+
+      .btn-nav-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--dark-light) !important;
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 10px 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        transition: all 0.3s;
+        border: none;
+        background: transparent;
+      }
+      .btn-nav-outline:hover {
+        color: var(--primary) !important;
+        background: var(--primary-ghost);
+      }
+
+      .btn-nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary);
+        color: var(--white) !important;
+        font-weight: 600;
+        font-size: 0.92rem;
+        padding: 12px 24px;
+        border-radius: 16px;
+        text-decoration: none;
+        transition: all 0.3s;
+        border: none;
+      }
+      .btn-nav-cta:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px var(--primary-glow);
+        color: var(--white) !important;
+      }
+
+      .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        color: var(--dark);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 12px;
+        transition: background 0.3s;
+      }
+      .nav-toggle:hover {
+        background: var(--primary-ghost);
+      }
+
+      /* ============================================
+           HERO
+           ============================================ */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 140px 0 100px;
+        overflow: hidden;
+      }
+      .hero-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .hero-blob-1 {
+        width: 600px;
+        height: 600px;
+        background: var(--primary);
+        opacity: 0.07;
+        top: -150px;
+        right: -100px;
+        animation: blobFloat 18s ease-in-out infinite;
+      }
+      .hero-blob-2 {
+        width: 450px;
+        height: 450px;
+        background: var(--accent);
+        opacity: 0.1;
+        bottom: -100px;
+        left: -80px;
+        animation: blobFloat 22s ease-in-out infinite reverse;
+      }
+      .hero-blob-3 {
+        width: 300px;
+        height: 300px;
+        background: var(--dark);
+        opacity: 0.04;
+        top: 40%;
+        left: 40%;
+        animation: blobFloat 15s ease-in-out infinite 3s;
+      }
+
+      @keyframes blobFloat {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(30px, -40px) scale(1.05);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.95);
+        }
+      }
+
+      .hero-dot-grid {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          circle,
+          var(--soft-light) 1px,
+          transparent 1px
+        );
+        background-size: 40px 40px;
+        opacity: 0.5;
+        z-index: 0;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-ghost);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.82rem;
+        padding: 8px 18px;
+        border-radius: 50px;
+        margin-bottom: 28px;
+        letter-spacing: 0.01em;
+        border: 1px solid rgba(107, 30, 40, 0.1);
+      }
+      .hero-badge i {
+        font-size: 0.7rem;
+      }
+      .hero-title {
+        margin-bottom: 24px;
+      }
+      .hero-title .accent-word {
+        color: var(--primary);
+        position: relative;
+      }
+      .hero-subtitle {
+        font-size: 1.15rem;
+        color: var(--gray);
+        max-width: 520px;
+        margin-bottom: 36px;
+        line-height: 1.75;
+        font-weight: 400;
+      }
+      .hero-buttons {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 52px;
+      }
+
+      .btn-primary-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--primary);
+        color: var(--white);
+        border: none;
+        border-radius: 16px;
+        padding: 16px 30px;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+      }
+      .btn-primary-custom:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px var(--primary-glow);
+        color: var(--white);
+      }
+
+      .btn-outline-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--white);
+        color: var(--dark);
+        border: 2px solid var(--soft-light);
+        border-radius: 16px;
+        padding: 14px 28px;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+      }
+      .btn-outline-custom:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 40px;
+      }
+      .hero-stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -0.02em;
+      }
+      .hero-stat-label {
+        font-size: 0.82rem;
+        color: var(--soft);
+        font-weight: 500;
+        margin-top: 2px;
+      }
+
+      /* ============================================
+           MOCKUP DEL DASHBOARD (HERO)
+           ============================================ */
+      .hero-mockup-wrapper {
+        position: relative;
+        z-index: 2;
+        perspective: 1200px;
+      }
+      .hero-mockup {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        transform: rotateY(-4deg) rotateX(2deg);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .hero-mockup:hover {
+        transform: rotateY(-1deg) rotateX(1deg) translateY(-5px);
+      }
+      .mockup-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--soft-light);
+      }
+      .mockup-dots {
+        display: flex;
+        gap: 7px;
+      }
+      .mockup-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .mockup-dot.red {
+        background: #f87171;
+      }
+      .mockup-dot.yellow {
+        background: #fbbf24;
+      }
+      .mockup-dot.green {
+        background: #34d399;
+      }
+      .mockup-url {
+        background: var(--white);
+        border-radius: 8px;
+        padding: 6px 16px;
+        font-size: 0.72rem;
+        color: var(--soft);
+        font-weight: 500;
+      }
+      .mockup-body {
+        display: flex;
+        min-height: 340px;
+      }
+      .mockup-sidebar {
+        width: 60px;
+        background: var(--dark);
+        padding: 16px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .mockup-sidebar-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        transition: background 0.3s;
+      }
+      .mockup-sidebar-dot.active {
+        background: var(--primary);
+        color: var(--white);
+      }
+      .mockup-sidebar-dot:not(.active) {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.35);
+      }
+      .mockup-sidebar-spacer {
+        flex: 1;
+      }
+      .mockup-main {
+        flex: 1;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .mockup-stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .mockup-stat-card {
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .mockup-stat-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+      }
+      .mockup-stat-icon.green {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .mockup-stat-icon.amber {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .mockup-stat-icon.rose {
+        background: #fce7f3;
+        color: #db2777;
+      }
+
+      .mockup-stat-num {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--dark);
+        letter-spacing: -0.02em;
+      }
+      .mockup-stat-label {
+        font-size: 0.62rem;
+        color: var(--soft);
+        font-weight: 500;
+      }
+      .mockup-chart-area {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+      }
+      .mockup-chart {
+        flex: 1.2;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+      }
+      .mockup-chart-title {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 12px;
+      }
+      .mockup-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        flex: 1;
+        padding-bottom: 4px;
+      }
+      .mockup-bar {
+        flex: 1;
+        border-radius: 6px 6px 3px 3px;
+        min-height: 8px;
+        animation: barGrow 1.5s ease-out forwards;
+        transform-origin: bottom;
+      }
+
+      @keyframes barGrow {
+        from {
+          transform: scaleY(0);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+
+      .mockup-table {
+        flex: 1;
+        background: var(--bg);
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+      }
+      .mockup-table-title {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 10px;
+      }
+      .mockup-table-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .mockup-table-row:last-child {
+        border-bottom: none;
+      }
+      .mockup-table-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .mockup-table-text {
+        font-size: 0.62rem;
+        color: var(--dark-light);
+        flex: 1;
+      }
+      .mockup-table-badge {
+        font-size: 0.55rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .badge-green {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .badge-amber {
+        background: #fef3c7;
+        color: #d97706;
+      }
+      .badge-rose {
+        background: #fce7f3;
+        color: #db2777;
+      }
+      .mockup-glow {
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        top: 15%;
+        left: 15%;
+        background: var(--primary);
+        opacity: 0.08;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+      }
+
+      /* ============================================
+           SECCIÓN: CONFIANZA
+           ============================================ */
+      .trust-section {
+        padding: 60px 0 80px;
+        position: relative;
+        z-index: 2;
+      }
+      .trust-label {
+        text-align: center;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--soft);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 36px;
+      }
+      .trust-logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        opacity: 0.4;
+      }
+      .trust-logo {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark);
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        transition: opacity 0.3s;
+      }
+      .trust-logo:hover {
+        opacity: 1;
+      }
+      .trust-logo .logo-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      /* ============================================
+           SECCIÓN: CARACTERÍSTICAS
+           ============================================ */
+      .features-section {
+        padding: 100px 0;
+        position: relative;
+      }
+      .section-header {
+        text-align: center;
+        max-width: 620px;
+        margin: 0 auto 64px;
+      }
+      .section-header .overline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+      }
+      .section-header .overline::before,
+      .section-header .overline::after {
+        content: "";
+        width: 20px;
+        height: 1.5px;
+        background: var(--primary);
+        opacity: 0.3;
+        border-radius: 2px;
+      }
+      .section-header p {
+        margin-top: 18px;
+      }
+
+      .feature-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 34px 30px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lg);
+        border-color: transparent;
+      }
+      .feature-card:hover::before {
+        transform: scaleX(1);
+      }
+      .feature-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 22px;
+        transition: transform 0.3s;
+      }
+      .feature-card:hover .feature-icon {
+        transform: scale(1.08);
+      }
+
+      .fi-wine {
+        background: var(--primary-ghost);
+        color: var(--primary);
+      }
+      .fi-gold {
+        background: var(--accent-ghost);
+        color: var(--accent);
+      }
+      .fi-rose {
+        background: #fce7f3;
+        color: #db2777;
+      }
+      .fi-blue {
+        background: #dbeafe;
+        color: #2563eb;
+      }
+      .fi-violet {
+        background: #ede9fe;
+        color: #7c3aed;
+      }
+      .fi-teal {
+        background: #ccfbf1;
+        color: #0d9488;
+      }
+
+      .feature-card h3 {
+        font-size: 1.12rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        letter-spacing: -0.01em;
+      }
+      .feature-card p {
+        font-size: 0.9rem;
+        color: var(--gray);
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      /* ============================================
+           SECCIÓN: DASHBOARD PREVIEW GRANDE
+           ============================================ */
+      .preview-section {
+        padding: 100px 0 120px;
+        background: var(--dark);
+        position: relative;
+        overflow: hidden;
+      }
+      .preview-section .section-header .overline {
+        color: var(--accent-light);
+      }
+      .preview-section .section-header .overline::before,
+      .preview-section .section-header .overline::after {
+        background: var(--accent);
+      }
+      .preview-section .section-header h2 {
+        color: var(--white);
+      }
+      .preview-section .section-header p {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .preview-particle {
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .preview-particle-1 {
+        width: 300px;
+        height: 300px;
+        top: -80px;
+        right: -60px;
+        background: var(--primary);
+        opacity: 0.15;
+        filter: blur(80px);
+      }
+      .preview-particle-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -50px;
+        left: 10%;
+        background: var(--accent);
+        opacity: 0.08;
+        filter: blur(60px);
+      }
+      .preview-particle-3 {
+        width: 150px;
+        height: 150px;
+        top: 30%;
+        left: -40px;
+        background: var(--primary-light);
+        opacity: 0.1;
+        filter: blur(50px);
+      }
+
+      .preview-dashboard {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .preview-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--soft-light);
+      }
+
+      .preview-sidebar-large {
+        width: 220px;
+        background: var(--dark);
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-height: 440px;
+      }
+      .preview-sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        margin-bottom: 24px;
+      }
+      .preview-sidebar-brand-icon {
+        width: 34px;
+        height: 34px;
+        background: var(--primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 0.8rem;
+      }
+      .preview-sidebar-brand span {
+        color: var(--white);
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .preview-sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        border-radius: 14px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.82rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        cursor: default;
+      }
+      .preview-sidebar-item.active {
+        background: rgba(107, 30, 40, 0.35);
+        color: var(--white);
+        border-left: 3px solid var(--accent);
+        padding-left: 11px;
+      }
+      .preview-sidebar-item i {
+        width: 18px;
+        text-align: center;
+        font-size: 0.85rem;
+      }
+      .preview-sidebar-spacer {
+        flex: 1;
+      }
+      .preview-sidebar-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+
+      .preview-main-content {
+        flex: 1;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .preview-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .preview-header-row h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+      }
+      .preview-header-row p {
+        font-size: 0.78rem;
+        color: var(--soft);
+        margin: 2px 0 0;
+      }
+      .preview-search {
+        background: var(--bg);
+        border: 1px solid var(--soft-light);
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-size: 0.78rem;
+        color: var(--gray);
+        width: 200px;
+        font-family: "Inter", sans-serif;
+      }
+
+      .preview-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .preview-stat {
+        background: var(--bg);
+        border-radius: 18px;
+        padding: 18px;
+        border: 1px solid var(--soft-light);
+      }
+      .preview-stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+      }
+
+      .preview-stat-icon.fi-wine {
+        background: var(--primary);
+        color: var(--white);
+        opacity: 0.9;
+      }
+      .preview-stat-icon.fi-gold {
+        background: var(--accent);
+        color: var(--white);
+        opacity: 0.9;
+      }
+      .preview-stat-icon.fi-rose {
+        background: #db2777;
+        color: var(--white);
+        opacity: 0.9;
+      }
+      .preview-stat-icon.fi-blue {
+        background: #2563eb;
+        color: var(--white);
+        opacity: 0.9;
+      }
+
+      .preview-stat-value {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--dark);
+        letter-spacing: -0.02em;
+      }
+      .preview-stat-label {
+        font-size: 0.72rem;
+        color: var(--soft);
+        font-weight: 500;
+        margin-top: 2px;
+      }
+      .preview-stat-change {
+        font-size: 0.68rem;
+        font-weight: 600;
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+      .change-up {
+        background: #dcfce7;
+        color: #16a34a;
+      }
+      .change-down {
+        background: #fce7f3;
+        color: #db2777;
+      }
+
+      .preview-bottom-row {
+        display: flex;
+        gap: 14px;
+        flex: 1;
+      }
+      .preview-chart-large {
+        flex: 1.4;
+        background: var(--bg);
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--soft-light);
+      }
+      .preview-chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .preview-chart-header h4 {
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--dark);
+      }
+      .preview-chart-tabs {
+        display: flex;
+        gap: 4px;
+        background: var(--white);
+        border-radius: 10px;
+        padding: 3px;
+        border: 1px solid var(--soft-light);
+      }
+      .preview-chart-tab {
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 8px;
+        color: var(--soft);
+        cursor: default;
+        transition: 0.3s;
+      }
+      .preview-chart-tab.active {
+        background: var(--dark);
+        color: var(--white);
+      }
+      .preview-chart-graph {
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        padding: 10px 0;
+      }
+      .preview-graph-bar-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
+        justify-content: flex-end;
+      }
+      .preview-graph-bar {
+        width: 100%;
+        border-radius: 8px 8px 4px 4px;
+        transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .preview-graph-label {
+        font-size: 0.58rem;
+        color: var(--soft);
+        font-weight: 500;
+      }
+
+      .preview-orders-list {
+        flex: 1;
+        background: var(--bg);
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--soft-light);
+      }
+      .preview-orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .preview-orders-header h4 {
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--dark);
+      }
+      .preview-orders-header span {
+        font-size: 0.7rem;
+        color: var(--primary);
+        font-weight: 600;
+        cursor: default;
+      }
+      .preview-order-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+      .preview-order-item:last-child {
+        border-bottom: none;
+      }
+      .preview-order-num {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--dark);
+        width: 32px;
+      }
+      .preview-order-info {
+        flex: 1;
+      }
+      .preview-order-name {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--dark);
+      }
+      .preview-order-time {
+        font-size: 0.65rem;
+        color: var(--soft);
+      }
+      .preview-order-status {
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 8px;
+      }
+
+      /* ============================================
+           SECCIÓN: DIFERENCIADORES
+           ============================================ */
+      .diff-section {
+        padding: 100px 0;
+        position: relative;
+      }
+      .diff-card {
+        display: flex;
+        gap: 24px;
+        padding: 32px;
+        background: var(--white);
+        border-radius: var(--radius);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+      }
+      .diff-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: transparent;
+      }
+      .diff-icon {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+      .diff-card h3 {
+        font-size: 1.08rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+        color: var(--dark);
+      }
+      .diff-card p {
+        font-size: 0.88rem;
+        color: var(--gray);
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      /* ============================================
+           SECCIÓN: TESTIMONIOS
+           ============================================ */
+      .testimonials-section {
+        padding: 100px 0;
+        background: var(--bg-warm);
+        position: relative;
+      }
+      .testimonial-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 36px 32px;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: transparent;
+      }
+      .testimonial-stars {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 20px;
+      }
+      .testimonial-stars i {
+        color: var(--accent);
+        font-size: 0.9rem;
+      }
+      .testimonial-text {
+        font-size: 0.95rem;
+        color: var(--dark-light);
+        line-height: 1.75;
+        flex: 1;
+        font-weight: 400;
+        margin-bottom: 24px;
+      }
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-top: 20px;
+        border-top: 1px solid var(--soft-light);
+      }
+      .testimonial-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--white);
+      }
+      .testimonial-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
+      .testimonial-role {
+        font-size: 0.78rem;
+        color: var(--soft);
+        font-weight: 500;
+      }
+
+      /* ============================================
+           SECCIÓN: CTA FINAL
+           ============================================ */
+      .cta-section {
+        padding: 120px 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-inner {
+        background: var(--primary);
+        border-radius: var(--radius-lg);
+        padding: 80px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .cta-inner::before {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: var(--primary-light);
+        border-radius: 50%;
+        top: -200px;
+        right: -100px;
+        opacity: 0.4;
+        filter: blur(80px);
+      }
+      .cta-inner::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: var(--accent);
+        border-radius: 50%;
+        bottom: -150px;
+        left: -80px;
+        opacity: 0.2;
+        filter: blur(60px);
+      }
+      .cta-inner h2 {
+        color: var(--white);
+        position: relative;
+        z-index: 2;
+        margin-bottom: 18px;
+      }
+      .cta-inner p {
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto 36px;
+        position: relative;
+        z-index: 2;
+      }
+      .btn-white {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--white);
+        color: var(--primary);
+        border: none;
+        border-radius: 16px;
+        padding: 17px 34px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        position: relative;
+        z-index: 2;
+      }
+      .btn-white:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        color: var(--primary);
+      }
+      .cta-note {
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 0.82rem;
+        margin-top: 18px;
+        position: relative;
+        z-index: 2;
+      }
+      .cta-login-link {
+        display: block;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        margin-top: 24px;
+        text-decoration: none;
+        font-weight: 500;
+        position: relative;
+        z-index: 2;
+        transition: color 0.3s;
+      }
+      .cta-login-link:hover {
+        color: var(--white);
+        text-decoration: underline;
+      }
+
+      /* ============================================
+           FOOTER
+           ============================================ */
+      .footer {
+        background: var(--dark);
+        padding: 70px 0 0;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--white);
+        margin-bottom: 16px;
+      }
+      .footer-brand-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--primary);
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 0.9rem;
+      }
+      .footer-desc {
+        font-size: 0.85rem;
+        line-height: 1.7;
+        max-width: 300px;
+        margin-bottom: 22px;
+      }
+      .footer-socials {
+        display: flex;
+        gap: 10px;
+      }
+      .footer-social-link {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+      }
+      .footer-social-link:hover {
+        background: var(--primary);
+        color: var(--white);
+        transform: translateY(-2px);
+      }
+      .footer-title {
+        color: var(--white);
+        font-weight: 700;
+        font-size: 0.88rem;
+        margin-bottom: 20px;
+        letter-spacing: -0.01em;
+      }
+      .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.45);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 400;
+        transition: all 0.3s;
+      }
+      .footer-links a:hover {
+        color: var(--white);
+        transform: translateX(3px);
+      }
+      .footer-bottom {
+        margin-top: 60px;
+        padding: 22px 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .footer-bottom p {
+        font-size: 0.8rem;
+        margin: 0;
+      }
+      .footer-bottom-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .footer-bottom-links a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+        font-size: 0.8rem;
+        transition: color 0.3s;
+      }
+      .footer-bottom-links a:hover {
+        color: var(--white);
+      }
+
+      /* ============================================
+           NOTIFICACIÓN TOAST
+           ============================================ */
+      .toast-notification {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--white);
+        border-radius: 22px;
+        padding: 20px 24px;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        z-index: 9999;
+        transform: translateX(460px);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border-left: 4px solid var(--primary);
+        max-width: 380px;
+      }
+      .toast-notification.show {
+        transform: translateX(0);
+      }
+      .toast-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 14px;
+        background: var(--primary-ghost);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      .toast-content h4 {
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin: 0 0 3px;
+        color: var(--dark);
+      }
+      .toast-content p {
+        font-size: 0.78rem;
+        color: var(--gray);
+        margin: 0;
+      }
+      .toast-close {
+        background: none;
+        border: none;
+        color: var(--soft);
+        cursor: pointer;
+        padding: 4px;
+        font-size: 0.9rem;
+        transition: color 0.3s;
+        margin-left: auto;
+      }
+      .toast-close:hover {
+        color: var(--dark);
+      }
+
+      /* ============================================
+           ANIMACIONES DE SCROLL
+           ============================================ */
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+          transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .reveal-delay-1 {
+        transition-delay: 0.1s;
+      }
+      .reveal-delay-2 {
+        transition-delay: 0.2s;
+      }
+      .reveal-delay-3 {
+        transition-delay: 0.3s;
+      }
+      .reveal-delay-4 {
+        transition-delay: 0.4s;
+      }
+      .reveal-delay-5 {
+        transition-delay: 0.5s;
+      }
+
+      /* ============================================
+           MOBILE MENU
+           ============================================ */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(251, 252, 251, 0.97);
+        backdrop-filter: blur(20px);
+        z-index: 999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .mobile-menu.open {
+        display: flex;
+        opacity: 1;
+      }
+      .mobile-menu a {
+        text-decoration: none;
+        color: var(--dark);
+        font-size: 1.3rem;
+        font-weight: 600;
+        padding: 14px 28px;
+        border-radius: 16px;
+        transition: all 0.3s;
+      }
+      .mobile-menu a:hover {
+        background: var(--primary-ghost);
+        color: var(--primary);
+      }
+      .mobile-menu-close {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        background: none;
+        border: none;
+        font-size: 1.6rem;
+        color: var(--dark);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 12px;
+        transition: background 0.3s;
+      }
+      .mobile-menu-close:hover {
+        background: var(--primary-ghost);
+      }
+
+      /* ============================================
+           RESPONSIVE
+           ============================================ */
+      @media (max-width: 991.98px) {
+        .nav-links,
+        .btn-nav-cta-desktop,
+        .btn-nav-outline-desktop {
+          display: none !important;
+        }
+        .nav-toggle {
+          display: block;
+        }
+        .hero-mockup {
+          transform: none !important;
+        }
+        .hero-mockup:hover {
+          transform: translateY(-5px) !important;
+        }
+        .hero-stats {
+          gap: 28px;
+        }
+        .preview-sidebar-large {
+          display: none;
+        }
+        .preview-stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .preview-bottom-row {
+          flex-direction: column;
+        }
+        .cta-inner {
+          padding: 60px 32px;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        .hero {
+          padding: 120px 0 70px;
+          text-align: center;
+        }
+        .hero-subtitle {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .hero-buttons {
+          justify-content: center;
+        }
+        .hero-stats {
+          justify-content: center;
+        }
+        .hero-mockup-wrapper {
+          margin-top: 50px;
+        }
+        .mockup-body {
+          min-height: 260px;
+        }
+        .mockup-stats-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .mockup-chart-area {
+          flex-direction: column;
+        }
+        .trust-logos {
+          gap: 28px;
+        }
+        .trust-logo {
+          font-size: 1rem;
+        }
+        .preview-stats-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .preview-search {
+          display: none;
+        }
+        .footer-bottom {
+          flex-direction: column;
+          text-align: center;
+        }
+        .toast-notification {
+          left: 16px;
+          right: 16px;
+          bottom: 16px;
+          max-width: none;
+        }
+        .cta-inner {
+          padding: 50px 24px;
+        }
+        .cta-inner h2 {
+          font-size: 1.8rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+        .reveal {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav
+      class="navbar-custom"
+      id="navbar"
+      role="navigation"
+      aria-label="Navegación principal"
+    >
+      <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+          <a href="#" class="nav-brand" aria-label="RestSoft inicio">
+            <span class="nav-brand-icon"><i class="fas fa-utensils"></i></span>
+            RestSoft
+          </a>
+          <ul class="nav-links" role="menubar">
+            <li role="none">
+              <a href="#features" role="menuitem">Características</a>
+            </li>
+            <li role="none"><a href="#preview" role="menuitem">Producto</a></li>
+            <li role="none">
+              <a href="#testimonials" role="menuitem">Testimonios</a>
+            </li>
+            <li role="none">
+              <a href="#diff" role="menuitem">Por qué nosotros</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center gap-3">
+            <a
+              href="login.html"
+              class="btn-nav-outline btn-nav-outline-desktop"
+            >
+              Iniciar sesión
+            </a>
+            <a href="comienzo.html" class="btn-nav-cta btn-nav-cta-desktop">
+              Comenzar gratis
+              <i class="fas fa-arrow-right" style="font-size: 0.8rem"></i>
+            </a>
+            <button
+              class="nav-toggle"
+              id="navToggle"
+              aria-label="Abrir menú"
+              aria-expanded="false"
+            >
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menú móvil -->
+    <div
+      class="mobile-menu"
+      id="mobileMenu"
+      role="dialog"
+      aria-label="Menú de navegación"
+    >
+      <button
+        class="mobile-menu-close"
+        id="mobileMenuClose"
+        aria-label="Cerrar menú"
+      >
+        <i class="fas fa-xmark"></i>
+      </button>
+      <a href="#features" class="mobile-menu-link">Características</a>
+      <a href="#preview" class="mobile-menu-link">Producto</a>
+      <a href="#testimonials" class="mobile-menu-link">Testimonios</a>
+      <a href="#diff" class="mobile-menu-link">Por qué nosotros</a>
+
+      <div
+        class="d-flex flex-column align-items-center gap-3 mt-4 w-100"
+        style="max-width: 280px"
+      >
+        <a
+          href="login.html"
+          class="btn-outline-custom w-100"
+          style="justify-content: center"
+          >Iniciar sesión</a
+        >
+        <a
+          href="comienzo.html"
+          class="btn-primary-custom w-100"
+          style="justify-content: center"
+          >Comenzar gratis</a
+        >
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-dot-grid" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-1" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-2" aria-hidden="true"></div>
+      <div class="hero-blob hero-blob-3" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6 hero-content">
+            <div class="hero-badge reveal">
+              <i class="fas fa-circle"></i> Software 100% gratuito
+            </div>
+            <h1 class="display-xl hero-title reveal reveal-delay-1">
+              El futuro de la gestión
+              <span class="accent-word">restaurantera</span>
+            </h1>
+            <p class="hero-subtitle reveal reveal-delay-2">
+              Software diseñado para transformar la operación de tu restaurante.
+              Pedidos, inventario, análisis y más — todo en un solo lugar
+              elegante.
+            </p>
+            <div class="hero-buttons reveal reveal-delay-3">
+              <a href="comienzo.html" class="btn-primary-custom">
+                Comenzar ahora
+                <i class="fas fa-arrow-right" style="font-size: 0.85rem"></i>
+              </a>
+              <a href="#preview" class="btn-outline-custom">
+                <i class="fas fa-play" style="font-size: 0.75rem"></i> Ver cómo
+                funciona
+              </a>
+            </div>
+            <div class="hero-stats reveal reveal-delay-4">
+              <div>
+                <div class="hero-stat-value" data-count="2400" data-suffix="+">
+                  0
+                </div>
+                <div class="hero-stat-label">Restaurantes activos</div>
+              </div>
+              <div>
+                <div class="hero-stat-value" data-count="98" data-suffix="%">
+                  0
+                </div>
+                <div class="hero-stat-label">Satisfacción</div>
+              </div>
+              <div>
+                <div class="hero-stat-value" data-count="15" data-suffix="+">
+                  0
+                </div>
+                <div class="hero-stat-label">Países</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6 hero-mockup-wrapper reveal reveal-delay-3">
+            <div class="mockup-glow" aria-hidden="true"></div>
+            <div class="hero-mockup" id="heroMockup">
+              <div class="mockup-topbar">
+                <div class="mockup-dots">
+                  <span class="mockup-dot red"></span
+                  ><span class="mockup-dot yellow"></span
+                  ><span class="mockup-dot green"></span>
+                </div>
+                <div class="mockup-url">app.restsoft.io/dashboard</div>
+                <div style="width: 52px"></div>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-sidebar">
+                  <div class="mockup-sidebar-dot active">
+                    <i class="fas fa-table-cells-large"></i>
+                  </div>
+                  <div class="mockup-sidebar-dot">
+                    <i class="fas fa-receipt"></i>
+                  </div>
+                  <div class="mockup-sidebar-dot">
+                    <i class="fas fa-box"></i>
+                  </div>
+                  <div class="mockup-sidebar-dot">
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                  <div class="mockup-sidebar-dot">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="mockup-sidebar-dot">
+                    <i class="fas fa-gear"></i>
+                  </div>
+                  <div class="mockup-sidebar-spacer"></div>
+                  <div
+                    class="mockup-sidebar-dot"
+                    style="
+                      background: var(--accent);
+                      color: #fff;
+                      width: 32px;
+                      height: 32px;
+                      border-radius: 10px;
+                      font-size: 0.6rem;
+                      font-weight: 700;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    CM
+                  </div>
+                </div>
+                <div class="mockup-main">
+                  <div class="mockup-stats-row">
+                    <div class="mockup-stat-card">
+                      <div class="mockup-stat-icon green">
+                        <i class="fas fa-dollar-sign"></i>
+                      </div>
+                      <div class="mockup-stat-num">$48.2K</div>
+                      <div class="mockup-stat-label">Ventas hoy</div>
+                    </div>
+                    <div class="mockup-stat-card">
+                      <div class="mockup-stat-icon amber">
+                        <i class="fas fa-clipboard-list"></i>
+                      </div>
+                      <div class="mockup-stat-num">127</div>
+                      <div class="mockup-stat-label">Pedidos</div>
+                    </div>
+                    <div class="mockup-stat-card">
+                      <div class="mockup-stat-icon rose">
+                        <i class="fas fa-users"></i>
+                      </div>
+                      <div class="mockup-stat-num">84</div>
+                      <div class="mockup-stat-label">Mesas ocupadas</div>
+                    </div>
+                  </div>
+                  <div class="mockup-chart-area">
+                    <div class="mockup-chart">
+                      <div class="mockup-chart-title">Ingresos semanales</div>
+                      <div class="mockup-bars" id="miniChart"></div>
+                    </div>
+                    <div class="mockup-table">
+                      <div class="mockup-table-title">Pedidos recientes</div>
+                      <div class="mockup-table-row">
+                        <span
+                          class="mockup-table-dot"
+                          style="background: #16a34a"
+                        ></span>
+                        <span class="mockup-table-text">Mesa 12 — Pasta</span>
+                        <span class="mockup-table-badge badge-green"
+                          >Listo</span
+                        >
+                      </div>
+                      <div class="mockup-table-row">
+                        <span
+                          class="mockup-table-dot"
+                          style="background: #d97706"
+                        ></span>
+                        <span class="mockup-table-text">Mesa 7 — Steak</span>
+                        <span class="mockup-table-badge badge-amber"
+                          >Cocina</span
+                        >
+                      </div>
+                      <div class="mockup-table-row">
+                        <span
+                          class="mockup-table-dot"
+                          style="background: #16a34a"
+                        ></span>
+                        <span class="mockup-table-text">Mesa 3 — Sushi</span>
+                        <span class="mockup-table-badge badge-green"
+                          >Servido</span
+                        >
+                      </div>
+                      <div class="mockup-table-row">
+                        <span
+                          class="mockup-table-dot"
+                          style="background: #db2777"
+                        ></span>
+                        <span class="mockup-table-text">Mesa 19 — Postre</span>
+                        <span class="mockup-table-badge badge-rose">Nuevo</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONFIANZA -->
+    <section class="trust-section">
+      <div class="container">
+        <p class="trust-label reveal">
+          Utilizado por restaurantes que lideran su mercado
+        </p>
+        <div class="trust-logos reveal reveal-delay-1">
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: var(--primary)"></span>La
+            Maison</span
+          >
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: var(--accent)"></span
+            >Sushi Zen</span
+          >
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: #db2777"></span>Olive &
+            Co</span
+          >
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: #2563eb"></span>Bistró
+            47</span
+          >
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: #7c3aed"></span>Café
+            Noir</span
+          >
+          <span class="trust-logo"
+            ><span class="logo-dot" style="background: #0d9488"></span>El
+            Fogón</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- CARACTERÍSTICAS -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="overline">Funcionalidades</span>
+          <h2 class="display-lg">
+            Todo lo que necesitas para operar con excelencia
+          </h2>
+          <p class="text-muted-custom">
+            Cada función fue pensada para resolver problemas reales de la
+            industria gastronómica, con la elegancia que tu negocio merece.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+            <div class="feature-card">
+              <div class="feature-icon fi-wine">
+                <i class="fas fa-bolt"></i>
+              </div>
+              <h3>Pedidos en tiempo real</h3>
+              <p>
+                Gestiona cada orden desde que entra hasta que se sirve. Sin
+                retrasos, sin errores, sin fricción.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+            <div class="feature-card">
+              <div class="feature-icon fi-gold">
+                <i class="fas fa-boxes-stacked"></i>
+              </div>
+              <h3>Inventario inteligente</h3>
+              <p>
+                Control automático de stock con alertas predictivas. Nunca te
+                quedes sin ingredientes clave.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+            <div class="feature-card">
+              <div class="feature-icon fi-rose">
+                <i class="fas fa-chart-pie"></i>
+              </div>
+              <h3>Análisis profundo</h3>
+              <p>
+                Métricas que importan: ventas, costos, tendencias y más,
+                presentadas en dashboards claros.
+              </p>
+            </div>
+          </div>
+          <!-- Reemplazo: Reservas y mesas en lugar de Menú Digital para mantener la cuadrícula -->
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+            <div class="feature-card">
+              <div class="feature-icon fi-blue">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <h3>Reservas y mesas</h3>
+              <p>
+                Gestiona la disponibilidad de tu salón, asigna mesas y organiza
+                reservas sin sobreposiciones ni confusiones.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+            <div class="feature-card">
+              <div class="feature-icon fi-violet">
+                <i class="fas fa-people-group"></i>
+              </div>
+              <h3>Equipo conectado</h3>
+              <p>
+                Cocina, sala, barra y caja. Todos en la misma frecuencia,
+                siempre informados y coordinados.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+            <div class="feature-card">
+              <div class="feature-icon fi-teal">
+                <i class="fas fa-puzzle-piece"></i>
+              </div>
+              <h3>Integraciones totales</h3>
+              <p>
+                Conecta con pasarelas de pago, plataformas de delivery,
+                contabilidad y más servicios esenciales.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD PREVIEW GRANDE -->
+    <section class="preview-section" id="preview">
+      <div class="preview-particle preview-particle-1" aria-hidden="true"></div>
+      <div class="preview-particle preview-particle-2" aria-hidden="true"></div>
+      <div class="preview-particle preview-particle-3" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="overline">Vista previa</span>
+          <h2 class="display-lg">
+            Tu centro de control, diseñado para impresionar
+          </h2>
+          <p class="text-muted-custom">
+            Un dashboard que combina potencia analítica con una interfaz que
+            cualquier miembro de tu equipo puede dominar desde el primer día.
+          </p>
+        </div>
+
+        <div class="preview-dashboard reveal reveal-delay-2">
+          <div class="preview-topbar">
+            <div class="mockup-dots">
+              <span class="mockup-dot red"></span
+              ><span class="mockup-dot yellow"></span
+              ><span class="mockup-dot green"></span>
+            </div>
+            <div class="mockup-url">app.restsoft.io/dashboard</div>
+            <div style="width: 52px"></div>
+          </div>
+          <div style="display: flex">
+            <div class="preview-sidebar-large">
+              <div class="preview-sidebar-brand">
+                <div class="preview-sidebar-brand-icon">
+                  <i class="fas fa-utensils"></i>
+                </div>
+                <span>RestSoft</span>
+              </div>
+              <div class="preview-sidebar-item active">
+                <i class="fas fa-table-cells-large"></i> Dashboard
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-receipt"></i> Pedidos
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-box"></i> Inventario
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-calendar-check"></i> Reservas
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-chart-line"></i> Reportes
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-users"></i> Personal
+              </div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-store"></i> Sucursales
+              </div>
+              <div class="preview-sidebar-spacer"></div>
+              <div class="preview-sidebar-item">
+                <i class="fas fa-gear"></i> Ajustes
+              </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 10px 12px;
+                  margin-top: 8px;
+                "
+              >
+                <div class="preview-sidebar-avatar">CM</div>
+                <div>
+                  <div
+                    style="color: #fff; font-size: 0.76rem; font-weight: 600"
+                  >
+                    Carlos M.
+                  </div>
+                  <div
+                    style="color: rgba(255, 255, 255, 0.4); font-size: 0.62rem"
+                  >
+                    Admin
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-main-content">
+              <div class="preview-header-row">
+                <div>
+                  <h3>Panel General</h3>
+                  <p>Bienvenido de vuelta, Carlos</p>
+                </div>
+                <input
+                  type="text"
+                  class="preview-search"
+                  placeholder="Buscar pedidos, productos..."
+                  aria-label="Buscar"
+                />
+              </div>
+
+              <div class="preview-stats-grid">
+                <div class="preview-stat">
+                  <div class="preview-stat-icon fi-wine">
+                    <i class="fas fa-dollar-sign"></i>
+                  </div>
+                  <div class="preview-stat-value">$142.8K</div>
+                  <div class="preview-stat-label">Ventas del mes</div>
+                  <span class="preview-stat-change change-up"
+                    ><i class="fas fa-arrow-up" style="font-size: 0.55rem"></i>
+                    12.5%</span
+                  >
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-icon fi-gold">
+                    <i class="fas fa-clipboard-list"></i>
+                  </div>
+                  <div class="preview-stat-value">3,847</div>
+                  <div class="preview-stat-label">Pedidos totales</div>
+                  <span class="preview-stat-change change-up"
+                    ><i class="fas fa-arrow-up" style="font-size: 0.55rem"></i>
+                    8.2%</span
+                  >
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-icon fi-rose">
+                    <i class="fas fa-user-group"></i>
+                  </div>
+                  <div class="preview-stat-value">$37.10</div>
+                  <div class="preview-stat-label">Ticket promedio</div>
+                  <span class="preview-stat-change change-down"
+                    ><i
+                      class="fas fa-arrow-down"
+                      style="font-size: 0.55rem"
+                    ></i>
+                    2.1%</span
+                  >
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-icon fi-blue">
+                    <i class="fas fa-rotate"></i>
+                  </div>
+                  <div class="preview-stat-value">94.2%</div>
+                  <div class="preview-stat-label">Tasa de retención</div>
+                  <span class="preview-stat-change change-up"
+                    ><i class="fas fa-arrow-up" style="font-size: 0.55rem"></i>
+                    3.7%</span
+                  >
+                </div>
+              </div>
+
+              <div class="preview-bottom-row">
+                <div class="preview-chart-large">
+                  <div class="preview-chart-header">
+                    <h4>Ingresos diarios</h4>
+                    <div class="preview-chart-tabs">
+                      <span class="preview-chart-tab">7D</span>
+                      <span class="preview-chart-tab active">30D</span>
+                      <span class="preview-chart-tab">90D</span>
+                    </div>
+                  </div>
+                  <div class="preview-chart-graph" id="largeChart"></div>
+                </div>
+
+                <div class="preview-orders-list">
+                  <div class="preview-orders-header">
+                    <h4>Pedidos activos</h4>
+                    <span>Ver todos</span>
+                  </div>
+                  <div class="preview-order-item">
+                    <span class="preview-order-num">#1247</span>
+                    <div class="preview-order-info">
+                      <div class="preview-order-name">Risotto de hongos</div>
+                      <div class="preview-order-time">Mesa 5 — hace 3 min</div>
+                    </div>
+                    <span class="preview-order-status badge-amber"
+                      >Preparando</span
+                    >
+                  </div>
+                  <div class="preview-order-item">
+                    <span class="preview-order-num">#1246</span>
+                    <div class="preview-order-info">
+                      <div class="preview-order-name">Salmón glaseado</div>
+                      <div class="preview-order-time">Mesa 12 — hace 8 min</div>
+                    </div>
+                    <span class="preview-order-status badge-green">Listo</span>
+                  </div>
+                  <div class="preview-order-item">
+                    <span class="preview-order-num">#1245</span>
+                    <div class="preview-order-info">
+                      <div class="preview-order-name">Ensalada César</div>
+                      <div class="preview-order-time">Mesa 3 — hace 12 min</div>
+                    </div>
+                    <span class="preview-order-status badge-green"
+                      >Servido</span
+                    >
+                  </div>
+                  <div class="preview-order-item">
+                    <span class="preview-order-num">#1244</span>
+                    <div class="preview-order-info">
+                      <div class="preview-order-name">Tiramisú x2</div>
+                      <div class="preview-order-time">Mesa 8 — hace 15 min</div>
+                    </div>
+                    <span class="preview-order-status badge-rose">Nuevo</span>
+                  </div>
+                  <div class="preview-order-item">
+                    <span class="preview-order-num">#1243</span>
+                    <div class="preview-order-info">
+                      <div class="preview-order-name">Pasta carbonara</div>
+                      <div class="preview-order-time">
+                        Mesa 15 — hace 18 min
+                      </div>
+                    </div>
+                    <span class="preview-order-status badge-green"
+                      >Servido</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIFERENCIADORES -->
+    <section class="diff-section" id="diff">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="overline">Diferencia</span>
+          <h2 class="display-lg">Por miles de restaurantes eligen RestSoft</h2>
+          <p class="text-muted-custom">
+            No somos otro software más. Somos la respuesta a lo que la industria
+            llevaba tiempo pidiendo.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 reveal reveal-delay-1">
+            <div class="diff-card">
+              <div class="diff-icon fi-wine"><i class="fas fa-gift"></i></div>
+              <div>
+                <h3>Totalmente gratuito, para siempre</h3>
+                <p>
+                  Sin límites de uso, sin sorpresas, sin letra pequeña. Creemos
+                  que la tecnología gastronómica de calidad debería ser
+                  accesible para todos.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 reveal reveal-delay-2">
+            <div class="diff-card">
+              <div class="diff-icon fi-gold"><i class="fas fa-rocket"></i></div>
+              <div>
+                <h3>Activo en minutos, no en días</h3>
+                <p>
+                  Sin instalaciones complicadas ni configuraciones eternas.
+                  Abre, configura tu menú y comienza a operar de inmediato.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Reemplazo: Gestión multi-sucursal en lugar de Soporte real para mantener la cuadrícula -->
+          <div class="col-md-6 reveal reveal-delay-3">
+            <div class="diff-card">
+              <div class="diff-icon fi-rose">
+                <i class="fas fa-network-wired"></i>
+              </div>
+              <div>
+                <h3>Gestión multi-sucursal</h3>
+                <p>
+                  Administra todas tus ubicaciones desde un único panel
+                  centralizado. Reportes consolidados y control total en tiempo
+                  real.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 reveal reveal-delay-4">
+            <div class="diff-card">
+              <div class="diff-icon fi-blue">
+                <i class="fas fa-shield-halved"></i>
+              </div>
+              <div>
+                <h3>Tus datos son solo tuyos</h3>
+                <p>
+                  No vendemos información, no mostramos publicidades, no
+                  compartimos nada con terceros. Tu restaurante, tus reglas.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="testimonials-section" id="testimonials">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="overline">Testimonios</span>
+          <h2 class="display-lg">
+            Lo que dicen quienes ya operan con RestSoft
+          </h2>
+          <p class="text-muted-custom">
+            Historias reales de restaurantes que transformaron su operación con
+            nuestra plataforma.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-1">
+            <div class="testimonial-card">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "RestSoft transformó completamente nuestra operación. Pasamos
+                del caos al control total en menos de una semana. La interfaz es
+                tan intuitiva que mi equipo no necesitó capacitación."
+              </p>
+              <div class="testimonial-author">
+                <div
+                  class="testimonial-avatar"
+                  style="background: var(--primary)"
+                >
+                  CM
+                </div>
+                <div>
+                  <div class="testimonial-name">Carlos Mendoza</div>
+                  <div class="testimonial-role">
+                    Chef Ejecutivo — Casa del Mar
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-2">
+            <div class="testimonial-card">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i>
+              </div>
+              <p class="testimonial-text">
+                "Lo mejor es que es gratuito pero se siente como un software de
+                miles de dólares. Increíble calidad. Mis gerentes lo aman y
+                nuestros tiempos de servicio cayeron un 30%."
+              </p>
+              <div class="testimonial-author">
+                <div
+                  class="testimonial-avatar"
+                  style="background: var(--accent)"
+                >
+                  AT
+                </div>
+                <div>
+                  <div class="testimonial-name">Ana Torres</div>
+                  <div class="testimonial-role">
+                    Gerente General — Sushi Nakamura
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4 reveal reveal-delay-3">
+            <div class="testimonial-card">
+              <div class="testimonial-stars">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star-half-stroke"></i>
+              </div>
+              <p class="testimonial-text">
+                "Los reportes nos ayudaron a reducir el desperdicio de
+                ingredientes un 40%. El retorno de inversión fue inmediato, y
+                eso que no invertimos nada. Simplemente funciona."
+              </p>
+              <div class="testimonial-author">
+                <div class="testimonial-avatar" style="background: #7c3aed">
+                  RS
+                </div>
+                <div>
+                  <div class="testimonial-name">Roberto Silva</div>
+                  <div class="testimonial-role">Propietario — La Terraza</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="cta-section" id="cta">
+      <div class="container">
+        <div class="cta-inner reveal">
+          <h2 class="display-lg">
+            Empieza a gestionar mejor tu restaurante hoy
+          </h2>
+          <p>
+            Únete a miles de restaurantes que ya operan con mayor control,
+            eficiencia y tranquilidad.
+          </p>
+          <a href="comienzo.html" class="btn-white" id="ctaButton">
+            Comenzar gratis ahora
+            <i class="fas fa-arrow-right" style="font-size: 0.9rem"></i>
+          </a>
+          <p class="cta-note">
+            Sin tarjeta de crédito. Sin compromiso. Sin costo.
+          </p>
+          <a href="login.html" class="cta-login-link"
+            >¿Ya tienes una cuenta? Iniciar sesión</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="row g-5" style="padding-bottom: 40px">
+          <div class="col-lg-4">
+            <a href="#" class="footer-brand">
+              <span class="footer-brand-icon"
+                ><i class="fas fa-utensils"></i
+              ></span>
+              RestSoft
+            </a>
+            <p class="footer-desc">
+              Software de gestión restaurantera de última generación. Gratis,
+              potente y diseñado con excelencia.
+            </p>
+            <div class="footer-socials">
+              <a href="#" class="footer-social-link" aria-label="Twitter"
+                ><i class="fab fa-x-twitter"></i
+              ></a>
+              <a href="#" class="footer-social-link" aria-label="Instagram"
+                ><i class="fab fa-instagram"></i
+              ></a>
+              <a href="#" class="footer-social-link" aria-label="LinkedIn"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
+              <a href="#" class="footer-social-link" aria-label="GitHub"
+                ><i class="fab fa-github"></i
+              ></a>
+            </div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h4 class="footer-title">Producto</h4>
+            <ul class="footer-links">
+              <li><a href="#features">Características</a></li>
+              <li><a href="#preview">Dashboard</a></li>
+              <li><a href="#">Integraciones</a></li>
+              <li><a href="#">Actualizaciones</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h4 class="footer-title">Recursos</h4>
+            <ul class="footer-links">
+              <li><a href="#">Documentación</a></li>
+              <li><a href="#">Guías</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Soporte</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h4 class="footer-title">Compañía</h4>
+            <ul class="footer-links">
+              <li><a href="#">Nosotros</a></li>
+              <li><a href="#">Cultura</a></li>
+              <li><a href="#">Contacto</a></li>
+              <li><a href="#">Prensa</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h4 class="footer-title">Legal</h4>
+            <ul class="footer-links">
+              <li><a href="#">Privacidad</a></li>
+              <li><a href="#">Términos</a></li>
+              <li><a href="#">Cookies</a></li>
+              <li><a href="#">Licencia</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>2026 RestSoft. Todos los derechos reservados.</p>
+          <ul class="footer-bottom-links">
+            <li><a href="#">Política de privacidad</a></li>
+            <li><a href="#">Términos de uso</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <!-- NOTIFICACIÓN TOAST -->
+    <div class="toast-notification" id="toast" role="alert" aria-live="polite">
+      <div class="toast-icon"><i class="fas fa-check"></i></div>
+      <div class="toast-content">
+        <h4>Bienvenido a RestSoft</h4>
+        <p>Tu cuenta se está preparando. Estarás listo en segundos.</p>
+      </div>
+      <button
+        class="toast-close"
+        id="toastClose"
+        aria-label="Cerrar notificación"
+      >
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      // ============================================
+      // NAVBAR SCROLL EFFECT
+      // ============================================
+      const navbar = document.getElementById("navbar");
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (window.scrollY > 40) navbar.classList.add("scrolled");
+          else navbar.classList.remove("scrolled");
+        },
+        { passive: true },
+      );
+
+      // ============================================
+      // MOBILE MENU
+      // ============================================
+      const navToggle = document.getElementById("navToggle");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const mobileMenuClose = document.getElementById("mobileMenuClose");
+      const mobileMenuLinks = mobileMenu.querySelectorAll("a");
+
+      function openMobileMenu() {
+        mobileMenu.classList.add("open");
+        navToggle.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+      }
+      function closeMobileMenu() {
+        mobileMenu.classList.remove("open");
+        navToggle.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+      }
+
+      navToggle.addEventListener("click", openMobileMenu);
+      mobileMenuClose.addEventListener("click", closeMobileMenu);
+      mobileMenuLinks.forEach((link) =>
+        link.addEventListener("click", closeMobileMenu),
+      );
+
+      // ============================================
+      // INTERSECTION OBSERVER - REVEAL ANIMATIONS
+      // ============================================
+      const revealElements = document.querySelectorAll(".reveal");
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+      );
+      revealElements.forEach((el) => revealObserver.observe(el));
+
+      // ============================================
+      // CONTADOR ANIMADO PARA STATS DEL HERO
+      // ============================================
+      const statValues = document.querySelectorAll(
+        ".hero-stat-value[data-count]",
+      );
+
+      function animateCounter(el) {
+        const target = parseInt(el.getAttribute("data-count"));
+        const suffix = el.getAttribute("data-suffix") || "";
+        const duration = 2000;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+
+          el.textContent = current.toLocaleString("es-ES") + suffix;
+
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      }
+
+      const statsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateCounter(entry.target);
+              statsObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      statValues.forEach((el) => statsObserver.observe(el));
+
+      // ============================================
+      // GENERAR GRÁFICA MINI DEL HERO
+      // ============================================
+      const miniChart = document.getElementById("miniChart");
+      const miniBarHeights = [45, 65, 40, 80, 55, 90, 70, 60, 85, 50, 75, 95];
+      const miniBarColors = [
+        "#6b1e28",
+        "#8a3b47",
+        "#6b1e28",
+        "#8a3b47",
+        "#6b1e28",
+        "#c49a6c",
+        "#6b1e28",
+        "#8a3b47",
+        "#6b1e28",
+        "#8a3b47",
+        "#6b1e28",
+        "#c49a6c",
+      ];
+
+      miniBarHeights.forEach((height, i) => {
+        const bar = document.createElement("div");
+        bar.className = "mockup-bar";
+        bar.style.height = height + "%";
+        bar.style.background = miniBarColors[i];
+        bar.style.animationDelay = i * 0.08 + "s";
+        miniChart.appendChild(bar);
+      });
+
+      // ============================================
+      // GENERAR GRÁFICA GRANDE DEL PREVIEW
+      // ============================================
+      const largeChart = document.getElementById("largeChart");
+      const largeBarData = [
+        55, 70, 45, 80, 60, 90, 50, 85, 65, 95, 70, 88, 55, 78, 92, 60, 85, 72,
+        98, 65, 80, 55, 90, 75, 82, 68, 95, 70, 88, 100,
+      ];
+
+      largeBarData.forEach((height, i) => {
+        const wrap = document.createElement("div");
+        wrap.className = "preview-graph-bar-wrap";
+
+        const bar = document.createElement("div");
+        bar.className = "preview-graph-bar";
+        bar.style.height = "0%";
+        bar.style.background = i === 29 ? "var(--accent)" : "var(--primary)";
+        bar.style.opacity =
+          i === 29 ? "1" : (0.4 + (height / 100) * 0.6).toFixed(2);
+
+        const label = document.createElement("span");
+        label.className = "preview-graph-label";
+        label.textContent = i % 5 === 0 ? i + 1 + "" : "";
+
+        wrap.appendChild(bar);
+        wrap.appendChild(label);
+        largeChart.appendChild(wrap);
+
+        const barObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                setTimeout(() => {
+                  bar.style.height = height + "%";
+                }, i * 30);
+                barObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.2 },
+        );
+        barObserver.observe(wrap);
+      });
+
+      // ============================================
+      // 3D PARALLAX EN MOCKUP DEL HERO
+      // ============================================
+      const heroMockup = document.getElementById("heroMockup");
+      const heroSection = document.querySelector(".hero");
+
+      if (window.matchMedia("(min-width: 992px)").matches) {
+        heroSection.addEventListener("mousemove", (e) => {
+          const rect = heroSection.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          heroMockup.style.transform = `rotateY(${x * 8 - 4}deg) rotateX(${-y * 6 + 2}deg)`;
+        });
+        heroSection.addEventListener("mouseleave", () => {
+          heroMockup.style.transform = "rotateY(-4deg) rotateX(2deg)";
+        });
+      }
+
+      // ============================================
+      // SISTEMA DE NOTIFICACIONES
+      // (Modificado para no interferir con la redirección del botón CTA)
+      // ============================================
+      const toast = document.getElementById("toast");
+      const toastClose = document.getElementById("toastClose");
+      let toastTimeout = null;
+
+      function showNotification() {
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toast.classList.add("show");
+        toastTimeout = setTimeout(hideNotification, 5000);
+      }
+      function hideNotification() {
+        toast.classList.remove("show");
+        if (toastTimeout) {
+          clearTimeout(toastTimeout);
+          toastTimeout = null;
+        }
+      }
+      toastClose.addEventListener("click", hideNotification);
+
+      // ============================================
+      // SMOOTH SCROLL PARA LINKS INTERNOS
+      // ============================================
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const targetId = this.getAttribute("href");
+          if (targetId === "#") return;
+          const target = document.querySelector(targetId);
+          if (target) {
+            e.preventDefault();
+            const offset = 80;
+            const top =
+              target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+  
