@@ -154,9 +154,7 @@
       </button>
       <div class="submenu">
         <a class="" href="configuracion-interfaz.html">Interfaz</a>
-         <a class="" href="configuracion-pagina-cliente.html"
-          >Configuracion</a
-        >
+        <a class="" href="configuracion-pagina-cliente.html">Configuracion</a>
         <a class="" href="perfil.html">Mi Perfil</a>
       </div>
     </div>
@@ -172,10 +170,27 @@
             Visualiza la ocupación y gestiona la disponibilidad del restaurante
           </p>
         </div>
-        <div id="infoPerfilContainer" class="profile">
-          <p style="color: var(--gray); text-align: center; padding: 20px">
-            Cargando perfil...
-          </p>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          "
+        >
+          <button
+            id="logoutBtn"
+            class="logout-icon-btn"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+
+          <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando perfil...
+            </p>
+          </div>
         </div>
       </div>
 

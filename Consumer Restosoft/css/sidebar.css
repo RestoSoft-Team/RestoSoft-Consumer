@@ -14,6 +14,7 @@
   --dark: #111827;
   --gray: #6b7280;
   --soft: #9ca3af;
+  --white:var(--background);
 
   /* Estados */
   --success: #059669;
@@ -319,4 +320,43 @@
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   transition: margin-left 0.3s ease;
+}
+
+/* ====================================================
+   BOTÓN LOGOUT MINIMALISTA (SOLO ÍCONO)
+   ==================================================== */
+.logout-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.logout-icon-btn i {
+  font-size: 14px;
+  transition: transform 0.25s ease;
+}
+
+/* Efecto Hover (Rojo delicado) */
+.logout-icon-btn:hover {
+  background-color: #fdf2f2;
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.logout-icon-btn:hover i {
+  transform: translateX(2px);
+}
+
+/* Efecto al presionar */
+.logout-icon-btn:active {
+  transform: scale(0.92);
 }
