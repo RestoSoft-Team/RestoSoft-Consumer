@@ -1,527 +1,563 @@
-/* ============================================
-   CLIENTE — Manejo de datos y renderizado
-   No sabe nada de fetch ni endpoints.
-   Recibe datos (del apiCliente) y hace todo.
-   ============================================ */
+import { ApiCliente } from "../consumo/apiCliente.js";
 
 const ClienteApp = (function () {
-    'use strict';
+  "use strict";
+  let $loading, $app, $sections, $header;
+  let iniciado = false;
 
-    /* ── DOM ── */
-    let $loading, $app, $sections, $header;
+  async function iniciar() {
+    if (iniciado) return;
+    iniciado = true;
+    $loading = document.getElementById("loading-screen");
+    $app = document.getElementById("app");
+    $sections = document.getElementById("sections-container");
+    $header = document.getElementById("site-header");
 
-    /* ── Estado ── */
-    let iniciado = false;
-
-    /* ============================================
-       INICIALIZACIÓN
-       ============================================ */
-
-    /**
-     * Punto de entrada.
-     * Extrae slug de URL, pide datos a la API,
-     * y renderiza o redirige.
-     */
-    async function iniciar() {
-        if (iniciado) return;
-        iniciado = true;
-
-        // Cachear referencias al DOM
-        $loading = document.getElementById('loading-screen');
-        $app = document.getElementById('app');
-        $sections = document.getElementById('sections-container');
-        $header = document.getElementById('site-header');
-
-        const slug = obtenerSlug();
-
-        // Sin slug → redirigir al inicio
-        if (!slug) {
-            redirigir('/');
-            return;
-        }
-
-        try {
-            // Llamar a la API (a través del otro archivo)
-            const data = await ApiCliente.obtenerEmpresa(slug);
-
-            // No existe → redirect a 404
-            if (!data) {
-                redirigir('/no-encontrado');
-                return;
-            }
-
-            // Existe → renderizar todo
-            aplicarBranding(data);
-            renderizarHeader(data);
-            renderizarSecciones(data);
-            renderizarFooter(data);
-            iniciarEfectoScroll();
-
-            mostrarApp();
-
-        } catch (error) {
-            console.error('Error cargando empresa:', error);
-            redirigir('/no-encontrado');
-        }
+    const slug = obtenerSlug();
+    if (!slug) {
+      redirigir("/");
+      return;
     }
 
-    /* ============================================
-       UTILIDADES
-       ============================================ */
+    try {
+      const data = await ApiCliente.obtenerEmpresa(slug);
+      if (!data) {
+        redirigir("/no-encontrado");
+        return;
+      }
 
-    /** Extrae el primer segmento de la URL después de / */
-    function obtenerSlug() {
-        const partes = window.location.pathname.split('/').filter(Boolean);
-        return partes[0] || null;
-    }
+      if (data.idEmpresa) {
+        localStorage.setItem("idEmpresaActual", data.idEmpresa);
+        localStorage.setItem("slugEmpresaActual", slug);
+      }
 
-    /** Redirect sin dejar historial */
-    function redirigir(ruta) {
-        window.location.replace(ruta);
-    }
+      // Parsear los campos JSON que vienen como String desde Java
+      data.seccionOrden = safeParse(data.seccionOrdenJson, [
+        "hero",
+        "acerca",
+        "horarios",
+        "galeria",
+        "contacto",
+        "redes",
+        "login",
+      ]);
+      data.horariosItems = safeParse(data.horariosItemsJson, []);
+      data.redesItems = safeParse(data.redesItemsJson, []);
 
-    /** Muestra la app y oculta el loading */
-    function mostrarApp() {
-        $app.style.display = 'block';
-        $loading.classList.add('out');
-        setTimeout(function () { $loading.style.display = 'none'; }, 500);
-    }
-
-    /** Convierte camelCase a --kebab-case con prefijo */
-    function camelToDash(prefijo, str) {
-        return prefijo + str.replace(/([A-Z])/g, '-$1').toLowerCase();
-    }
-
-    /* ============================================
-       BRANDING — Sobreescribir variables CSS
-       ============================================ */
-
-    function aplicarBranding(config) {
-        var root = document.documentElement;
-        var e = config.estilos;
-        if (!e) return;
-
-        // Colores
-        if (e.colores) {
-            var colorMap = {
-                'primario': '--c-primary',
-                'primarioHover': '--c-primary-hover',
-                'primarioRgb': '--c-primary-rgb',
-                'secundario': '--c-secondary',
-                'secundarioHover': '--c-secondary-hover',
-                'oscuro': '--c-dark',
-                'darkMid': '--c-dark-mid',
-                'bg': '--c-bg',
-                'bgAlt': '--c-bg-alt',
-                'card': '--c-card',
-                'texto': '--c-text',
-                'textoSec': '--c-text-sec',
-                'textoTer': '--c-text-ter',
-                'borde': '--c-border',
-                'exito': '--c-success',
-                'warning': '--c-warning',
-                'peligro': '--c-danger'
-            };
-            Object.keys(e.colores).forEach(function (key) {
-                if (colorMap[key]) {
-                    root.style.setProperty(colorMap[key], e.colores[key]);
-                }
-            });
+      // === LA MAGIA PARA LA GALERÍA AQUÍ ===
+      // Agrupamos las 6 imágenes individuales del DTO en un solo Array
+      data.galeriaImagenes = [];
+      for (let i = 1; i <= 6; i++) {
+        const img = data["galeriaImagen" + i];
+        if (img && img.trim() !== "") {
+          data.galeriaImagenes.push({ url: img, alt: "Imagen " + i });
         }
+      }
 
-        // Tipografía
-        if (e.tipografia) {
-            if (e.tipografia.fuente) root.style.setProperty('--font-main', e.tipografia.fuente);
-            if (e.tipografia.fuenteHeading) root.style.setProperty('--font-heading', e.tipografia.fuenteHeading);
+      aplicarBranding(data);
+      renderizarHeader(data);
+      renderizarSecciones(data);
+      renderizarFooter(data);
+      iniciarEfectoScroll();
+      iniciarAnimacionesEntrada();
+      mostrarApp();
+    } catch (error) {
+      console.error("Error cargando empresa:", error);
+      redirigir("/no-encontrado");
+    }
+  }
 
-            if (e.tipografia.tamanios) {
-                var sizeMap = {
-                    hero: '--fs-hero', h2: '--fs-h2', h3: '--fs-h3',
-                    h4: '--fs-h4', body: '--fs-body', small: '--fs-small', mini: '--fs-mini'
-                };
-                Object.keys(e.tipografia.tamanios).forEach(function (k) {
-                    if (sizeMap[k]) root.style.setProperty(sizeMap[k], e.tipografia.tamanios[k]);
-                });
-            }
+  function safeParse(jsonStr, fallback) {
+    try {
+      return jsonStr ? JSON.parse(jsonStr) : fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+  function obtenerSlug() {
+    const partes = window.location.pathname.split("/").filter(Boolean);
+    return partes[0] || null;
+  }
+  function redirigir(ruta) {
+    window.location.replace(ruta);
+  }
+  function mostrarApp() {
+    $app.style.display = "block";
+    $loading.classList.add("out");
+    setTimeout(function () {
+      $loading.style.display = "none";
+    }, 800);
+  }
+  function setCssVar(varName, value) {
+    if (value !== null && value !== undefined && value !== "")
+      document.documentElement.style.setProperty(varName, value);
+  }
 
-            if (e.tipografia.pesos) {
-                var weightMap = {
-                    hero: '--fw-hero', h2: '--fw-h2', h3: '--fw-h3',
-                    h4: '--fw-h4', body: '--fw-body', bold: '--fw-bold', small: '--fw-small'
-                };
-                Object.keys(e.tipografia.pesos).forEach(function (k) {
-                    if (weightMap[k]) root.style.setProperty(weightMap[k], String(e.tipografia.pesos[k]));
-                });
-            }
-        }
-
-        // Bordes
-        if (e.bordes) {
-            var radiusMap = {
-                tarjeta: '--r-card', boton: '--r-btn', input: '--r-input',
-                badge: '--r-badge', imagen: '--r-img', tooltip: '--r-tooltip'
-            };
-            Object.keys(e.bordes).forEach(function (k) {
-                if (radiusMap[k]) root.style.setProperty(radiusMap[k], e.bordes[k]);
-            });
-        }
-
-        // Sombras
-        if (e.sombras) {
-            var shadowMap = {
-                suave: '--sh-soft', media: '--sh-mid', fuerte: '--sh-strong',
-                boton: '--sh-btn', ninguna: '--sh-none'
-            };
-            Object.keys(e.sombras).forEach(function (k) {
-                if (shadowMap[k]) root.style.setProperty(shadowMap[k], e.sombras[k]);
-            });
-        }
-
-        // Espaciados
-        if (e.espaciados) {
-            if (e.espaciados.seccionPadding) root.style.setProperty('--section-py', e.espaciados.seccionPadding);
-            if (e.espaciados.tarjetaPadding) root.style.setProperty('--card-p', e.espaciados.tarjetaPadding);
-            if (e.espaciados.elementoGap) root.style.setProperty('--gap', e.espaciados.elementoGap);
-            if (e.espaciados.anchoMaximo) root.style.setProperty('--max-w', e.espaciados.anchoMaximo);
-        }
-
-        // Animaciones
-        if (e.animaciones) {
-            if (e.animaciones.activas === false) {
-                root.style.setProperty('--hover-lift', '0px');
-                root.style.setProperty('--hover-lift-btn', '0px');
-            }
-            if (e.animaciones.velocidad) root.style.setProperty('--anim-speed', e.animaciones.velocidad);
-            if (e.animaciones.curva) root.style.setProperty('--anim-curve', e.animaciones.curva);
-            if (e.animaciones.hoverElevacion) root.style.setProperty('--hover-lift', e.animaciones.hoverElevacion);
-            if (e.animaciones.hoverElevacionBoton) root.style.setProperty('--hover-lift-btn', e.animaciones.hoverElevacionBoton);
-        }
+  function aplicarBranding(data) {
+    if (data.tipografiaFuenteGoogle) {
+      var fontName = data.tipografiaFuenteGoogle.replace(/ /g, "+");
+      var fontLink = document.createElement("link");
+      fontLink.href =
+        "https://fonts.googleapis.com/css2?family=" +
+        fontName +
+        ":wght@300;400;500;600;700;800;900&display=swap";
+      fontLink.rel = "stylesheet";
+      document.head.appendChild(fontLink);
     }
 
-    /* ============================================
-       HEADER
-       ============================================ */
+    // Aplicar TODAS las variables CSS que vienen en tu DTO
+    setCssVar("--c-primary", data.colorPrimario);
+    setCssVar("--c-primary-hover", data.colorPrimarioHover);
+    setCssVar("--c-primary-rgb", data.colorPrimarioRgb);
+    setCssVar("--c-secondary", data.colorSecundario);
+    setCssVar("--c-secondary-hover", data.colorSecundarioHover);
+    setCssVar("--c-dark", data.colorOscuro);
+    setCssVar("--c-dark-mid", data.colorDarkMid);
+    setCssVar("--c-bg", data.colorBg);
+    setCssVar("--c-bg-alt", data.colorBgAlt);
+    setCssVar("--c-card", data.colorCard);
+    setCssVar("--c-text", data.colorTexto);
+    setCssVar("--c-text-sec", data.colorTextoSec);
+    setCssVar("--c-text-ter", data.colorTextoTer);
+    setCssVar("--c-border", data.colorBorde);
+    setCssVar("--c-success", data.colorExito);
+    setCssVar("--c-warning", data.colorWarning);
+    setCssVar("--c-danger", data.colorPeligro);
 
-    function renderizarHeader(data) {
-        document.getElementById('h-logo').src = data.branding.logo;
-        document.getElementById('h-logo').alt = data.branding.nombre;
-        document.getElementById('h-nombre').textContent = data.branding.nombre;
-        document.getElementById('h-slogan').textContent = data.branding.slogan;
+    setCssVar("--font-main", data.tipografiaFuente);
+    setCssVar("--font-heading", data.tipografiaFuenteHeading);
+    setCssVar("--fs-hero", data.tipografiaFsHero);
+    setCssVar("--fs-h2", data.tipografiaFsH2);
+    setCssVar("--fs-h3", data.tipografiaFsH3);
+    setCssVar("--fs-h4", data.tipografiaFsH4);
+    setCssVar("--fs-body", data.tipografiaFsBody);
+    setCssVar("--fs-small", data.tipografiaFsSmall);
+    setCssVar("--fs-mini", data.tipografiaFsMini);
+    setCssVar("--fw-hero", data.tipografiaFwHero);
+    setCssVar("--fw-h2", data.tipografiaFwH2);
+    setCssVar("--fw-h3", data.tipografiaFwH3);
+    setCssVar("--fw-h4", data.tipografiaFwH4);
+    setCssVar("--fw-body", data.tipografiaFwBody);
+    setCssVar("--fw-bold", data.tipografiaFwBold);
+    setCssVar("--fw-small", data.tipografiaFwSmall);
 
-        var loginCfg = data.secciones.login;
-        if (loginCfg) {
-            document.getElementById('h-login-text').textContent = loginCfg.textoBoton;
-            document.getElementById('h-login-btn').href = loginCfg.enlace;
-        }
+    setCssVar("--r-card", data.bordeTarjeta);
+    setCssVar("--r-btn", data.bordeBoton);
+    setCssVar("--r-input", data.bordeInput);
+    setCssVar("--r-badge", data.bordeBadge);
+    setCssVar("--r-img", data.bordeImagen);
+    setCssVar("--r-tooltip", data.bordeTooltip);
 
-        // Favicon
-        if (data.branding.favicon) {
-            var link = document.createElement('link');
-            link.rel = 'icon';
-            link.href = data.branding.favicon;
-            document.head.appendChild(link);
-        }
+    setCssVar("--sh-soft", data.sombraSuave);
+    setCssVar("--sh-mid", data.sombraMedia);
+    setCssVar("--sh-strong", data.sombraFuerte);
+    setCssVar("--sh-btn", data.sombraBoton);
 
-        // Title
-        document.title = data.branding.nombre + ' \u2014 ' + data.branding.slogan;
+    setCssVar("--section-py", data.espacioSeccionPy);
+    setCssVar("--card-p", data.espacioCardP);
+    setCssVar("--gap", data.espacioGap);
+    setCssVar("--max-w", data.espacioMaxW);
+
+    if (data.animActiva === false) {
+      setCssVar("--hover-lift", "0px");
+      setCssVar("--hover-lift-btn", "0px");
     }
+    setCssVar("--anim-speed", data.animVelocidad);
+    setCssVar("--anim-curve", data.animCurva);
+    setCssVar("--hover-lift", data.animHoverLift);
+    setCssVar("--hover-lift-btn", data.animHoverLiftBtn);
+  }
 
-    /* ============================================
-       SECCIONES — Orquestador
-       ============================================ */
-
-    function renderizarSecciones(data) {
-        $sections.innerHTML = '';
-        var orden = data.secciones.orden;
-
-        var renderers = {
-            hero: function () { return construirHero(data); },
-            acerca: function () { return construirAcerca(data); },
-            horarios: function () { return construirHorarios(data); },
-            galeria: function () { return construirGaleria(data); },
-            contacto: function () { return construirContacto(data); },
-            redes: function () { return construirRedes(data); },
-            login: function () { return construirLoginCTA(data); }
-        };
-
-        orden.forEach(function (key, i) {
-            var cfg = data.secciones[key];
-            if (!cfg || cfg.activa === false) return;
-
-            var renderer = renderers[key];
-            if (!renderer) return;
-
-            var section = renderer();
-            if (section) {
-                if (key !== 'hero' && i % 2 === 1) {
-                    section.classList.add('alt-bg');
-                }
-                $sections.appendChild(section);
-            }
-        });
+  function renderizarHeader(data) {
+    document.getElementById("h-logo").src = data.brandingLogo || "";
+    document.getElementById("h-logo").alt = data.brandingNombre || "";
+    document.getElementById("h-nombre").textContent = data.brandingNombre || "";
+    document.getElementById("h-slogan").textContent = data.brandingSlogan || "";
+    if (data.loginEnlace) {
+      document.getElementById("h-login-text").textContent =
+        data.loginTextoBoton || "Acceder";
+      document.getElementById("h-login-btn").href = data.loginEnlace;
     }
-
-    /* ---------- HERO ---------- */
-
-    function construirHero(data) {
-        var h = data.hero;
-        if (!h || h.activa === false) return null;
-
-        var section = document.createElement('section');
-        section.className = 'hero-section';
-
-        var tagsHTML = '';
-
-        if (h.mostrarDireccion && data.secciones.contacto && data.secciones.contacto.direccion) {
-            tagsHTML += '<span class="hero-tag">' +
-                '<i class="fa-solid fa-location-dot"></i> ' +
-                data.secciones.contacto.direccion +
-                '</span>';
-        }
-
-        if (h.mostrarHorario && data.secciones.horarios && data.secciones.horarios.items && data.secciones.horarios.items.length > 0) {
-            var first = data.secciones.horarios.items[0];
-            tagsHTML += '<span class="hero-tag">' +
-                '<i class="fa-regular fa-clock"></i> ' +
-                first.dia + ': ' + first.hora +
-                '</span>';
-        }
-
-        section.innerHTML =
-            '<img class="hero-bg" src="' + h.imagen + '" alt="' + data.branding.nombre + '">' +
-            '<div class="hero-overlay" style="background:' + h.overlay + '"></div>' +
-            '<div class="hero-content">' +
-            '<h1>' + data.branding.nombre + '</h1>' +
-            '<p>' + data.branding.descripcion + '</p>' +
-            (tagsHTML ? '<div class="hero-tags">' + tagsHTML + '</div>' : '') +
-            '</div>';
-
-        return section;
+    if (data.brandingFavicon) {
+      var link = document.createElement("link");
+      link.rel = "icon";
+      link.href = data.brandingFavicon;
+      document.head.appendChild(link);
     }
+    document.title =
+      (data.brandingNombre || "") + " \u2014 " + (data.brandingSlogan || "");
+  }
 
-    /* ---------- ACERCA ---------- */
-
-    function construirAcerca(data) {
-        var a = data.secciones.acerca;
-        if (!a || a.activa === false) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        var tieneImagen = a.imagen && a.imagen.trim();
-        var contentHTML;
-
-        if (tieneImagen) {
-            contentHTML =
-                '<div class="acerca-grid">' +
-                '<div class="acerca-text">' +
-                '<h2 class="section-title">' + a.titulo + '</h2>' +
-                '<p>' + a.texto + '</p>' +
-                '</div>' +
-                '<div class="acerca-image">' +
-                '<img src="' + a.imagen + '" alt="' + a.titulo + '" loading="lazy">' +
-                '</div>' +
-                '</div>';
-        } else {
-            contentHTML =
-                '<div style="text-align:center; max-width:680px; margin:0 auto;">' +
-                '<h2 class="section-title">' + a.titulo + '</h2>' +
-                '<p class="section-subtitle" style="margin:0 auto;">' + a.texto + '</p>' +
-                '</div>';
-        }
-
-        section.innerHTML = '<div class="section-inner">' + contentHTML + '</div>';
-        return section;
-    }
-
-    /* ---------- HORARIOS ---------- */
-
-    function construirHorarios(data) {
-        var h = data.secciones.horarios;
-        if (!h || h.activa === false || !h.items || h.items.length === 0) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        var rowsHTML = h.items.map(function (item) {
-            return '<div class="horario-row">' +
-                '<span class="dia">' + item.dia + '</span>' +
-                '<span class="hora">' + item.hora + '</span>' +
-                '</div>';
-        }).join('');
-
-        section.innerHTML =
-            '<div class="section-inner">' +
-            '<h2 class="section-title">' + h.titulo + '</h2>' +
-            '<div class="horarios-grid">' +
-            '<div class="horario-card">' +
-            '<div class="horario-card-icon"><i class="fa-regular fa-clock"></i></div>' +
-            '<h4>Nuestros Horarios</h4>' +
-            rowsHTML +
-            '</div>' +
-            '</div>' +
-            '</div>';
-
-        return section;
-    }
-
-    /* ---------- GALERÍA ---------- */
-
-    function construirGaleria(data) {
-        var g = data.secciones.galeria;
-        if (!g || g.activa === false || !g.imagenes || g.imagenes.length === 0) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        var itemsHTML = g.imagenes.map(function (img) {
-            return '<div class="galeria-item">' +
-                '<img src="' + img.url + '" alt="' + (img.alt || '') + '" loading="lazy">' +
-                (img.alt ? '<span class="galeria-caption">' + img.alt + '</span>' : '') +
-                '</div>';
-        }).join('');
-
-        section.innerHTML =
-            '<div class="section-inner">' +
-            '<h2 class="section-title">' + g.titulo + '</h2>' +
-            '<div class="galeria-grid">' + itemsHTML + '</div>' +
-            '</div>';
-
-        return section;
-    }
-
-    /* ---------- CONTACTO ---------- */
-
-    function construirContacto(data) {
-        var c = data.secciones.contacto;
-        if (!c || c.activa === false) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        var cardsHTML = '';
-
-        if (c.mostrarDireccion && c.direccion) {
-            cardsHTML +=
-                '<div class="contacto-card">' +
-                '<div class="contacto-icon"><i class="fa-solid fa-location-dot"></i></div>' +
-                '<h4>Ubicación</h4>' +
-                '<p>' + c.direccion + '</p>' +
-                '</div>';
-        }
-
-        if (c.mostrarTelefono && c.telefono) {
-            cardsHTML +=
-                '<div class="contacto-card">' +
-                '<div class="contacto-icon"><i class="fa-solid fa-phone"></i></div>' +
-                '<h4>Teléfono</h4>' +
-                '<p><a href="tel:' + c.telefono.replace(/\s/g, '') + '">' + c.telefono + '</a></p>' +
-                '</div>';
-        }
-
-        if (c.mostrarEmail && c.email) {
-            cardsHTML +=
-                '<div class="contacto-card">' +
-                '<div class="contacto-icon"><i class="fa-solid fa-envelope"></i></div>' +
-                '<h4>Email</h4>' +
-                '<p><a href="mailto:' + c.email + '">' + c.email + '</a></p>' +
-                '</div>';
-        }
-
-        if (c.mostrarWhatsapp && c.whatsapp) {
-            cardsHTML +=
-                '<div class="contacto-card">' +
-                '<div class="contacto-icon"><i class="fa-brands fa-whatsapp"></i></div>' +
-                '<h4>WhatsApp</h4>' +
-                '<p><a href="https://wa.me/' + c.whatsapp + '" target="_blank" rel="noopener">Enviar mensaje</a></p>' +
-                '</div>';
-        }
-
-        section.innerHTML =
-            '<div class="section-inner">' +
-            '<h2 class="section-title">' + c.titulo + '</h2>' +
-            '<div class="contacto-grid">' + cardsHTML + '</div>' +
-            '</div>';
-
-        return section;
-    }
-
-    /* ---------- REDES SOCIALES ---------- */
-
-    function construirRedes(data) {
-        var r = data.secciones.redes;
-        if (!r || r.activa === false || !r.items || r.items.length === 0) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        var btnsHTML = r.items.map(function (item) {
-            return '<a href="' + item.url + '" target="_blank" rel="noopener" class="red-btn">' +
-                '<i class="' + item.icono + '"></i> ' +
-                item.plataforma +
-                '</a>';
-        }).join('');
-
-        section.innerHTML =
-            '<div class="section-inner" style="text-align:center;">' +
-            '<h2 class="section-title" style="text-align:center;">' + r.titulo + '</h2>' +
-            '<div class="redes-grid" style="justify-content:center;">' + btnsHTML + '</div>' +
-            '</div>';
-
-        return section;
-    }
-
-    /* ---------- LOGIN CTA ---------- */
-
-    function construirLoginCTA(data) {
-        var l = data.secciones.login;
-        if (!l || l.activa === false) return null;
-
-        var section = document.createElement('section');
-        section.className = 'site-section';
-
-        section.innerHTML =
-            '<div class="section-inner">' +
-            '<div class="login-cta-wrap">' +
-            '<div class="login-cta-icon"><i class="fa-solid fa-user-lock"></i></div>' +
-            '<h3>' + l.titulo + '</h3>' +
-            '<p>' + l.texto + '</p>' +
-            '<a href="' + l.enlace + '" class="btn-cta-login">' +
-            '<i class="fa-solid fa-arrow-right-to-bracket"></i> ' +
-            l.textoBoton +
-            '</a>' +
-            '</div>' +
-            '</div>';
-
-        return section;
-    }
-
-    /* ============================================
-       FOOTER
-       ============================================ */
-
-    function renderizarFooter(data) {
-        document.getElementById('f-logo').src = data.branding.logo;
-        document.getElementById('f-logo').alt = data.branding.nombre;
-        document.getElementById('f-nombre').textContent = data.branding.nombre;
-        document.getElementById('f-texto').textContent = data.footer.texto;
-        document.getElementById('f-powered').style.display =
-            data.footer.mostrarPowered !== false ? 'block' : 'none';
-    }
-
-    /* ============================================
-       SCROLL EFFECT
-       ============================================ */
-
-    function iniciarEfectoScroll() {
-        window.addEventListener('scroll', function () {
-            $header.classList.toggle('scrolled', window.scrollY > 30);
-        }, { passive: true });
-    }
-
-    /* ── Pública ── */
-    return {
-        iniciar: iniciar
+  function renderizarSecciones(data) {
+    $sections.innerHTML = "";
+    var orden = data.seccionOrden;
+    var renderers = {
+      hero: function () {
+        return construirHero(data);
+      },
+      acerca: function () {
+        return construirAcerca(data);
+      },
+      horarios: function () {
+        return construirHorarios(data);
+      },
+      galeria: function () {
+        return construirGaleria(data);
+      },
+      contacto: function () {
+        return construirContacto(data);
+      },
+      redes: function () {
+        return construirRedes(data);
+      },
+      login: function () {
+        return construirLoginCTA(data);
+      },
     };
+    orden.forEach(function (key, i) {
+      var renderer = renderers[key];
+      if (!renderer) return;
+      var activaKey = key + "Activa";
+      if (data[activaKey] === false) return;
+      var section = renderer();
+      if (section) {
+        if (key !== "hero" && i % 2 === 1) section.classList.add("alt-bg");
+        $sections.appendChild(section);
+      }
+    });
+  }
 
+  function construirHero(data) {
+    if (data.heroActiva === false) return null;
+    var section = document.createElement("section");
+    section.className = "hero-section";
+    var tagsHTML = "";
+    if (data.heroMostrarDireccion && data.contactoDireccion)
+      tagsHTML +=
+        '<span class="hero-tag"><i class="fa-solid fa-location-dot"></i> ' +
+        data.contactoDireccion +
+        "</span>";
+    if (
+      data.heroMostrarHorario &&
+      data.horariosItems &&
+      data.horariosItems.length > 0
+    ) {
+      var first = data.horariosItems[0];
+      tagsHTML +=
+        '<span class="hero-tag"><i class="fa-regular fa-clock"></i> ' +
+        first.dia +
+        ": " +
+        first.hora +
+        "</span>";
+    }
+    var nombre = data.brandingNombre || "";
+    var nombreParts = nombre.split(" ");
+    var nombreStyled =
+      nombreParts.length > 1
+        ? nombreParts.slice(0, -1).join(" ") +
+          " <span>" +
+          nombreParts.slice(-1) +
+          "</span>"
+        : nombre;
+
+    section.innerHTML =
+      '<img class="hero-bg" src="' +
+      data.heroImagen +
+      '" alt="' +
+      nombre +
+      '">' +
+      '<div class="hero-overlay" style="background:' +
+      (data.heroOverlay ||
+        "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)") +
+      '"></div>' +
+      '<div class="hero-content">' +
+      "<h1>" +
+      nombreStyled +
+      "</h1>" +
+      "<p>" +
+      (data.brandingDescripcion || "") +
+      "</p>" +
+      (tagsHTML ? '<div class="hero-tags">' + tagsHTML + "</div>" : "") +
+      "</div>" +
+      '<div class="hero-scroll-indicator">Scroll <i class="fa-solid fa-arrow-down"></i></div>';
+    return section;
+  }
+
+  function construirAcerca(data) {
+    if (data.acercaActiva === false) return null;
+    var section = document.createElement("section");
+    section.className = "site-section";
+    var contentHTML;
+    if (data.acercaImagen && data.acercaImagen.trim()) {
+      contentHTML =
+        '<div class="acerca-grid">' +
+        '<div class="acerca-text">' +
+        '<span class="section-eyebrow">Nuestra Esencia</span>' +
+        '<h2 class="section-title">' +
+        (data.acercaTitulo || "") +
+        "</h2>" +
+        "<p>" +
+        (data.acercaTexto || "") +
+        "</p>" +
+        "</div>" +
+        '<div class="acerca-image-wrapper">' +
+        '<img src="' +
+        data.acercaImagen +
+        '" alt="' +
+        (data.acercaTitulo || "") +
+        '" loading="lazy">' +
+        "</div></div>";
+    } else {
+      contentHTML =
+        '<div class="text-center max-w-680 mx-auto">' +
+        '<span class="section-eyebrow">Nuestra Esencia</span>' +
+        '<h2 class="section-title">' +
+        (data.acercaTitulo || "") +
+        "</h2>" +
+        '<p class="section-subtitle mx-auto">' +
+        (data.acercaTexto || "") +
+        "</p></div>";
+    }
+    section.innerHTML = '<div class="section-inner">' + contentHTML + "</div>";
+    return section;
+  }
+
+  function construirHorarios(data) {
+    if (
+      data.horariosActiva === false ||
+      !data.horariosItems ||
+      data.horariosItems.length === 0
+    )
+      return null;
+    var section = document.createElement("section");
+    section.className = "site-section alt-bg";
+    var rowsHTML = data.horariosItems
+      .map(function (item) {
+        return (
+          '<div class="horario-row"><span class="dia">' +
+          item.dia +
+          '</span><span class="hora">' +
+          item.hora +
+          "</span></div>"
+        );
+      })
+      .join("");
+    section.innerHTML =
+      '<div class="section-inner text-center">' +
+      '<span class="section-eyebrow" style="justify-content: center;">Disponibilidad</span>' +
+      '<h2 class="section-title">' +
+      (data.horariosTitulo || "") +
+      "</h2>" +
+      '<div class="horarios-container" style="margin-top: 48px;">' +
+      '<div class="horario-card">' +
+      '<div class="horario-header">' +
+      '<div><span class="horario-status"><span class="dot"></span> Abierto Ahora</span></div>' +
+      '<div class="horario-icon"><i class="fa-regular fa-clock"></i></div>' +
+      "</div>" +
+      '<div class="horario-list">' +
+      rowsHTML +
+      "</div>" +
+      "</div></div></div>";
+    return section;
+  }
+
+  function construirGaleria(data) {
+    if (
+      data.galeriaActiva === false ||
+      !data.galeriaImagenes ||
+      data.galeriaImagenes.length === 0
+    )
+      return null;
+    var section = document.createElement("section");
+    section.className = "site-section";
+    var itemsHTML = data.galeriaImagenes
+      .map(function (img) {
+        return (
+          '<div class="galeria-item" onclick="ClienteApp.abrirLightbox(\'' +
+          img.url +
+          "', '" +
+          (img.alt || "").replace(/'/g, "\\'") +
+          "')\">" +
+          '<img src="' +
+          img.url +
+          '" alt="' +
+          (img.alt || "") +
+          '" loading="lazy">' +
+          (img.alt
+            ? '<span class="galeria-caption">' + img.alt + "</span>"
+            : "") +
+          "</div>"
+        );
+      })
+      .join("");
+    section.innerHTML =
+      '<div class="section-inner">' +
+      '<span class="section-eyebrow">Vive la Experiencia</span>' +
+      '<h2 class="section-title">' +
+      (data.galeriaTitulo || "Galería") +
+      "</h2>" +
+      '<div class="galeria-grid" style="margin-top: 48px;">' +
+      itemsHTML +
+      "</div></div>";
+    return section;
+  }
+
+  function construirContacto(data) {
+    if (data.contactoActiva === false) return null;
+    var section = document.createElement("section");
+    section.className = "site-section alt-bg";
+    var cardsHTML = "";
+    if (data.contactoMostrarDireccion && data.contactoDireccion)
+      cardsHTML +=
+        '<a href="#" class="contacto-card"><div class="contacto-icon"><i class="fa-solid fa-location-dot"></i></div><div class="contacto-info"><h4>Ubicación</h4><p>' +
+        data.contactoDireccion +
+        "</p></div></a>";
+    if (data.contactoMostrarTelefono && data.contactoTelefono)
+      cardsHTML +=
+        '<a href="tel:' +
+        data.contactoTelefono.replace(/\s/g, "") +
+        '" class="contacto-card"><div class="contacto-icon"><i class="fa-solid fa-phone"></i></div><div class="contacto-info"><h4>Llámanos</h4><p>' +
+        data.contactoTelefono +
+        "</p></div></a>";
+    if (data.contactoMostrarEmail && data.contactoEmail)
+      cardsHTML +=
+        '<a href="mailto:' +
+        data.contactoEmail +
+        '" class="contacto-card"><div class="contacto-icon"><i class="fa-solid fa-envelope"></i></div><div class="contacto-info"><h4>Email</h4><p>' +
+        data.contactoEmail +
+        "</p></div></a>";
+    if (data.contactoMostrarWhatsapp && data.contactoWhatsapp)
+      cardsHTML +=
+        '<a href="https://wa.me/' +
+        data.contactoWhatsapp +
+        '" target="_blank" rel="noopener" class="contacto-card"><div class="contacto-icon"><i class="fa-brands fa-whatsapp"></i></div><div class="contacto-info"><h4>WhatsApp</h4><p>Escríbenos directamente</p></div></a>"';
+    section.innerHTML =
+      '<div class="section-inner"><span class="section-eyebrow">Estamos para ti</span><h2 class="section-title">' +
+      (data.contactoTitulo || "Contacto") +
+      '</h2><div class="contacto-grid" style="margin-top: 48px;">' +
+      cardsHTML +
+      "</div></div>";
+    return section;
+  }
+
+  function construirRedes(data) {
+    if (
+      data.redesActiva === false ||
+      !data.redesItems ||
+      data.redesItems.length === 0
+    )
+      return null;
+    var section = document.createElement("section");
+    section.className = "site-section";
+    var btnsHTML = data.redesItems
+      .map(function (item) {
+        return (
+          '<a href="' +
+          item.url +
+          '" target="_blank" rel="noopener" class="red-btn">' +
+          '<i class="' +
+          item.icono +
+          '"></i>' +
+          "<span>" +
+          item.plataforma +
+          "</span>" +
+          '<i class="fa-solid fa-arrow-right arrow"></i>' +
+          "</a>"
+        );
+      })
+      .join("");
+    section.innerHTML =
+      '<div class="section-inner"><span class="section-eyebrow">Únete a la comunidad</span><h2 class="section-title">' +
+      (data.redesTitulo || "Redes") +
+      '</h2><div class="redes-grid" style="margin-top: 48px;">' +
+      btnsHTML +
+      "</div></div>";
+    return section;
+  }
+
+  function construirLoginCTA(data) {
+    if (data.loginActiva === false) return null;
+    var section = document.createElement("section");
+    section.className = "site-section alt-bg";
+    section.innerHTML =
+      '<div class="section-inner"><div class="login-cta-wrap">' +
+      '<div class="login-cta-icon"><i class="fa-solid fa-user-lock"></i></div>' +
+      "<h3>" +
+      (data.loginTitulo || "Acceso Exclusivo") +
+      "</h3>" +
+      "<p>" +
+      (data.loginTexto || "") +
+      "</p>" +
+      '<a href="' +
+      (data.loginEnlace || "#") +
+      '" class="btn-cta-login"><i class="fa-solid fa-arrow-right-to-bracket"></i> ' +
+      (data.loginTextoBoton || "Acceder") +
+      "</a>" +
+      "</div></div>";
+    return section;
+  }
+
+  function renderizarFooter(data) {
+    document.getElementById("f-logo").src = data.brandingLogo || "";
+    document.getElementById("f-logo").alt = data.brandingNombre || "";
+    document.getElementById("f-nombre").textContent = data.brandingNombre || "";
+    document.getElementById("f-texto").textContent = data.footerTexto || "";
+    document.getElementById("f-powered").style.display =
+      data.footerMostrarPowered !== false ? "block" : "none";
+
+    if (!document.querySelector(".footer-massive")) {
+      var massiveDiv = document.createElement("div");
+      massiveDiv.className = "footer-massive";
+      massiveDiv.textContent = (data.brandingNombre || "").toUpperCase();
+      document
+        .getElementById("site-footer")
+        .insertBefore(massiveDiv, document.querySelector(".footer-powered"));
+    }
+  }
+
+  function iniciarEfectoScroll() {
+    window.addEventListener(
+      "scroll",
+      function () {
+        $header.classList.toggle("scrolled", window.scrollY > 50);
+      },
+      { passive: true },
+    );
+  }
+  function iniciarAnimacionesEntrada() {
+    var reveals = document.querySelectorAll(".site-section, .hero-content");
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) entry.target.classList.add("visible");
+        });
+      },
+      { threshold: 0.1 },
+    );
+    reveals.forEach(function (el) {
+      el.classList.add("reveal");
+      observer.observe(el);
+    });
+  }
+  function abrirLightbox(url, alt) {
+    var modal = document.createElement("div");
+    modal.className = "lightbox-modal active";
+    modal.innerHTML =
+      '<span class="lightbox-close" onclick="this.parentElement.remove()">&times;</span><img src="' +
+      url +
+      '" alt="' +
+      alt +
+      '">';
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
+
+  return { iniciar: iniciar, abrirLightbox: abrirLightbox };
 })();
+
+// El módulo se inicia a sí mismo cuando el DOM está listo
+document.addEventListener("DOMContentLoaded", function () {
+  ClienteApp.iniciar();
+});

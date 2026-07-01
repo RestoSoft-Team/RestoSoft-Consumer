@@ -2,8 +2,12 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/:slug",
+      "source": "/((?!api|css|js|img|assets|admin|login-cliente|no-encontrado|404|favicon\\.ico).*)",
       "destination": "/cliente.html"
+    },
+    {
+      "source": "/no-encontrado",
+      "destination": "/404.html"
     }
   ]
 }
