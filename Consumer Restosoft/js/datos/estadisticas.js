@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         await cargarDatos();
 
-        // 🚀 WEBSOCKET: Escucha en tiempo real
         connectWebSocket((canal, data) => {
             console.log("📥 WebSocket recibido en Estadísticas:", canal, data);
             if (canal === 'COCINA') {
@@ -114,8 +113,6 @@ function setFechasDefecto(rango) {
 }
 
 function aplicarFiltros() {
-    // Ajustamos las fechas para evitar problemas de zona horaria (UTC)
-    // Esto asegura que un pedido creado a cualquier hora del día entre en el rango.
     const fInicioStr = dom.fechaInicio.value;
     const fFinStr = dom.fechaFin.value;
 
@@ -157,12 +154,9 @@ function ocultarLoaders() {
 function calcularYRenderKPIs() {
     ocultarLoaders();
     
-    // Usamos toUpperCase().trim() para evitar problemas de espacios o minúsculas
     const pagados = pedidosFiltrados.filter(p => p.estado?.toUpperCase().trim() === 'PAGADO');
     const cancelados = pedidosFiltrados.filter(p => p.estado?.toUpperCase().trim() === 'CANCELADO');
     const totalPedidos = pedidosFiltrados.length;
-
-    console.log("📊 KPIs -> Total Pedidos:", totalPedidos, "| Pagados:", pagados.length, "| Cancelados:", cancelados.length);
 
     const totalVentas = pagados.reduce((acc, p) => acc + obtenerTotalCobrado(p), 0);
     const ticketPromedio = pagados.length > 0 ? totalVentas / pagados.length : 0;
@@ -383,13 +377,16 @@ function exportarExcelContable(tipoReporte) {
         ws['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 35 }, { wch: 30 }];
         ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } }];
         
-        for(let i=0; i<4; i++) ws[XLSX.utils.encode_cell({r:0, c:i})].s = estiloTitulo;
-        for(let i=0; i<4; i++) ws[XLSX.utils.encode_cell({r:1, c:i})].s = estiloSubtitulo;
-        for(let i=0; i<4; i++) ws[XLSX.utils.encode_cell({r:3, c:i})].s = estiloHeader;
+        let cell;
+        for(let i=0; i<4; i++) { cell = ws[XLSX.utils.encode_cell({r:0, c:i})]; if(cell) cell.s = estiloTitulo; }
+        for(let i=0; i<4; i++) { cell = ws[XLSX.utils.encode_cell({r:1, c:i})]; if(cell) cell.s = estiloSubtitulo; }
+        for(let i=0; i<4; i++) { cell = ws[XLSX.utils.encode_cell({r:3, c:i})]; if(cell) cell.s = estiloHeader; }
         for(let r=4; r<=7; r++) {
             for(let c=0; c<4; c++) {
-                let cell = ws[XLSX.utils.encode_cell({r, c})];
-                if(c==1 && r<7) cell.s = estiloMoneda; else cell.s = estiloCelda;
+                cell = ws[XLSX.utils.encode_cell({r, c})];
+                if(cell) {
+                    if(c==1 && r<7) cell.s = estiloMoneda; else cell.s = estiloCelda;
+                }
             }
         }
         XLSX.utils.book_append_sheet(wb, ws, "Resumen Financiero");
@@ -435,26 +432,31 @@ function exportarExcelContable(tipoReporte) {
         ws['!cols'] = [{ wch: 12 }, { wch: 22 }, { wch: 15 }, { wch: 22 }, { wch: 25 }, { wch: 16 }, { wch: 14 }, { wch: 16 }, { wch: 18 }, { wch: 12 }, { wch: 35 }];
         ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }];
 
-        for(let i=0; i<11; i++) ws[XLSX.utils.encode_cell({r:0, c:i})].s = estiloTitulo;
-        for(let i=0; i<11; i++) ws[XLSX.utils.encode_cell({r:1, c:i})].s = estiloSubtitulo;
-        for(let i=0; i<11; i++) ws[XLSX.utils.encode_cell({r:3, c:i})].s = estiloHeader;
+        let cell;
+        for(let i=0; i<11; i++) { cell = ws[XLSX.utils.encode_cell({r:0, c:i})]; if(cell) cell.s = estiloTitulo; }
+        for(let i=0; i<11; i++) { cell = ws[XLSX.utils.encode_cell({r:1, c:i})]; if(cell) cell.s = estiloSubtitulo; }
+        for(let i=0; i<11; i++) { cell = ws[XLSX.utils.encode_cell({r:3, c:i})]; if(cell) cell.s = estiloHeader; }
         
         let rowIndex = 4;
         pedidosFiltrados.forEach(p => {
-            for(let c=0; c<11; c++) {
-                let cell = ws[XLSX.utils.encode_cell({r:rowIndex, c})];
-                if (p.estado?.toUpperCase().trim() === 'CANCELADO' && c >= 5 && c <= 8) {
-                    cell.s = estiloCancelado;
-                } else if (c >= 5 && c <= 8) {
-                    cell.s = estiloMoneda;
-                } else {
-                    cell.s = estiloCelda;
+            if (p.estado?.toUpperCase().trim() === 'PAGADO' || p.estado?.toUpperCase().trim() === 'CANCELADO') {
+                for(let c=0; c<11; c++) {
+                    let cell = ws[XLSX.utils.encode_cell({r:rowIndex, c})];
+                    if (cell) {
+                        if (p.estado?.toUpperCase().trim() === 'CANCELADO' && c >= 5 && c <= 8) {
+                            cell.s = estiloCancelado;
+                        } else if (c >= 5 && c <= 8) {
+                            cell.s = estiloMoneda;
+                        } else {
+                            cell.s = estiloCelda;
+                        }
+                    }
                 }
+                rowIndex++;
             }
-            rowIndex++;
         });
         
-        rowIndex++; 
+        rowIndex++; // Saltar la fila vacía
         for(let c=0; c<11; c++) {
             let cell = ws[XLSX.utils.encode_cell({r:rowIndex, c})];
             if(cell) {
@@ -494,15 +496,18 @@ function exportarExcelContable(tipoReporte) {
         ws['!cols'] = [{ wch: 20 }, { wch: 35 }, { wch: 18 }, { wch: 16 }, { wch: 18 }];
         ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }];
 
-        for(let i=0; i<5; i++) ws[XLSX.utils.encode_cell({r:0, c:i})].s = estiloTitulo;
-        for(let i=0; i<5; i++) ws[XLSX.utils.encode_cell({r:1, c:i})].s = estiloSubtitulo;
-        for(let i=0; i<5; i++) ws[XLSX.utils.encode_cell({r:3, c:i})].s = estiloHeader;
+        let cell;
+        for(let i=0; i<5; i++) { cell = ws[XLSX.utils.encode_cell({r:0, c:i})]; if(cell) cell.s = estiloTitulo; }
+        for(let i=0; i<5; i++) { cell = ws[XLSX.utils.encode_cell({r:1, c:i})]; if(cell) cell.s = estiloSubtitulo; }
+        for(let i=0; i<5; i++) { cell = ws[XLSX.utils.encode_cell({r:3, c:i})]; if(cell) cell.s = estiloHeader; }
         
         let rowIndex = 4;
         topProductos.forEach(p => {
             for(let c=0; c<5; c++) {
                 let cell = ws[XLSX.utils.encode_cell({r:rowIndex, c})];
-                if(c == 3 || c == 4) cell.s = estiloMoneda; else cell.s = estiloCelda;
+                if(cell) {
+                    if(c == 3 || c == 4) cell.s = estiloMoneda; else cell.s = estiloCelda;
+                }
             }
             rowIndex++;
         });

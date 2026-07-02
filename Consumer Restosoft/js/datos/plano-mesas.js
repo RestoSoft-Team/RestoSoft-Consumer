@@ -240,7 +240,7 @@ fileInput.addEventListener("change", async e => {
     document.getElementById("btnContinuarPaso2").disabled = true;
     const formData = new FormData(); formData.append("imagen", archivo);
     try {
-        const respuesta = await api.subirImagenPlano(formData);
+        const respuesta = await api.subirImagenPlanoPublica(formData);
         state.planoUrl = respuesta.url; saveState();
         if (respuesta.mesasDetectadas) {
             const zonasIA = JSON.parse(respuesta.mesasDetectadas);
@@ -535,6 +535,10 @@ document.getElementById("savePlanBtn").addEventListener("click", async () => {
 
         localStorage.removeItem(STORAGE_KEY);
         showNotification("¡Empresa, Administrador y Plano guardados con éxito!", "success");
+
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
         
     } catch (error) {
         showNotification("Error al guardar: " + error.message, "error");

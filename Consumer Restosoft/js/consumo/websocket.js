@@ -11,7 +11,13 @@ export function connectWebSocket(onMessageCallback) {
     stompClient = Stomp.over(socket);
     stompClient.debug = null; 
 
-    stompClient.connect({}, function (frame) {
+    const token = localStorage.getItem("token") || "TU_TOKEN_FALLBACK"; 
+
+    const headers = {
+        'Authorization': `Bearer ${token}`
+    };
+
+    stompClient.connect(headers, function (frame) {
         console.log('Conectado a WebSocket: ' + frame);
         
         stompClient.subscribe('/topic/cocina', function (message) {
@@ -27,7 +33,11 @@ export function connectWebSocket(onMessageCallback) {
     }, function (error) {
         console.error('Error en WebSocket:', error);
         stompClient = null;
-        setTimeout(() => connectWebSocket(onMessageCallback), 5000);
+        if (error && (error.includes('401') || error.includes('403') || error.includes('Denied'))) {
+            console.warn("🚨 Token inválido o sin permisos para WebSocket. Conexión rechazada.");
+        } else {
+            setTimeout(() => connectWebSocket(onMessageCallback), 5000);
+        }
     });
 }
 
