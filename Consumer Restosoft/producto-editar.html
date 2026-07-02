@@ -2,1182 +2,679 @@
 <html lang="es">
 
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RestSoft • Editar Producto</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-
-    <!-- Google Fonts -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RestSoft | Editar Insumo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/sidebar.css">
 
     <style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
         :root {
-
-            --background: #fbfcfb;
-
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
 
-            --dark: #262f3c;
-            --dark-light: #39485c;
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
 
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
 
-            --white: #ffffff;
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
 
-            --gray: #6f7782;
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
 
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
             background: var(--background);
-            font-family: 'Inter', sans-serif;
             color: var(--dark);
-            overflow-x: hidden;
         }
 
-        a {
-            text-decoration: none;
-        }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--dark);
-            padding: 28px 22px;
-            z-index: 1000;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 42px;
-        }
-
-        .brand-logo {
-            width: 58px;
-            height: 58px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-        }
-
-        .brand h2 {
-            color: white;
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .brand span {
-            color: #c6ced8;
-            font-size: 13px;
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            color: #c7cfda;
-            transition: 0.3s;
-            font-weight: 500;
-        }
-
-        .sidebar-item i {
-            width: 22px;
-            font-size: 18px;
-        }
-
-        .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        .sidebar-item.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
+        /* ── MAIN Y TOPBAR (Complementan tu sidebar.css) ── */
         .main {
-            margin-left: 280px;
-            padding: 34px;
+            padding: 30px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 24px;
-            margin-bottom: 34px;
+            margin-bottom: 28px;
+            gap: 15px;
         }
 
-        .topbar-title h1 {
-            font-size: 34px;
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title h2 {
             font-weight: 800;
-            margin-bottom: 6px;
+            font-size: 32px;
         }
 
-        .topbar-title p {
+        .title p {
             color: var(--gray);
-            margin: 0;
+            margin-top: 6px;
         }
 
-        .profile-box {
+        .search {
+            position: relative;
+        }
+
+        .search input {
+            width: 320px;
+            min-height: 55px;
+            border: none;
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 14px 18px 14px 48px;
+            outline: none;
+        }
+
+        .search input:focus {
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .search i {
+            position: absolute;
+            left: 18px;
+            top: 18px;
+            color: var(--gray);
+        }
+
+        .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+        }
+
+        .profile {
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 16px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 50px;
-            height: 50px;
-            border-radius: 18px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .profile-box span {
-            color: var(--gray);
-            font-size: 13px;
-        }
-
-        /* =========================================================
-           PREMIUM CARD
-        ========================================================== */
-
-        .premium-card {
+        /* ── TARJETAS Y FORMULARIOS ── */
+        .card-premium {
             background: white;
             border-radius: 28px;
             padding: 30px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            transition: 0.3s;
+            transition: .3s;
         }
 
-        .premium-card:hover {
-            transform: translateY(-5px);
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
         }
-
-        /* =========================================================
-           SECTION TITLE
-        ========================================================== */
-
-        .section-title {
-            margin-bottom: 28px;
-        }
-
-        .section-title h3 {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .section-title p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================================
-           FORM
-        ========================================================== */
 
         .form-label {
             font-weight: 600;
             margin-bottom: 10px;
-            color: var(--dark);
+            display: block;
         }
 
         .form-control,
-        .form-select,
-        textarea {
-            background: #f7f8fa !important;
-            border: none !important;
-            border-radius: 16px !important;
-            min-height: 58px;
-            padding: 14px 18px !important;
-            transition: 0.3s;
+        .form-select {
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            min-height: 55px;
+            padding: 14px 18px;
+            width: 100%;
+            transition: .3s;
             box-shadow: none !important;
-            color: var(--dark);
-        }
-
-        textarea {
-            min-height: 140px !important;
-            resize: none;
         }
 
         .form-control:focus,
-        .form-select:focus,
-        textarea:focus {
-            border: 1px solid var(--primary) !important;
-            background: white !important;
+        .form-select:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
         }
 
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
 
-        .btn-premium {
+        .form-control.is-invalid,
+        .form-select.is-invalid {
+            border: 1.5px solid var(--danger) !important;
+            background: #fff5f6;
+        }
+
+        .invalid-feedback {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-control.is-invalid+.invalid-feedback,
+        .form-select.is-invalid+.invalid-feedback {
+            display: block;
+        }
+
+        .btn-primary-custom {
             background: var(--primary);
-            color: white;
             border: none;
+            color: white;
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
-            transition: 0.3s;
+            transition: .3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .btn-premium:hover {
+        .btn-primary-custom:hover {
             background: var(--primary-light);
-            color: white;
             transform: translateY(-2px);
         }
 
-        .btn-outline-premium {
+        .btn-primary-custom:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline-custom {
             border: 2px solid var(--dark);
             background: none;
             color: var(--dark);
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
-            transition: 0.3s;
+            width: 100%;
+            transition: .3s;
+            cursor: pointer;
         }
 
-        .btn-outline-premium:hover {
+        .btn-outline-custom:hover {
             background: var(--dark);
             color: white;
         }
 
-        .btn-danger-soft {
-            background: rgba(187, 58, 75, 0.12);
-            color: var(--danger);
-            border: none;
-            border-radius: 16px;
-            padding: 14px 24px;
-            font-weight: 600;
-            transition: 0.3s;
+        .summary {
+            position: sticky;
+            top: 30px;
         }
 
-        .btn-danger-soft:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* =========================================================
-           PRODUCT PREVIEW
-        ========================================================== */
-
-        .product-preview {
-            background: #fafbfc;
-            border-radius: 24px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .product-image {
-            width: 100%;
-            height: 260px;
-            border-radius: 24px;
-            object-fit: cover;
-            margin-bottom: 22px;
-        }
-
-        .product-preview h4 {
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .product-preview p {
-            color: var(--gray);
-            margin-bottom: 18px;
-        }
-
-        .product-meta {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .meta-badge {
-            padding: 10px 16px;
-            border-radius: 14px;
-            background: white;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* =========================================================
-           DROPZONE
-        ========================================================== */
-
-        .upload-box {
-            border: 2px dashed #d9d9d9;
-            border-radius: 22px;
-            background: #fafafa;
-            padding: 34px 24px;
-            text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: white;
-        }
-
-        .upload-icon {
-            width: 74px;
-            height: 74px;
-            border-radius: 22px;
-            background: rgba(107, 30, 40, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto auto 20px;
-            color: var(--primary);
-            font-size: 28px;
-        }
-
-        /* =========================================================
-           SWITCH
-        ========================================================== */
-
-        .switch-wrapper {
+        .summary-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 22px;
-            border-radius: 22px;
-            background: #fafbfc;
             margin-bottom: 18px;
-        }
-
-        .form-check-input {
-            width: 52px !important;
-            height: 28px !important;
-            border: none !important;
-            background-color: #d8dde4;
-            box-shadow: none !important;
-            cursor: pointer;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--primary);
-        }
-
-        /* =========================================================
-           STATUS
-        ========================================================== */
-
-        .status {
-            display: inline-flex;
-            align-items: center;
             gap: 8px;
-            padding: 10px 16px;
-            border-radius: 14px;
+        }
+
+        .summary-item span:first-child {
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .summary-item strong {
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+            font-weight: 700;
+        }
+
+        .summary-item strong.placeholder-val {
+            color: #ccc;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 12px;
             font-size: 13px;
             font-weight: 600;
         }
 
-        .status-success {
-            background: rgba(61, 139, 92, 0.12);
+        .badge-activo {
+            background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
-        /* =========================================================
-           TIMELINE
-        ========================================================== */
-
-        .timeline {
-            position: relative;
-            padding-left: 24px;
+        .badge-inactivo {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
         }
 
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 6px;
-            top: 0;
-            width: 2px;
-            height: 100%;
-            background: #e6e9ee;
+        /* =========================================
+   NOTIFICACIONES MODERNAS
+   ========================================= */
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 24px;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -22px;
-            top: 6px;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--primary);
-        }
-
-        .timeline-item h6 {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .timeline-item p {
-            color: var(--gray);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
 
         .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 380px;
-            background: white;
-            border-left: 6px solid var(--success);
-            border-radius: 22px;
-            padding: 22px;
             display: flex;
             align-items: flex-start;
-            gap: 18px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-            z-index: 9999;
-
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
             transform: translateX(420px);
-            transition: 0.3s;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         .notification-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, 0.10);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--success);
-            font-size: 20px;
-        }
-
-        .notification h6 {
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .notification p {
-            margin: 0;
-            color: var(--gray);
             font-size: 14px;
+            flex-shrink: 0;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
-
-        @media(max-width:992px) {
-
-            .sidebar {
-                width: 96px;
-            }
-
-            .sidebar .brand h2,
-            .sidebar .brand span,
-            .sidebar .sidebar-item span {
-                display: none;
-            }
-
-            .sidebar-item {
-                justify-content: center;
-            }
-
-            .main {
-                margin-left: 96px;
-            }
-
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
         }
 
-        @media(max-width:768px) {
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
 
-            .sidebar {
-                display: none;
-            }
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
 
-            .main {
-                margin-left: 0;
-                padding: 22px;
-            }
+        .notification-content {
+            flex: 1;
+        }
 
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
 
-            .notification {
-                width: calc(100% - 40px);
-                right: 20px;
-            }
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
 
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
         }
     </style>
-
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
-
-    <!-- =========================================================
-       SIDEBAR
-    ========================================================== -->
-
-    <aside class="sidebar">
-
-        <div class="brand">
-
-            <div class="brand-logo">
-                <i class="fa-solid fa-utensils"></i>
-            </div>
-
-            <div>
-                <h2>RestSoft</h2>
-                <span>Enterprise POS</span>
-            </div>
-
+    <div class="notification-container" id="notificationContainer"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3 id="nombreEmpresa"></h3>
         </div>
+        <div class="menu-title">Navegación</div>
 
-        <nav class="sidebar-menu">
+        <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                Inicio</span></a>
 
-            <a href="#" class="sidebar-item">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Dashboard</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="empleados.html">Empleados</a><a href="empleado-crear.html">Crear Empleado</a><a
+                href="empleado-editar.html">Editar Empleado</a><a href="roles-permisos.html">Roles y Permisos</a><a
+                href="horarios-turnos.html">Horarios y Turnos</a><a href="asistencia.html">Asistencia</a></div>
 
-            <a href="#" class="sidebar-item active">
-                <i class="fa-solid fa-pen-to-square"></i>
-                <span>Editar Producto</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron rotate"></i></button>
+        <div class="submenu open"><a href="inventario.html">Inventario</a><a href="insumos-crear.html">Crear
+                Producto</a><a class="active" href="producto-editar.html">Editar Producto</a><a
+                href="entradas-mercancia.html">Entradas Mercancía</a><a href="salidas-mermas.html">Salidas/Mermas</a><a
+                href="categorias-inventario.html">Categorías</a><a href="proveedores.html">Proveedores</a><a
+                href="ProveedorInsumo.html">Insumos por Proveedor</a></div>
 
-            <a href="#" class="sidebar-item">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <span>Inventario</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="pedidos.html">Pedidos</a><a href="pedido-crear.html">Crear Pedido</a><a
+                href="pedido-detalle.html">Detalle Pedido</a><a href="pedido-cocina.html">Pedido Cocina</a><a
+                href="seguimiento-pedidos.html">Seguimiento</a></div>
 
-            <a href="#" class="sidebar-item">
-                <i class="fa-solid fa-truck"></i>
-                <span>Proveedores</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="mesas.html">Mesas</a><a href="mapa-mesas.html">Mapa Mesas</a><a
+                href="transferir-mesa.html">Transferir Mesa</a><a href="dividir-cuenta.html">Dividir Cuenta</a></div>
 
-            <a href="#" class="sidebar-item">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Reportes</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reservas.html">Reservas</a><a href="reserva-crear.html">Crear Reserva</a><a
+                href="reserva-editar.html">Editar Reserva</a><a href="calendario-reservas.html">Calendario</a></div>
 
-            <a href="#" class="sidebar-item">
-                <i class="fa-solid fa-gear"></i>
-                <span>Configuración</span>
-            </a>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="facturacion.html">Facturación</a><a href="generar-factura.html">Generar
+                Factura</a><a href="pagos.html">Pagos</a><a href="propinas.html">Propinas</a><a
+                href="cierre-caja.html">Cierre Caja</a></div>
 
-        </nav>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="menu-productos.html">Menú</a><a href="platillo-crear.html">Crear Platillo</a><a
+                href="platillo-editar.html">Editar Platillo</a><a href="promociones.html">Promociones</a><a
+                href="categorias-menu.html">Categorías Menú</a></div>
 
-    </aside>
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="cocina-dashboard.html">Dashboard Cocina</a><a
+                href="pedidos-preparacion.html">Pedidos Preparación</a><a href="tiempos-preparacion.html">Tiempos</a><a
+                href="notificaciones-cocina.html">Notificaciones</a></div>
 
-    <!-- =========================================================
-       MAIN
-    ========================================================== -->
+        <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="clientes.html">Clientes</a><a href="cliente-crear.html">Crear Cliente</a><a
+                href="historial-cliente.html">Historial</a><a href="fidelizacion.html">Fidelización</a><a
+                href="promociones-clientes.html">Promociones</a></div>
 
-    <main class="main">
+        <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reportes.html">Reportes</a><a href="reporte-ventas.html">Ventas</a><a
+                href="reporte-inventario.html">Inventario</a><a href="reporte-empleados.html">Empleados</a><a
+                href="reporte-financiero.html">Financiero</a><a href="reporte-reservas.html">Reservas</a><a
+                href="estadisticas-ocupacion.html">Ocupación</a></div>
 
-        <!-- TOPBAR -->
+        <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="configuracion-general.html">General</a><a
+                href="usuarios-sistema.html">Usuarios</a><a href="impresoras.html">Impresoras</a><a
+                href="metodos-pago.html">Métodos Pago</a><a href="alertas.html">Alertas</a><a
+                href="backup-restauracion.html">Backup</a></div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main">
 
         <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-
-            <div class="topbar-title">
-
-                <h1>Editar Producto</h1>
-
-                <p>
-                    Actualiza información, disponibilidad y configuración del inventario.
-                </p>
-
-            </div>
-
-            <div class="profile-box">
-
-                <img src="https://i.pravatar.cc/100?img=28">
-
-                <div>
-                    <h6>Mariana Vélez</h6>
-                    <span>Inventory Supervisor</span>
+            <!-- Contenedor que agrupa el botón y el título a la izquierda -->
+            <div style="display: flex; align-items: center; gap: 15px; flex-grow: 1;">
+                <button class="mobile-menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="title">
+                    <h2>Editar Insumo</h2>
+                    <p>Actualiza la información de los ingredientes y productos del inventario.</p>
                 </div>
-
             </div>
 
+            <div class="top-actions">
+                <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
+                </div>
+            </div>
         </div>
-
-        <!-- CONTENT -->
 
         <div class="row g-4">
 
-            <!-- LEFT -->
+            <div class="col-lg-8">
 
-            <div class="col-xl-8">
+                <div class="card-premium">
+                    <div class="card-title">Información General</div>
+                    <div class="row g-4">
 
-                <div class="premium-card mb-4">
-
-                    <div class="section-title">
-
-                        <h3>Información General</h3>
-
-                        <p>
-                            Edita los datos operativos y comerciales del producto.
-                        </p>
-
-                    </div>
-
-                    <form>
-
-                        <div class="row g-4">
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Nombre del Producto
-                                </label>
-
-                                <input type="text" class="form-control" value="Vino Reserva Premium">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Código SKU
-                                </label>
-
-                                <input type="text" class="form-control" value="INV-204">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Categoría
-                                </label>
-
-                                <select class="form-select">
-
-                                    <option>Bebidas</option>
-                                    <option>Carnes</option>
-                                    <option>Postres</option>
-
-                                </select>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label class="form-label">
-                                    Proveedor
-                                </label>
-
-                                <select class="form-select">
-
-                                    <option>Premium Drinks SAS</option>
-                                    <option>Distribuidora Gourmet</option>
-
-                                </select>
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <label class="form-label">
-                                    Stock Actual
-                                </label>
-
-                                <input type="number" class="form-control" value="84">
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <label class="form-label">
-                                    Precio Compra
-                                </label>
-
-                                <input type="number" class="form-control" value="28">
-
-                            </div>
-
-                            <div class="col-md-4">
-
-                                <label class="form-label">
-                                    Precio Venta
-                                </label>
-
-                                <input type="number" class="form-control" value="45">
-
-                            </div>
-
-                            <div class="col-12">
-
-                                <label class="form-label">
-                                    Descripción
-                                </label>
-
-                                <textarea
-                                    class="form-control">Vino reserva premium importado con notas frutales y acabado elegante para experiencias gastronómicas exclusivas.</textarea>
-
-                            </div>
-
+                        <div class="col-md-6">
+                            <label class="form-label" for="nombre">Nombre del Insumo <span
+                                    class="text-danger">*</span></label>
+                            <input id="nombre" class="form-control" placeholder="Cargando..." />
+                            <div class="invalid-feedback">El nombre es obligatorio.</div>
                         </div>
 
-                    </form>
+                        <div class="col-lg-6">
+                            <label for="productoCategoria" class="form-label">Categoría <span
+                                    class="text-danger">*</span></label>
+                            <select id="productoCategoria" class="form-select">
+                                <option value="">Cargando categorías...</option>
+                            </select>
+                            <div class="invalid-feedback">Selecciona una categoría.</div>
+                        </div>
 
+                        <div class="col-md-6">
+                            <label class="form-label" for="idProveedor">Proveedor <span
+                                    class="text-danger">*</span></label>
+                            <select id="idProveedor" class="form-select">
+                                <option value="">Cargando proveedores...</option>
+                            </select>
+                            <div class="invalid-feedback">Selecciona un proveedor.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="unidadMedida">Unidad <span
+                                    class="text-danger">*</span></label>
+                            <input id="unidadMedida" class="form-control" placeholder="Ej: Kg, Litros..." />
+                            <div class="invalid-feedback">Ingresa la unidad de medida.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="stockActual">Stock Inicial <span
+                                    class="text-danger">*</span></label>
+                            <input id="stockActual" class="form-control" type="number" min="0" placeholder="0" />
+                            <div class="invalid-feedback">Ingresa un stock válido.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="stockMinimo">Stock Mínimo</label>
+                            <input id="stockMinimo" class="form-control" type="number" min="0" placeholder="0" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="costoUnitario">Costo Unitario <span
+                                    class="text-danger">*</span></label>
+                            <input id="costoUnitario" class="form-control" type="number" min="0" step="0.01"
+                                placeholder="0" />
+                            <div class="invalid-feedback">Ingresa un costo válido.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="estado">Estado</label>
+                            <select id="estado" class="form-select">
+                                <option value="ACTIVO">Activo</option>
+                                <option value="INACTIVO">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
+                            <input id="fechaVencimiento" class="form-control" type="date" />
+                        </div>
+
+                    </div>
                 </div>
 
-                <!-- IMAGE -->
-
-                <div class="premium-card">
-
-                    <div class="section-title">
-
-                        <h3>Imagen del Producto</h3>
-
-                        <p>
-                            Actualiza la fotografía principal del inventario.
-                        </p>
-
-                    </div>
-
-                    <div class="upload-box">
-
-                        <div class="upload-icon">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                        </div>
-
-                        <h5 class="fw-bold mb-2">
-                            Reemplazar Imagen
-                        </h5>
-
-                        <p>
-                            PNG, JPG o WEBP • Máximo 10MB
-                        </p>
-
-                    </div>
-
+                <div class="card-premium mt-4">
+                    <div class="card-title">Descripción</div>
+                    <textarea id="descripcion" class="form-control"
+                        placeholder="Notas adicionales del insumo..."></textarea>
                 </div>
 
             </div>
 
-            <!-- RIGHT -->
+            <div class="col-lg-4">
+                <div class="card-premium summary">
+                    <div class="card-title">Resumen</div>
 
-            <div class="col-xl-4">
-
-                <!-- PREVIEW -->
-
-                <div class="premium-card mb-4">
-
-                    <div class="product-preview">
-
-                        <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=1200&auto=format&fit=crop"
-                            class="product-image">
-
-                        <span class="status status-success mb-3">
-                            <i class="fa-solid fa-circle-check"></i>
-                            Disponible
-                        </span>
-
-                        <h4>Vino Reserva Premium</h4>
-
-                        <p>
-                            Producto gourmet premium para menú ejecutivo y experiencias exclusivas.
-                        </p>
-
-                        <div class="product-meta">
-
-                            <div class="meta-badge">
-                                Stock: 84
-                            </div>
-
-                            <div class="meta-badge">
-                                $45 USD
-                            </div>
-
-                            <div class="meta-badge">
-                                Bebidas
-                            </div>
-
-                        </div>
-
+                    <div class="summary-item"><span>Nombre</span><strong id="sumNombre"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Categoría</span><strong id="sumCategoria"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Proveedor</span><strong id="sumProveedor"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Unidad</span><strong id="sumUnidad"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Stock</span><strong id="sumStock" class="placeholder-val">—</strong>
+                    </div>
+                    <div class="summary-item"><span>Stock Mín.</span><strong id="sumStockMin"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Costo Unit.</span><strong id="sumCosto"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Vence</span><strong id="sumVence" class="placeholder-val">—</strong>
                     </div>
 
-                </div>
+                    <hr />
 
-                <!-- SETTINGS -->
+                    <div id="sumEstadoBadge" class="badge-status badge-activo mb-3">Activo</div>
 
-                <div class="premium-card mb-4">
-
-                    <div class="section-title">
-
-                        <h3>Configuración</h3>
-
-                        <p>
-                            Ajustes avanzados del producto.
-                        </p>
-
-                    </div>
-
-                    <div class="switch-wrapper">
-
-                        <div>
-
-                            <h6 class="fw-bold mb-1">
-                                Producto Activo
-                            </h6>
-
-                            <small class="text-secondary">
-                                Visible en el sistema POS.
-                            </small>
-
-                        </div>
-
-                        <div class="form-check form-switch m-0">
-
-                            <input class="form-check-input" type="checkbox" checked>
-
-                        </div>
-
-                    </div>
-
-                    <div class="switch-wrapper">
-
-                        <div>
-
-                            <h6 class="fw-bold mb-1">
-                                Alertas de Stock
-                            </h6>
-
-                            <small class="text-secondary">
-                                Monitoreo automático.
-                            </small>
-
-                        </div>
-
-                        <div class="form-check form-switch m-0">
-
-                            <input class="form-check-input" type="checkbox" checked>
-
-                        </div>
-
-                    </div>
-
-                    <div class="switch-wrapper mb-0">
-
-                        <div>
-
-                            <h6 class="fw-bold mb-1">
-                                Producto Premium
-                            </h6>
-
-                            <small class="text-secondary">
-                                Destacar en reportes.
-                            </small>
-
-                        </div>
-
-                        <div class="form-check form-switch m-0">
-
-                            <input class="form-check-input" type="checkbox" checked>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- HISTORY -->
-
-                <div class="premium-card mb-4">
-
-                    <div class="section-title">
-
-                        <h3>Historial</h3>
-
-                        <p>
-                            Últimas modificaciones registradas.
-                        </p>
-
-                    </div>
-
-                    <div class="timeline">
-
-                        <div class="timeline-item">
-
-                            <h6>Precio actualizado</h6>
-
-                            <p>
-                                Hace 2 horas • Mariana Vélez
-                            </p>
-
-                        </div>
-
-                        <div class="timeline-item">
-
-                            <h6>Stock ajustado</h6>
-
-                            <p>
-                                Ayer • Sistema automático
-                            </p>
-
-                        </div>
-
-                        <div class="timeline-item">
-
-                            <h6>Producto creado</h6>
-
-                            <p>
-                                12 Mayo 2026 • Andrés Molina
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- ACTIONS -->
-
-                <div class="premium-card">
+                    <hr />
 
                     <div class="d-grid gap-3">
-
-                        <button class="btn btn-premium" onclick="showNotification()">
-                            <i class="fa-solid fa-floppy-disk me-2"></i>
-                            Guardar Cambios
+                        <button class="btn-primary-custom" id="btnGuardar">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Actualizar Insumo
                         </button>
-
-                        <button class="btn btn-outline-premium">
-                            <i class="fa-solid fa-copy me-2"></i>
-                            Duplicar Producto
+                        <button class="btn-outline-custom" id="btnCancelar">
+                            Cancelar
                         </button>
-
-                        <button class="btn btn-danger-soft">
-                            <i class="fa-solid fa-trash me-2"></i>
-                            Eliminar Producto
-                        </button>
-
                     </div>
-
                 </div>
-
             </div>
 
         </div>
-
-    </main>
-
-    <!-- =========================================================
-       NOTIFICATION
-    ========================================================== -->
-
-    <div class="notification" id="notification">
-
-        <div class="notification-icon">
-            <i class="fa-solid fa-check"></i>
-        </div>
-
-        <div>
-
-            <h6>Producto Actualizado</h6>
-
-            <p>
-                Los cambios fueron guardados correctamente en el inventario.
-            </p>
-
-        </div>
-
     </div>
 
-    <!-- =========================================================
-       JAVASCRIPT
-    ========================================================== -->
 
-    <script>
-
-        const notification = document.getElementById('notification');
-
-        function showNotification() {
-
-            event.preventDefault();
-
-            notification.classList.add('show');
-
-            setTimeout(() => {
-                hideNotification();
-            }, 3500);
-
-        }
-
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
-
-    </script>
-
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/consumo/ApiInventario.js"></script>
+    <script type="module" src="/js/datos/editarInsumo.js"></script>
 </body>
 
 </html>

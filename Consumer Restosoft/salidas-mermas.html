@@ -1,51 +1,56 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft — Salidas &amp; Mermas</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft — Salidas & Mermas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
         :root {
-
-            --background: #fbfcfb;
-
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
 
-            --dark: #262f3c;
-            --dark-light: #39485c;
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
 
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
 
-            --white: #ffffff;
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
 
-            --gray: #6f7782;
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
 
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -67,10 +72,6 @@
         .app {
             display: flex;
         }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
 
         .sidebar {
             width: 280px;
@@ -151,37 +152,11 @@
             color: white;
         }
 
-        .sidebar-footer {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            padding: 20px;
-        }
-
-        .sidebar-footer h6 {
-            color: white;
-            font-weight: 700;
-        }
-
-        .sidebar-footer p {
-            color: #b7c0cb;
-            font-size: 13px;
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
             padding: 32px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -189,6 +164,13 @@
             align-items: center;
             margin-bottom: 30px;
             gap: 20px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
         }
 
         .page-title h1 {
@@ -238,36 +220,59 @@
         }
 
         .profile {
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
             padding: 10px 14px;
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
         }
 
         .profile img {
             width: 48px;
             height: 48px;
-            border-radius: 16px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile h6 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .profile span {
-            font-size: 13px;
-            color: var(--gray);
-        }
-
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
 
         .btn-premium {
             background: var(--primary);
@@ -277,12 +282,19 @@
             padding: 14px 24px;
             font-weight: 600;
             transition: .3s;
+            cursor: pointer;
         }
 
         .btn-premium:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
             color: white;
+        }
+
+        .btn-premium:disabled {
+            background: #ccc;
+            transform: none;
+            cursor: not-allowed;
         }
 
         .btn-outline-premium {
@@ -293,16 +305,13 @@
             padding: 14px 24px;
             font-weight: 600;
             transition: .3s;
+            cursor: pointer;
         }
 
         .btn-outline-premium:hover {
             background: var(--dark);
             color: white;
         }
-
-        /* =========================================================
-           CARDS
-        ========================================================== */
 
         .card-premium {
             background: white;
@@ -316,10 +325,6 @@
         .card-premium:hover {
             transform: translateY(-5px);
         }
-
-        /* =========================================================
-           STATS
-        ========================================================== */
 
         .stats-grid {
             display: grid;
@@ -372,23 +377,6 @@
             font-size: 14px;
         }
 
-        .growth {
-            margin-top: 10px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        /* =========================================================
-           FILTERS
-        ========================================================== */
-
-        .filters {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 28px;
-        }
-
         .input-premium {
             background: #f7f8fa;
             border: none;
@@ -405,10 +393,6 @@
             box-shadow: none;
             background: white;
         }
-
-        /* =========================================================
-           TABLE
-        ========================================================== */
 
         .table-card {
             overflow: hidden;
@@ -456,169 +440,160 @@
             border-radius: 0 18px 18px 0;
         }
 
-        .product {
+        /* ── NOTIFICACIÓN ── */
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
             display: flex;
-            align-items: center;
-            gap: 14px;
+            flex-direction: column;
+            gap: 12px;
         }
-
-        .product-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            background: #f3f4f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-        }
-
-        .status {
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status-danger {
-            background: rgba(187, 58, 75, .12);
-            color: var(--danger);
-        }
-
-        .status-warning {
-            background: rgba(217, 164, 65, .15);
-            color: var(--warning);
-        }
-
-        .status-success {
-            background: rgba(61, 139, 92, .15);
-            color: var(--success);
-        }
-
-        .action-btn {
-            width: 42px;
-            height: 42px;
-            border: none;
-            border-radius: 14px;
-            background: #f7f8fa;
-            transition: .3s;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* =========================================================
-           DROPZONE
-        ========================================================== */
-
-        .dropzone {
-            margin-top: 28px;
-            border: 2px dashed #d9d9d9;
-            border-radius: 22px;
-            background: #fafafa;
-            padding: 50px 30px;
-            text-align: center;
-            transition: .3s;
-            cursor: pointer;
-        }
-
-        .dropzone:hover {
-            border-color: var(--primary);
-            background: white;
-        }
-
-        .dropzone i {
-            font-size: 42px;
-            color: var(--primary);
-            margin-bottom: 18px;
-        }
-
-        .dropzone h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .dropzone p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
 
         .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: white;
-            width: 360px;
-            padding: 20px;
-            border-radius: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-            border-left: 6px solid var(--success);
             display: flex;
-            gap: 16px;
             align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
             transform: translateX(420px);
-            transition: .3s;
-            z-index: 99999;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         .notification-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            background: rgba(61, 139, 92, .15);
-            color: var(--success);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-        }
-
-        .notification h6 {
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .notification p {
-            margin: 0;
-            color: var(--gray);
             font-size: 14px;
-            line-height: 1.6;
+            flex-shrink: 0;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── BOTÓN HAMBURGUESA (FORZAR COLOR) ── */
+        .mobile-menu-btn {
+            display: none;
+            border: none !important;
+            background: var(--primary) !important;
+            color: #fff !important;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 14px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
         @media(max-width:992px) {
-
             .sidebar {
-                width: 92px;
-                padding: 28px 16px;
+                width: 90px;
             }
 
-            .brand-text,
-            .menu-item span,
-            .sidebar-footer {
+            .sidebar .brand-text,
+            .sidebar .menu-item span,
+            .sidebar .sidebar-footer {
                 display: none;
             }
 
             .main {
-                margin-left: 92px;
-                width: calc(100% - 92px);
+                margin-left: 90px;
+                width: calc(100% - 90px);
             }
 
             .menu-item {
@@ -626,15 +601,40 @@
             }
         }
 
-        @media(max-width:768px) {
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0 !important;
+            }
+
+            .sidebar .brand-text,
+            .sidebar .menu-item span,
+            .sidebar .sidebar-footer {
+                display: block;
+            }
 
             .main {
-                padding: 22px;
+                margin-left: 0 !important;
+                padding: 18px !important;
+                width: 100% !important;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 15px;
             }
 
             .topbar-right {
@@ -643,6 +643,7 @@
                 align-items: stretch;
             }
 
+            .search-box,
             .search-box input {
                 width: 100%;
             }
@@ -653,477 +654,245 @@
             }
         }
     </style>
-
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
+
 <body>
-<!-- =========================================================
-         NOTIFICATION
-    ========================================================== -->
-<div class="notification" id="notification">
-<div class="notification-icon">
-<i class="fa-solid fa-circle-check"></i>
-</div>
-<div>
-<h6>Merma registrada</h6>
-<p>La salida de inventario fue procesada correctamente.</p>
-</div>
-</div>
-<!-- =========================================================
-         APP
-    ========================================================== -->
-<div class="app">
-<!-- =====================================================
-             SIDEBAR
-        ====================================================== -->
-<aside class="sidebar">
-<div>
-<div class="brand">
-<div class="brand-logo">
-<i class="fa-solid fa-utensils"></i>
-</div>
-<div class="brand-text">
-<h2>RestSoft</h2>
-<span>Enterprise POS</span>
-</div>
-</div>
-<nav class="menu">
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="menu-item active" href="#">
-<i class="fa-solid fa-boxes-stacked"></i>
-<span>Inventario</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-cart-shopping"></i>
-<span>Pedidos</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chair"></i>
-<span>Mesas</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-file-invoice-dollar"></i>
-<span>Facturación</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Reportes</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</nav>
-</div>
-<div class="sidebar-footer">
-<h6>Inventario Inteligente</h6>
-<p>
-                    Controla pérdidas, desperdicios y movimientos internos en tiempo real.
-                </p>
-</div>
-</aside>
-<!-- =====================================================
-             MAIN
-        ====================================================== -->
-<main class="main">
-<!-- =================================================
-                 TOPBAR
-            ================================================== -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="page-title">
-<h1>Salidas &amp; Mermas</h1>
-<p>
-                        Gestión avanzada de pérdidas, consumo interno y desperdicios.
-                    </p>
-</div>
-<div class="topbar-right">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar movimientos..." type="text"/>
-</div>
-<div class="profile">
-<img alt="" src="https://i.pravatar.cc/100"/>
-<div>
-<h6>Camila Torres</h6>
-<span>Administradora</span>
-</div>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 STATS
-            ================================================== -->
-<div class="stats-grid">
-<div class="card-premium stat-card">
-<div class="stat-info">
-<h3>48</h3>
-<p>Salidas Registradas</p>
-<div class="growth text-danger">
-<i class="fa-solid fa-arrow-up"></i>
-                            +12% esta semana
-                        </div>
-</div>
-<div class="stat-icon bg-danger-soft">
-<i class="fa-solid fa-arrow-right-arrow-left"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div class="stat-info">
-<h3>$1.240</h3>
-<p>Pérdidas Totales</p>
-<div class="growth text-warning">
-<i class="fa-solid fa-triangle-exclamation"></i>
-                            Revisar desperdicios
-                        </div>
-</div>
-<div class="stat-icon bg-warning-soft">
-<i class="fa-solid fa-chart-column"></i>
-</div>
-</div>
-<div class="card-premium stat-card">
-<div class="stat-info">
-<h3>96%</h3>
-<p>Control de Inventario</p>
-<div class="growth text-success">
-<i class="fa-solid fa-circle-check"></i>
-                            Operación estable
-                        </div>
-</div>
-<div class="stat-icon bg-success-soft">
-<i class="fa-solid fa-shield-heart"></i>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 FILTERS
-            ================================================== -->
-<div class="card-premium mb-4">
-<div class="row g-4">
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Producto
-                        </label>
-<input class="input-premium" placeholder="Buscar producto" type="text"/>
-</div>
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Tipo de salida
-                        </label>
-<select class="input-premium">
-<option>Todos</option>
-<option>Merma</option>
-<option>Consumo Interno</option>
-<option>Daño</option>
-</select>
-</div>
-<div class="col-lg-3">
-<label class="form-label fw-semibold mb-3">
-                            Responsable
-                        </label>
-<select class="input-premium">
-<option>Seleccionar</option>
-<option>Cocina</option>
-<option>Bar</option>
-<option>Bodega</option>
-</select>
-</div>
-<div class="col-lg-3 d-flex align-items-end">
-<button class="btn-premium w-100">
-<i class="fa-solid fa-plus me-2"></i>
-                            Registrar Salida
-                        </button>
-</div>
-</div>
-</div>
-<!-- =================================================
-                 TABLE
-            ================================================== -->
-<div class="card-premium table-card">
-<div class="d-flex justify-content-between align-items-center mb-4">
-<div>
-<h4 class="fw-bold mb-1">
-                            Historial de Mermas
-                        </h4>
-<p class="text-secondary mb-0">
-                            Movimientos recientes del inventario gastronómico.
-                        </p>
-</div>
-<button class="btn-outline-premium">
-<i class="fa-solid fa-file-export me-2"></i>
-                        Exportar
+    <div class="notification-container" id="notificationContainer"></div>
+
+
+
+    <div class="app">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3 id="nombreEmpresa"></h3>
+            </div>
+            <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                    class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+                class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
+                    href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar
+                    Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class=""
+                    href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
+            </div><button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="menu-item" href="inventario.html">Inventario</a><a class=""
+                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a
+                    class="menu-item active" href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                    href="categorias-inventario.html">Categorías</a><a class=""
+                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
+                    Proveedor</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i>
+                    Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
+                    href="seguimiento-pedidos.html">Seguimiento</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
+                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
+                    href="dividir-cuenta.html">Dividir Cuenta</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
+                    href="reserva-crear.html">Crear Reserva</a><a class="" href="reserva-editar.html">Editar
+                    Reserva</a><a class="" href="calendario-reservas.html">Calendario</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
+                    href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar
+                    Platillo</a><a class="" href="promociones.html">Promociones</a><a class=""
+                    href="categorias-menu.html">Categorías Menú</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                    href="tiempos-preparacion.html">Tiempos</a><a class=""
+                    href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
+                    href="cliente-crear.html">Crear Cliente</a><a class="" href="historial-cliente.html">Historial</a><a
+                    class="" href="fidelizacion.html">Fidelización</a><a class=""
+                    href="promociones-clientes.html">Promociones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                    class="" href="reporte-empleados.html">Empleados</a><a class=""
+                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
+                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a
+                    class="" href="backup-restauracion.html">Backup</a></div>
+        </div>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                    <div class="page-title">
+                        <h1>Salidas & Mermas</h1>
+                        <p>Gestión avanzada de pérdidas, consumo interno y desperdicios.</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input placeholder="Buscar movimientos..." type="text" />
+                    </div>
+                    <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
-</div>
-<div class="table-responsive">
-<table>
-<thead>
-<tr>
-<th>Producto</th>
-<th>Tipo</th>
-<th>Cantidad</th>
-<th>Responsable</th>
-<th>Fecha</th>
-<th>Estado</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-cheese"></i>
-</div>
-<div>
-<strong>Queso Mozzarella</strong>
-<div class="text-secondary small">
-                                                Lácteos
-                                            </div>
-</div>
-</div>
-</td>
-<td data-label="Tipo">Merma</td>
-<td data-label="Cantidad">12 Kg</td>
-<td data-label="Responsable">Chef Principal</td>
-<td data-label="Fecha">28 May 2026</td>
-<td data-label="Estado">
-<span class="status status-danger">
-<i class="fa-solid fa-circle"></i>
-                                        Crítico
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-wine-bottle"></i>
-</div>
-<div>
-<strong>Vino Tinto Reserva</strong>
-<div class="text-secondary small">
-                                                Bebidas
-                                            </div>
-</div>
-</div>
-</td>
-<td data-label="Tipo">Consumo Interno</td>
-<td data-label="Cantidad">4 Botellas</td>
-<td data-label="Responsable">Bar</td>
-<td data-label="Fecha">27 May 2026</td>
-<td data-label="Estado">
-<span class="status status-warning">
-<i class="fa-solid fa-circle"></i>
-                                        Moderado
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-<tr>
-<td data-label="Producto">
-<div class="product">
-<div class="product-icon">
-<i class="fa-solid fa-drumstick-bite"></i>
-</div>
-<div>
-<strong>Pollo Marinado</strong>
-<div class="text-secondary small">
-                                                Proteínas
-                                            </div>
-</div>
-</div>
-</td>
-<td data-label="Tipo">Daño</td>
-<td data-label="Cantidad">6 Kg</td>
-<td data-label="Responsable">Bodega</td>
-<td data-label="Fecha">26 May 2026</td>
-<td data-label="Estado">
-<span class="status status-success">
-<i class="fa-solid fa-circle"></i>
-                                        Controlado
-                                    </span>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-ellipsis"></i>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- =================================================
-                 DROPZONE
-            ================================================== -->
-<div class="dropzone">
-<i class="fa-solid fa-cloud-arrow-up"></i>
-<h5>Subir Evidencia o Reporte</h5>
-<p>
-                    Arrastra archivos aquí o haz clic para cargar imágenes y documentos.
-                </p>
-</div>
-</main>
-</div>
-<!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
-<script>
+                    <div id="infoPerfilContainer" class="profile">
+                        <p style="color: var(--gray); text-align: center; padding: 20px">
+                            Cargando perfil...
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        const notification = document.getElementById('notification');
+            <div class="stats-grid">
+                <div class="card-premium stat-card">
+                    <div class="stat-info">
+                        <h3 id="statTotalSalidas">0</h3>
+                        <p>Salidas Registradas</p>
+                    </div>
+                    <div class="stat-icon bg-danger-soft">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                </div>
 
-        function showNotification() {
+                <div class="card-premium stat-card">
+                    <div class="stat-info">
+                        <h3 id="statPerdidas">0 uds</h3>
+                        <p>Pérdidas Totales</p>
+                    </div>
+                    <div class="stat-icon bg-warning-soft">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+                </div>
 
-            notification.classList.add('show');
+                <div class="card-premium stat-card">
+                    <div class="stat-info">
+                        <h3>96%</h3>
+                        <p>Control de Inventario</p>
+                    </div>
+                    <div class="stat-icon bg-success-soft">
+                        <i class="fa-solid fa-shield-heart"></i>
+                    </div>
+                </div>
+            </div>
 
-            setTimeout(() => {
-                hideNotification();
-            }, 4000);
-        }
+            <div class="card-premium mb-4">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <label class="form-label fw-semibold mb-3">Producto</label>
+                        <input class="input-premium" id="filtroProducto" placeholder="Buscar producto..." type="text" />
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="form-label fw-semibold mb-3">Tipo de salida</label>
+                        <select class="input-premium" id="filtroTipo">
+                            <option value="">Todos</option>
+                            <option value="MERMA">Merma</option>
+                            <option value="CONSUMO_INTERNO">Consumo Interno</option>
+                            <option value="DANO">Daño</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 d-flex align-items-end">
+                        <button class="btn-premium w-100" id="btnAbrirModal">
+                            <i class="fa-solid fa-plus me-2"></i>Registrar Salida
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
+            <div class="card-premium table-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1">Historial de Mermas</h4>
+                        <p class="text-secondary mb-0">Movimientos recientes del inventario gastronómico.</p>
+                    </div>
+                    <button class="btn-outline-premium" id="btnExportar">
+                        <i class="fa-solid fa-file-export me-2"></i>Exportar
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead id="theadSalidas">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Observaciones</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaSalidas">
+                            <tr>
+                                <td colspan="5" class="text-center text-secondary py-4"><i
+                                        class="fa-solid fa-spinner fa-spin me-2"></i>Cargando salidas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                showNotification();
-            }, 800);
-        });
+            <div class="modal-overlay" id="modalOverlay">
+                <div class="card-premium" id="modalCard"
+                    style="max-width:520px;width:90%;padding:40px;transform:scale(.95);transition:.3s;">
+                    <h3 class="fw-bold mb-4">Registrar Salida / Merma</h3>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Insumo / Producto</label>
+                        <select class="input-premium" id="selectInsumo">
+                            <option value="">Cargando insumos...</option>
+                        </select>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Cantidad</label>
+                            <input type="number" class="input-premium" id="inputCantidad" placeholder="0" min="1">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Tipo de Salida</label>
+                            <select class="input-premium" id="selectTipo">
+                                <option value="MERMA">Merma</option>
+                                <option value="CONSUMO_INTERNO">Consumo Interno</option>
+                                <option value="DANO">Daño</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Motivo / Observación</label>
+                        <input type="text" class="input-premium" id="inputMotivo"
+                            placeholder="Ej: Producto vencido, mal estado...">
+                    </div>
+                    <div class="d-flex gap-3">
+                        <button class="btn-premium w-100" id="btnGuardarSalida"><i
+                                class="fa-solid fa-check me-2"></i>Guardar Salida</button>
+                        <button class="btn-outline-premium" id="btnCancelarSalida" style="width: 40%;">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-    </script>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/consumo/apiSalidaMermas.js"></script>
+    <script type="module" src="/js/datos/salidaMermas.js"></script>
 </body>
+
 </html>

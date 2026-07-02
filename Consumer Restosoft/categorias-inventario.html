@@ -5,52 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RestSoft — Categorías de Inventario</title>
-
-    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Google Fonts -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
-
+    <link rel="stylesheet" href="/css/sidebar.css">
     <style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
         :root {
-
-            --background: #fbfcfb;
-
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
 
-            --dark: #262f3c;
-            --dark-light: #39485c;
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
 
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
 
-            --white: #ffffff;
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
 
-            --gray: #6f7782;
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
 
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -73,10 +72,7 @@
             display: flex;
         }
 
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
-
+        /* ── SIDEBAR ── */
         .sidebar {
             width: 280px;
             height: 100vh;
@@ -174,19 +170,12 @@
             margin: 0;
         }
 
-        /* =========================================================
-           MAIN
-        ========================================================== */
-
+        /* ── MAIN ── */
         .main {
             margin-left: 280px;
             width: calc(100% - 280px);
             padding: 34px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -194,6 +183,13 @@
             align-items: center;
             margin-bottom: 32px;
             gap: 20px;
+        }
+
+        /* NUEVO: Contenedor izquierdo */
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .page-title h1 {
@@ -231,7 +227,6 @@
         .search-box input:focus {
             border: 1px solid var(--primary);
             outline: none;
-            box-shadow: none;
             background: white;
         }
 
@@ -244,37 +239,60 @@
         }
 
         .profile {
-            background: white;
-            border-radius: 20px;
-            padding: 10px 14px;
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
         }
 
         .profile img {
             width: 48px;
             height: 48px;
-            border-radius: 16px;
+            border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile h6 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 15px;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .profile span {
-            color: var(--gray);
-            font-size: 13px;
-        }
-
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
-
+        /* ── BUTTONS ── */
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -283,6 +301,7 @@
             padding: 14px 24px;
             font-weight: 600;
             transition: .3s;
+            cursor: pointer;
         }
 
         .btn-premium:hover {
@@ -299,6 +318,7 @@
             padding: 14px 24px;
             font-weight: 600;
             transition: .3s;
+            cursor: pointer;
         }
 
         .btn-outline-premium:hover {
@@ -306,10 +326,7 @@
             color: white;
         }
 
-        /* =========================================================
-           CARDS
-        ========================================================== */
-
+        /* ── CARDS ── */
         .card-premium {
             background: white;
             border-radius: 28px;
@@ -323,10 +340,7 @@
             transform: translateY(-5px);
         }
 
-        /* =========================================================
-           STATS
-        ========================================================== */
-
+        /* ── STATS ── */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -377,10 +391,17 @@
             color: var(--warning);
         }
 
-        /* =========================================================
-           CATEGORY GRID
-        ========================================================== */
+        .danger-soft {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
 
+        .info-soft {
+            background: rgba(13, 110, 253, .12);
+            color: #0d6efd;
+        }
+
+        /* ── CATEGORY GRID ── */
         .category-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -416,6 +437,10 @@
             border: none;
             background: #f7f8fa;
             transition: .3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .category-menu:hover {
@@ -426,12 +451,6 @@
         .category-card h4 {
             font-weight: 700;
             margin-bottom: 10px;
-        }
-
-        .category-card p {
-            color: var(--gray);
-            line-height: 1.7;
-            margin-bottom: 24px;
         }
 
         .category-meta {
@@ -445,21 +464,23 @@
             border-radius: 14px;
             font-size: 13px;
             font-weight: 600;
+            text-transform: capitalize;
         }
 
-        .badge-success {
+        .badge-activa,
+        .badge-estable {
             background: rgba(61, 139, 92, .12);
             color: var(--success);
         }
 
-        .badge-warning {
+        .badge-alta-rotacion {
             background: rgba(217, 164, 65, .15);
             color: var(--warning);
         }
 
-        .badge-primary {
-            background: rgba(107, 30, 40, .12);
-            color: var(--primary);
+        .badge-inactiva {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
         }
 
         .category-count {
@@ -468,10 +489,7 @@
             font-weight: 600;
         }
 
-        /* =========================================================
-           FORM
-        ========================================================== */
-
+        /* ── FORM ── */
         .form-card {
             margin-top: 30px;
         }
@@ -490,129 +508,367 @@
             margin: 0;
         }
 
-        .input-premium {
+        .input-premium,
+        .select-premium,
+        .textarea-premium {
             width: 100%;
             background: #f7f8fa;
-            border: none;
+            border: 1px solid transparent;
             border-radius: 16px;
-            min-height: 55px;
             padding: 14px 18px;
             transition: .3s;
             margin-bottom: 20px;
+            font-size: 15px;
+            color: var(--dark);
         }
 
-        .input-premium:focus {
-            border: 1px solid var(--primary);
+        .input-premium:focus,
+        .select-premium:focus,
+        .textarea-premium:focus {
+            border-color: var(--primary);
             outline: none;
-            box-shadow: none;
             background: white;
         }
 
-        textarea.input-premium {
-            min-height: 120px;
+        .textarea-premium {
+            min-height: 110px;
             resize: none;
         }
 
-        /* =========================================================
-           UPLOAD
-        ========================================================== */
-
-        .upload-box {
-            border: 2px dashed #d9d9d9;
-            border-radius: 22px;
-            background: #fafafa;
-            padding: 50px 30px;
-            text-align: center;
-            transition: .3s;
-            cursor: pointer;
-            margin-top: 8px;
+        .select-premium {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23262f3c'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 24px;
         }
 
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: white;
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-
-        .upload-box i {
-            font-size: 40px;
-            color: var(--primary);
-            margin-bottom: 16px;
-        }
-
-        .upload-box h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .upload-box p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================================
-           NOTIFICATION
-        ========================================================== */
 
         .notification {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            width: 360px;
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            border-left: 5px solid var(--success);
             display: flex;
-            gap: 16px;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
             transform: translateX(420px);
-            transition: .3s;
-            z-index: 99999;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         .notification-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, .12);
-            color: var(--success);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-        }
-
-        .notification h6 {
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .notification p {
-            margin: 0;
-            color: var(--gray);
             font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
+        }
+
+        /* ── MODAL CONFIRMAR ELIMINAR ── */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 40px 36px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(38, 47, 60, .22);
+            transform: scale(.88) translateY(24px);
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .confirm-overlay.show .confirm-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: 28px;
+            background: rgba(187, 58, 75, .08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .confirm-icon-wrap i {
+            font-size: 32px;
+            color: var(--danger);
+        }
+
+        .confirm-modal h4 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .confirm-modal p {
+            color: var(--gray);
+            font-size: 15px;
+            margin-bottom: 8px;
             line-height: 1.6;
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        .confirm-product-name {
+            display: inline-block;
+            background: #f7f8fa;
+            border-radius: 12px;
+            padding: 8px 18px;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 28px;
+        }
 
-        @media(max-width:992px) {
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+        }
 
+        .btn-confirm-cancel {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid #e2e6ea;
+            background: white;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-confirm-cancel:hover {
+            background: #f4f6f8;
+        }
+
+        .btn-confirm-delete {
+            flex: 1.4;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            background: var(--danger);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirm-delete:hover {
+            background: #a8303f;
+            transform: translateY(-1px);
+        }
+
+        /* ── MODAL EDITAR ── */
+        .edit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(38, 47, 60, .55);
+            backdrop-filter: blur(6px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+        }
+
+        .edit-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .edit-modal {
+            background: white;
+            border-radius: 28px;
+            padding: 36px;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 30px 80px rgba(38, 47, 60, .22);
+            transform: scale(.88) translateY(24px);
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .edit-overlay.show .edit-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .edit-modal-header h4 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .btn-close-modal {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 12px;
+            background: #f7f8fa;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .btn-close-modal:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ── OVERLAY Y BOTÓN HAMBURGUESA ── */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: .3s;
+            z-index: 998;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #menuToggle {
+            display: none;
+            border: none !important;
+            background: var(--primary) !important;
+            color: white !important;
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 14px;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 992px) {
             .sidebar {
-                width: 96px;
-                padding: 28px 16px;
+                width: 90px;
             }
 
-            .brand-text,
-            .menu-item span,
-            .sidebar-footer {
-                display: none;
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar .sidebar-footer {
+                display: none !important;
             }
 
             .menu-item {
@@ -620,531 +876,291 @@
             }
 
             .main {
-                margin-left: 96px;
-                width: calc(100% - 96px);
+                margin-left: 90px;
+                width: calc(100% - 90px);
             }
         }
 
-        @media(max-width:768px) {
-
-            .main {
-                margin-left: 0;
-                width: 100%;
-                padding: 22px;
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px !important;
+                left: -280px !important;
+                transition: .3s;
+                z-index: 999;
             }
 
-            .sidebar {
-                display: none;
+            .sidebar.open {
+                left: 0 !important;
+            }
+
+            .sidebar .brand h2,
+            .sidebar .brand span,
+            .sidebar .menu-item span,
+            .sidebar .sidebar-footer {
+                display: block !important;
+            }
+
+            .menu-item {
+                justify-content: flex-start;
+            }
+
+            .main {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 18px !important;
+            }
+
+            #menuToggle {
+                display: flex;
             }
 
             .topbar {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 15px;
             }
 
             .topbar-right {
                 width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .notification {
-                width: calc(100% - 40px);
-                right: 20px;
-                bottom: 20px;
+                justify-content: flex-end;
             }
         }
     </style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
 
-    <!-- =========================================================
-         NOTIFICATION
-    ========================================================== -->
+    <div class="notification-container" id="notificationContainer"></div>
 
-    <div class="notification" id="notification">
-
-        <div class="notification-icon">
-            <i class="fa-solid fa-circle-check"></i>
+    <!-- MODAL CONFIRMAR ELIMINAR -->
+    <div class="confirm-overlay" id="confirmCatOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-icon-wrap"><i class="fa-solid fa-trash-can"></i></div>
+            <h4>¿Eliminar categoría?</h4>
+            <p>Esta acción es permanente y no se puede deshacer. Se eliminará:</p>
+            <div class="confirm-product-name" id="confirmCatNombre">—</div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="btnCancelDeleteCat">Cancelar</button>
+                <button class="btn-confirm-delete" id="btnConfirmDeleteCat">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
+                </button>
+            </div>
         </div>
-
-        <div>
-            <h6>Categoría creada</h6>
-            <p>
-                La nueva categoría de inventario fue registrada exitosamente.
-            </p>
-        </div>
-
     </div>
 
-    <!-- =========================================================
-         LAYOUT
-    ========================================================== -->
+    <!-- MODAL EDITAR CATEGORÍA -->
+    <div class="edit-overlay" id="editCatOverlay">
+        <div class="edit-modal">
+            <div class="edit-modal-header">
+                <h4><i class="fa-solid fa-pen-to-square me-2" style="color:var(--primary)"></i>Editar Categoría</h4>
+                <button class="btn-close-modal" id="btnCloseEditCat">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="form-editar-cat">
+                <input type="hidden" id="edit-cat-id" />
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Nombre
+                            de la Categoría</label>
+                        <input class="input-premium" id="edit-cat-nombre" type="text"
+                            placeholder="Ej. Carnes, Postres..." required style="margin-bottom:0;" />
+                    </div>
+                    <div class="col-12">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Estado
+                            Operativo</label>
+                        <select class="select-premium" id="edit-cat-estado" style="margin-bottom:0;">
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label
+                            style="font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;display:block;">Descripción</label>
+                        <textarea class="textarea-premium" id="edit-cat-descripcion"
+                            placeholder="Describe los insumos que abarca..." style="margin-bottom:0;"></textarea>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button type="button" class="btn-outline-premium" id="btnCancelEditCat">Cancelar</button>
+                    <button type="submit" class="btn-premium">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="layout">
-
-        <!-- =====================================================
-             SIDEBAR
-        ====================================================== -->
-
-        <aside class="sidebar">
-
-            <div>
-
-                <div class="brand">
-
-                    <div class="brand-logo">
-                        <i class="fa-solid fa-utensils"></i>
-                    </div>
-
-                    <div class="brand-text">
-                        <h2>RestSoft</h2>
-                        <span>Premium ERP</span>
-                    </div>
-
-                </div>
-
-                <nav class="sidebar-menu">
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-
-                    <a href="#" class="menu-item active">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span>Inventario</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        <span>Pedidos</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Clientes</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span>Reportes</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-gear"></i>
-                        <span>Configuración</span>
-                    </a>
-
-                </nav>
-
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3 id="nombreEmpresa"></h3>
             </div>
-
-            <div class="sidebar-footer">
-
-                <h6>Gestión Inteligente</h6>
-
-                <p>
-                    Organiza y administra categorías gastronómicas premium en tiempo real.
-                </p>
-
+            <div class="menu-title">Navegación</div><a class="menu-item" href="Dashboard-example.html"><i
+                    class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a><button
+                class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
+                    href="empleado-crear.html">Crear
+                    Empleado</a><a class="" href="empleado-editar.html">Editar Empleado</a><a class=""
+                    href="roles-permisos.html">Roles y Permisos</a><a class="" href="horarios-turnos.html">Horarios y
+                    Turnos</a><a class="" href="asistencia.html">Asistencia</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="menu-item" href="inventario.html">Inventario</a><a class=""
+                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
+                    href="salidas-mermas.html">Salidas/Mermas</a><a class="menu-item active"
+                    href="categorias-inventario.html">Categorías</a><a class=""
+                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
+                    Proveedor</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i>
+                    Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
+                    href="seguimiento-pedidos.html">Seguimiento</a>
+            </div><button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
+                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
+                    href="dividir-cuenta.html">Dividir
+                    Cuenta</a></div><button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i>
+                    Reservas</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
+                    href="reserva-crear.html">Crear
+                    Reserva</a><a class="" href="reserva-editar.html">Editar Reserva</a><a class=""
+                    href="calendario-reservas.html">Calendario</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
+                    href="platillo-crear.html">Crear
+                    Platillo</a><a class="" href="platillo-editar.html">Editar Platillo</a><a class=""
+                    href="promociones.html">Promociones</a><a class="" href="categorias-menu.html">Categorías Menú</a>
             </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                    href="tiempos-preparacion.html">Tiempos</a><a class=""
+                    href="notificaciones-cocina.html">Notificaciones</a></div><button class="menu-group-btn"><span><i
+                        class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
+                    href="cliente-crear.html">Crear
+                    Cliente</a>
+            </div><button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                    class="" href="reporte-empleados.html">Empleados</a><a class=""
+                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div><button
+                class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
+                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a
+                    class="" href="backup-restauracion.html">Backup</a></div>
+        </div>
 
-        </aside>
-
-        <!-- =====================================================
-             MAIN
-        ====================================================== -->
 
         <main class="main">
-
-            <!-- =================================================
-                 TOPBAR
-            ================================================== -->
-
             <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-
-                <div class="page-title">
-                    <h1>Categorías de Inventario</h1>
-                    <p>
-                        Organiza productos, insumos y recursos gastronómicos del sistema.
-                    </p>
+                <!-- Agrupado a la izquierda -->
+                <div class="topbar-left">
+                    <button id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                    <div class="page-title">
+                        <h1>Categorías de Inventario</h1>
+                        <p>Organiza productos, insumos y recursos gastronómicos del sistema.</p>
+                    </div>
                 </div>
-
                 <div class="topbar-right">
-
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="Buscar categorías...">
+                    <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                    <div id="infoPerfilContainer" class="profile">
+                        <p style="color: var(--gray); text-align: center; padding: 20px">
+                            Cargando perfil...
+                        </p>
                     </div>
-
-                    <div class="profile">
-
-                        <img src="https://i.pravatar.cc/100" alt="">
-
-                        <div>
-                            <h6>Sofía Ramírez</h6>
-                            <span>Inventory Manager</span>
-                        </div>
-
-                    </div>
-
                 </div>
-
             </div>
-
-            <!-- =================================================
-                 STATS
-            ================================================== -->
 
             <div class="stats-grid">
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>24</h3>
+                        <h3 id="txtCategoríasActivas">0</h3>
                         <p>Categorías Activas</p>
                     </div>
-
-                    <div class="stat-icon primary-soft">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
-
+                    <div class="stat-icon primary-soft"><i class="fa-solid fa-layer-group"></i></div>
                 </div>
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>842</h3>
+                        <h3 id="txtProductosOrganizados">0</h3>
                         <p>Productos Organizados</p>
                     </div>
-
-                    <div class="stat-icon success-soft">
-                        <i class="fa-solid fa-box-open"></i>
-                    </div>
-
+                    <div class="stat-icon success-soft"><i class="fa-solid fa-box-open"></i></div>
                 </div>
-
                 <div class="card-premium stat-card">
-
                     <div>
-                        <h3>98%</h3>
-                        <p>Estructura Optimizada</p>
+                        <h3>100%</h3>
+                        <p>Sincronizado Base Datos</p>
                     </div>
-
-                    <div class="stat-icon warning-soft">
-                        <i class="fa-solid fa-chart-simple"></i>
-                    </div>
-
+                    <div class="stat-icon warning-soft"><i class="fa-solid fa-database"></i></div>
                 </div>
-
             </div>
 
-            <!-- =================================================
-                 CATEGORY GRID
-            ================================================== -->
-
-            <div class="category-grid">
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon primary-soft">
-                            <i class="fa-solid fa-cheese"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Lácteos</h4>
-
-                    <p>
-                        Gestión de quesos, crema, leche y derivados utilizados en cocina premium.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-primary">
-                            Activa
-                        </span>
-
-                        <span class="category-count">
-                            84 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon success-soft">
-                            <i class="fa-solid fa-wine-bottle"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Bebidas</h4>
-
-                    <p>
-                        Control de vinos, licores, jugos y bebidas utilizadas en bar y restaurante.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-success">
-                            Estable
-                        </span>
-
-                        <span class="category-count">
-                            142 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
-                <!-- CARD -->
-
-                <div class="card-premium category-card">
-
-                    <div class="category-top">
-
-                        <div class="category-icon warning-soft">
-                            <i class="fa-solid fa-fish"></i>
-                        </div>
-
-                        <button class="category-menu">
-                            <i class="fa-solid fa-ellipsis"></i>
-                        </button>
-
-                    </div>
-
-                    <h4>Mariscos</h4>
-
-                    <p>
-                        Inventario especializado para pescados frescos y productos refrigerados.
-                    </p>
-
-                    <div class="category-meta">
-
-                        <span class="badge-soft badge-warning">
-                            Alta Rotación
-                        </span>
-
-                        <span class="category-count">
-                            48 productos
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- =================================================
-                 FORM
-            ================================================== -->
+            <div class="category-grid" id="categoryGrid"></div>
 
             <div class="card-premium form-card">
-
                 <div class="form-title">
-
                     <h4>Crear Nueva Categoría</h4>
-
-                    <p>
-                        Registra nuevas categorías para mantener un inventario organizado.
-                    </p>
-
+                    <p>Registra nuevas categorías para mantener un inventario organizado.</p>
                 </div>
-
-                <div class="row">
-
-                    <div class="col-lg-6">
-
-                        <input type="text" class="input-premium" placeholder="Nombre de la categoría">
-
+                <form id="formCategoria">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold mb-2">Nombre de la Categoría</label>
+                            <input type="text" id="nombreCategoria" class="input-premium"
+                                placeholder="Ej. Carnes, Postres, Verduras..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold mb-2">Estado Operativo</label>
+                            <select id="estadoCategoria" class="select-premium" required>
+                                <option value="activa">Activa</option>
+                                <option value="inactiva">Inactiva</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold mb-2">Descripción Completa</label>
+                            <textarea id="descripcionCategoria" class="textarea-premium"
+                                placeholder="Describe los insumos o productos que abarca esta categoría..."
+                                required></textarea>
+                        </div>
                     </div>
-
-                    <div class="col-lg-6">
-
-                        <select class="input-premium">
-
-                            <option>Seleccionar estado</option>
-                            <option>Activa</option>
-                            <option>Inactiva</option>
-                            <option>Alta Rotación</option>
-
-                        </select>
-
+                    <div class="d-flex justify-content-end gap-3 mt-2">
+                        <button class="btn-outline-premium" type="button"
+                            onclick="limpiarFormulario()">Cancelar</button>
+                        <button type="submit" class="btn-premium">
+                            <i class="fa-solid fa-plus me-2"></i>Crear Categoría
+                        </button>
                     </div>
-
-                </div>
-
-                <textarea class="input-premium" placeholder="Descripción de la categoría..."></textarea>
-
-                <!-- =================================================
-                     UPLOAD
-                ================================================== -->
-
-                <div class="upload-box">
-
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <h5>Subir Imagen o Ícono</h5>
-
-                    <p>
-                        Arrastra archivos aquí o haz clic para cargar recursos visuales.
-                    </p>
-
-                </div>
-
-                <div class="d-flex justify-content-end gap-3 mt-4">
-
-                    <button class="btn-outline-premium">
-                        Cancelar
-                    </button>
-
-                    <button class="btn-premium">
-                        <i class="fa-solid fa-plus me-2"></i>
-                        Crear Categoría
-                    </button>
-
-                </div>
-
+                </form>
             </div>
-
         </main>
-
     </div>
 
-    <!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
-
-    <script>
-
-        const notification = document.getElementById('notification');
-
-        function showNotification() {
-
-            notification.classList.add('show');
-
-            setTimeout(() => {
-                hideNotification();
-            }, 4000);
-
-        }
-
-        function hideNotification() {
-            notification.classList.remove('show');
-        }
-
-        window.addEventListener('load', () => {
-
-            setTimeout(() => {
-                showNotification();
-            }, 1000);
-
-        });
-
-    </script>
-
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="js/datos/categorias.js"></script>
 </body>
 
 </html>
