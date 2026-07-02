@@ -2,26 +2,27 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestSoft - Mapa de Mesas en Vivo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestSoft | Gestión de Mesas</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../css/mapa-mesas.css">
-    <link rel="stylesheet" href="../css/sidebar.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/mesas.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
 
-   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <div class="sidebar">
       <div class="logo">
         <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-        <h3>RestSoft</h3>
+        <h3 id="nombreEmpresa"></h3>
       </div>
       <div class="menu-title">Navegación</div>
       <a class="menu-item" href="Dashboard-example.html"
@@ -69,8 +70,8 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu open">
-        <a class="" href="mesas.html">Mesas</a
-        ><a class="active" href="mapa-mesas.html">Mapa Mesas</a
+        <a class="active" href="mesas.html">Mesas</a
+        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
         ><a class="" href="transferir-mesa.html">Transferir Mesa</a
         ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
       </div>
@@ -78,7 +79,7 @@
         <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
-      <div class="submenu open">
+      <div class="submenu">
         <a class="" href="reservas.html">Reservas</a
         ><a class="" href="calendario-reservas.html">Calendario</a>
       </div>
@@ -145,8 +146,9 @@
         ><i class="fa-solid fa-chevron-right chevron"></i>
       </button>
       <div class="submenu">
-        <a class="" href="configuracion-general.html">General</a
-        ><a class="" href="usuarios-sistema.html">Usuarios</a
+        <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="perfil.html">Mi Perfil</a>
+        <a class="" href="usuarios-sistema.html">Usuarios</a
         ><a class="" href="impresoras.html">Impresoras</a
         ><a class="" href="metodos-pago.html">Métodos Pago</a
         ><a class="" href="alertas.html">Alertas</a
@@ -154,102 +156,129 @@
       </div>
     </div>
 
-    <main class="main">
-        <div class="topbar">
-            <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="page-title">
-                <h1>Mapa de Mesas</h1>
-                <p>Visualiza la ocupación y distribución del restaurante en tiempo real.</p>
-            </div>
-            <div class="topbar-right">
-
-                <div class="profile">
-                    <img src="https://i.pravatar.cc/100?img=45" alt="Perfil">
-                    <div>
-                        <strong>Valentina Ruiz</strong>
-                        <div style="font-size:13px;color:var(--gray);">Floor Manager</div>
-                    </div>
-                </div>
-            </div>
+  <main class="main">
+    <div class="topbar">
+      <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-title">
+        <h1>Gestión de Mesas</h1>
+        <p>Administra la disponibilidad de las mesas de tu restaurante.</p>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <!-- Se añade ID para el buscador empresarial -->
+          <input type="text" id="searchInput" placeholder="Buscar por número o zona...">
         </div>
-
-        <div class="layout-grid">
-            <div class="panel">
-                <div class="panel-title">
-                    <h4>Estado General</h4>
-                    <p>Distribución operacional de la zona</p>
-                </div>
-
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-left">
-                            <div class="legend-dot dot-success"></div>
-                            <strong>Disponibles</strong>
-                        </div>
-                        <span id="stat-disponibles">0 Mesas</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left">
-                            <div class="legend-dot dot-danger"></div>
-                            <strong>Ocupadas</strong>
-                        </div>
-                        <span id="stat-ocupadas">0 Mesas</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left">
-                            <div class="legend-dot dot-warning"></div>
-                            <strong>Reservadas</strong>
-                        </div>
-                        <span id="stat-reservadas">0 Mesas</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-left">
-                            <div class="legend-dot dot-inactive"></div>
-                            <strong>Fuera de Servicio</strong>
-                        </div>
-                        <span id="stat-fuera-servicio">0 Mesas</span>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <h5>Resumen de Zona</h5>
-                    <div class="info-item">
-                        <span>Capacidad Total</span>
-                        <strong id="stat-capacidad">0 Personas</strong>
-                    </div>
-                    <div class="info-item">
-                        <span>Ocupación Actual</span>
-                        <strong id="stat-porcentaje">0%</strong>
-                    </div>
-                    <div class="info-item">
-                        <span>Total de Mesas</span>
-                        <strong id="stat-totales">0</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="map-card">
-                <div class="map-header">
-                    <h3>Plano Mesas</h3>
-                    <div class="floating-toolbar">
-                        <select id="zonaSelector" class="custom-input">
-                            <option value="">Cargando zonas...</option>
-                        </select>
-                        <button class="btn-refresh" id="btnRecargarMapa" title="Actualizar Plano">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="canvasWrapper" class="canvas-container">
-                    <canvas id="restaurantCanvas" width="800" height="600"></canvas>
-                </div>
-            </div>
+        <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando perfil...
+            </p>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
 
-    <script type="module" src="../js/datos/mapa-mesas.js"></script>
-    <script src="../js/datos/sidebar.js"></script>
+    <!-- Estado de Error -->
+    <div id="error-state" class="error-container" style="display: none;">
+      <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3>Error de Conexión</h3>
+      <p id="error-message">No se pudo conectar con la base de datos.</p>
+      <div class="error-actions">
+        <button class="btn-primary-custom" onclick="location.reload()">
+          <i class="fa-solid fa-rotate-right"></i> Reintentar
+        </button>
+        <a href="mailto:soporte@restosoft.com" class="btn-outline-custom">
+          <i class="fa-solid fa-headset"></i> Soporte
+        </a>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-content">
+      <div class="stats-grid row g-4">
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card">
+            <div class="stats-top">
+              <div class="stats-icon success-icon"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <h2 id="stat-disponibles">
+              <div class="skeleton skeleton-text"></div>
+            </h2>
+            <p>Disponibles</p>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card">
+            <div class="stats-top">
+              <div class="stats-icon danger-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <h2 id="stat-ocupadas">
+              <div class="skeleton skeleton-text"></div>
+            </h2>
+            <p>Ocupadas</p>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card">
+            <div class="stats-top">
+              <div class="stats-icon warning-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+            <h2 id="stat-reservadas">
+              <div class="skeleton skeleton-text"></div>
+            </h2>
+            <p>Reservadas</p>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="stats-card">
+            <div class="stats-top">
+              <div class="stats-icon" style="background:var(--gray);"><i class="fa-solid fa-ban"></i></div>
+            </div>
+            <h2 id="stat-fuera-servicio">
+              <div class="skeleton skeleton-text"></div>
+            </h2>
+            <p>Inactivas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="filters" id="filtersContainer">
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+
+      <div class="tables-grid" id="tablesGrid"></div>
+    </div>
+  </main>
+  <script type="module" src="../js/datos/sidebar.js"></script>
+
+
+  <!-- Modales Empresariales -->
+  <div id="modalGenerico" class="modal-overlay">
+    <div class="modal-box">
+      <button class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      <h3 id="modalTitle"></h3>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification">
+    <div class="notification-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <div class="notification-content-text">
+      <strong>Operación Exitosa</strong>
+      <p id="notificationText">La acción se realizó correctamente.</p>
+    </div>
+  </div>
+
+
+
+
+  <script type="module" src="js/datos/sidebar.js"></script>
+  <script type="module" src="js/datos/mesas.js"></script>
+  <script type="module" src="js/datos/notificaciones.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </body>
 
 </html>

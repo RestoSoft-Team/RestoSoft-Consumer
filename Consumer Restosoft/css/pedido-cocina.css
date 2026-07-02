@@ -1,0 +1,331 @@
+:root {
+  --primary: #6b1e28;
+  --primary-light: #8a3b47;
+  --primary-soft: rgba(107, 30, 40, 0.08);
+  
+  --background: #f8f9fb;
+  --surface: #ffffff;
+  --surface-container: #f1f3f6;
+  --border-color: #e8ebf0;
+  
+  --dark: #111827;
+  --gray: #6b7280;
+  --soft: #9ca3af;
+  
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  /* Tamaños fijos */
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 78px;
+  --topbar-height: 80px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--background); color: var(--dark); overflow-x: hidden; }
+a { text-decoration: none; }
+
+.main { margin-left: 280px; padding: 34px; transition: margin-left 0.3s ease; }
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 34px; gap: 20px; }
+.page-title h1 { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+.page-title p { color: var(--gray); margin: 0; }
+.topbar-right { display: flex; align-items: center; gap: 18px; }
+/* El contenedor principal ahora solo sirve de base */
+.profile {
+  background: transparent; /* El fondo se pasa al enlace interno */
+}
+
+/* Esta es tu tarjeta adaptada como enlace clickable */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* Tu espacio original */
+  background: white; /* Tu fondo original */
+  padding: 10px 14px; /* Tu padding original */
+  border-radius: 20px; /* Tu borde original */
+  box-shadow: var(--shadow); /* Tu sombra original */
+  text-decoration: none; /* Quita el subrayado del enlace */
+  color: inherit; /* Hereda el color de letra del proyecto */
+  width: 100%;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* Efecto hover: se oscurece sutilmente el fondo al pasar el mouse */
+.profile-link:hover {
+  background-color: #f9fafb; /* Un gris casi imperceptible */
+  transform: translateY(-1px); /* Efecto sutil de elevación */
+  cursor: pointer;
+}
+
+/* Tu avatar de texto adaptado a las medidas de tu imagen (48px) */
+.profile-text-avatar {
+  width: 48px; /* Ajustado a 48px para emparejar con la foto */
+  height: 48px; /* Ajustado a 48px para emparejar con la foto */
+  border-radius: 50%;
+  background-color: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px; /* Subido a 16px para que balancee con el nuevo tamaño */
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Tu imagen original con object-fit para evitar que se deforme */
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover; /* Evita que las fotos estiradas se vean mal */
+  flex-shrink: 0;
+}
+
+/* Asegura que los textos sigan ordenados en columna */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Botón de menú móvil oculto por defecto */
+.mobile-menu-btn { display: none; background: white; border: none; box-shadow: var(--shadow); width: 45px; height: 45px; border-radius: 12px; font-size: 20px; color: var(--dark); cursor: pointer; align-items: center; justify-content: center; }
+
+.stats-grid { margin-bottom: 30px; }
+.stats-card { background: white; border-radius: 28px; padding: 24px; box-shadow: var(--shadow); transition: .3s; height: 100%; }
+.stats-card:hover { transform: translateY(-5px); }
+.stats-top { display: flex; justify-content: space-between; margin-bottom: 22px; }
+.stats-icon { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; }
+.icon-warning { background: var(--warning); }
+.icon-danger { background: var(--danger); }
+.icon-success { background: var(--success); }
+.status { padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.status.warning { background: rgba(217, 164, 65, .12); color: var(--warning); }
+.status.danger { background: rgba(187, 58, 75, .12); color: var(--danger); }
+.status.success { background: rgba(61, 139, 92, .12); color: var(--success); }
+.stats-card h2 { font-size: 34px; font-weight: 800; margin-bottom: 8px; }
+.stats-card p { margin: 0; color: var(--gray); font-size: 14px; }
+
+/* TABLERO KANBAN */
+.board { display: flex; gap: 24px; align-items: flex-start; }
+.board-column { flex: 1; min-width: 300px; background: #fafafa; border-radius: 24px; padding: 20px; min-height: 60vh; }
+.board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--gray-light); }
+.board-header h4 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.badge-count { background: var(--dark); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 14px; }
+.board-cards { display: flex; flex-direction: column; gap: 20px; }
+
+.order-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid var(--gray); transition: .3s; }
+
+.order-card.card-entering {
+    animation: popIn 0.3s ease forwards;
+}
+.order-card.estado-PENDIENTE { border-left-color: var(--warning); }
+.order-card.estado-PREPARANDO { border-left-color: var(--danger); }
+.order-card.estado-LISTO { border-left-color: var(--success); background: #f8fff9; }
+
+.order-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
+.order-id { font-size: 18px; font-weight: 800; color: var(--dark); }
+.table-badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; }
+
+.order-items { list-style: none; margin-bottom: 20px; }
+.order-items li { padding: 8px 0; border-bottom: 1px dashed var(--gray-light); font-size: 15px; color: var(--dark-light); font-weight: 500; }
+.order-items li:last-child { border-bottom: none; }
+
+.order-footer { display: flex; justify-content: space-between; align-items: center; }
+.time { font-size: 14px; font-weight: 700; color: var(--gray); }
+.time.late { color: var(--danger); }
+
+/* BOTONES DE ACCIÓN */
+.btn-kds { width: 100%; border: none; border-radius: 12px; padding: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-kds:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.btn-start { background: var(--warning); color: white; }
+.btn-finish { background: var(--success); color: white; }
+.btn-delivered { background: var(--gray-light); color: var(--gray); cursor: default; }
+
+.empty-text { text-align: center; color: var(--gray); padding: 40px; font-size: 14px; }
+
+@keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* PLATOS INDIVIDUALES Y UNIDADES */
+.order-items .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--gray-light);
+    flex-wrap: wrap; /* 👈 Permite que el botón baje si no cabe en móviles */
+    gap: 10px;
+}
+
+.order-items .item-row .unit-num {
+    font-size: 12px;
+    color: var(--gray);
+    background: #f4f5f7;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 5px;
+}
+
+.order-items .item-done {
+    color: var(--success);
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.order-items .item-done i {
+    color: var(--success);
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.order-items .separator {
+    margin-top: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--gray-light);
+    padding-bottom: 5px;
+    list-style: none;
+}
+
+.btn-item-listo {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 70px;
+    justify-content: center;
+}
+
+.btn-item-listo:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+.info-preparando {
+    text-align: center;
+    color: var(--gray);
+    font-size: 13px;
+    font-style: italic;
+    padding: 10px;
+    background: #f9f9fa;
+    border-radius: 10px;
+}
+
+.badge-cooking {
+    background: rgba(187, 58, 75, 0.15);
+    color: var(--danger);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.badge-pending {
+    background: rgba(217, 164, 65, 0.15);
+    color: var(--warning);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 8px;
+    text-transform: uppercase;
+    animation: blink 1.5s infinite;
+}
+
+.info-mini { font-size: 11px; color: var(--gray); font-style: italic; }
+
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+
+/* ======================================
+   RESPONSIVE DESIGN
+======================================= */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 992px) {
+    .sidebar { width: 90px; } /* Sidebar minimizado si lo tienes configurado así */
+    .sidebar .text { display: none; }
+    .main { margin-left: 90px; padding: 24px; }
+    
+    .page-title h1 { font-size: 28px; }
+    .page-title p { font-size: 14px; }
+}
+
+/* Móviles y Tablets pequeñas */
+@media (max-width: 768px) {
+    /* Ajustes del Layout Principal */
+    .main { margin-left: 0; padding: 20px; }
+    
+    /* Mostrar botón de menú */
+    .mobile-menu-btn { display: flex; }
+    
+    /* Convertir Sidebar en Overlay */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 280px;
+        transform: translateX(-100%);
+        z-index: 1050;
+        transition: transform 0.3s ease;
+    }
+    .sidebar.active { transform: translateX(0); }
+    
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(38, 47, 60, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1040;
+    }
+    .sidebar-overlay.active { display: block; }
+
+    /* Topbar */
+    .topbar { flex-wrap: wrap; }
+    
+    /* Tablero Kanban se apila verticalmente */
+    .board { flex-direction: column; gap: 20px; }
+    .board-column { width: 100%; min-width: auto; }
+    
+    /* Ajustes finos en móviles */
+    .stats-card { padding: 20px; }
+    .stats-card h2 { font-size: 28px; }
+    .stats-icon { width: 50px; height: 50px; font-size: 20px; }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+    .topbar-right .profile span, 
+    .topbar-right .profile p { display: none; } /* Ocultar texto del perfil para ahorrar espacio */
+    .profile { padding: 5px; }
+    
+    .order-card { padding: 15px; }
+    .order-items li { font-size: 14px; }
+    .btn-kds { font-size: 14px; padding: 10px; }
+}

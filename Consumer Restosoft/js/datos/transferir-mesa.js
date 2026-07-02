@@ -1,4 +1,6 @@
-import { api } from '../consumo/apiMesas.js'; 
+import { api } from '../consumo/apiMesas.js';
+import { showNotification } from './notificaciones.js';
+import { apiProfile } from '../consumo/apiProfile.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById("canvasOrigen")) {
@@ -24,33 +26,32 @@ function iniciarModuloTransferencia() {
         ctxOrig: document.getElementById("canvasOrigen").getContext("2d"),
         zonaSelectorOrig: document.getElementById("zonaOrigenSelector"),
         statusOrig: document.getElementById("statusOrigen"),
-        
+
         canvasDest: document.getElementById("canvasDestino"),
         ctxDest: document.getElementById("canvasDestino").getContext("2d"),
         zonaSelectorDest: document.getElementById("zonaDestinoSelector"),
         statusDest: document.getElementById("statusDestino"),
-        
+
         btnContinuar: document.getElementById("btnContinuar"),
         btnConfirmar: document.getElementById("btnConfirmarTransferencia"),
-        btnVolver: document.getElementById("btnVolverA1"),
-        notification: document.getElementById("notification")
+        btnVolver: document.getElementById("btnVolverA1")
     };
 
     window.addEventListener('resize', ajustarAmbasResoluciones);
 
     async function iniciarCarga() {
-        const ID_EMPRESA = 1;
+        cargarPerfilUsuario();
         try {
             const [mesasData, zonasData] = await Promise.all([
-                api.obtenerMesas(ID_EMPRESA),
-                api.obtenerZonas(ID_EMPRESA)
+                api.obtenerMesas(),
+                api.obtenerZonas()
             ]);
 
             state.mesas = mesasData;
             state.zonas = zonasData;
 
             llenarSelectores();
-            
+
             if (state.zonas.length > 0) {
                 const primeraZonaId = state.zonas[0].id || state.zonas[0].idZona;
                 state.origen.idZona = primeraZonaId;
@@ -110,7 +111,7 @@ function iniciarModuloTransferencia() {
     }
 
     function llenarSelectores() {
-        const opcionesHTML = '<option value="">Selecciona Zona...</option>' + 
+        const opcionesHTML = '<option value="">Selecciona Zona...</option>' +
             state.zonas.map(z => `<option value="${z.id || z.idZona}">${z.nombreZona}</option>`).join('');
         dom.zonaSelectorOrig.innerHTML = opcionesHTML;
         dom.zonaSelectorDest.innerHTML = opcionesHTML;
@@ -132,7 +133,7 @@ function iniciarModuloTransferencia() {
 
     function procesarClicCanvas(e, canvasHTML, stateTarget, canvasRole) {
         if (!stateTarget.idZona) return;
-        
+
         const rect = canvasHTML.getBoundingClientRect();
         const clickXVirtual = (e.clientX - rect.left) / stateTarget.scale;
         const clickYVirtual = (e.clientY - rect.top) / stateTarget.scale;
@@ -140,7 +141,7 @@ function iniciarModuloTransferencia() {
         const mesaClickeada = state.mesas.find(m => {
             const zonaIdMesa = m.idZona || m.zona?.id;
             if (zonaIdMesa !== stateTarget.idZona) return false;
-            
+
             if (m.disponibilidadPersonas > 6) {
                 return Math.abs(m.posicionX - clickXVirtual) <= 55 && Math.abs(m.posicionY - clickYVirtual) <= 32;
             }
@@ -149,9 +150,7 @@ function iniciarModuloTransferencia() {
 
         if (mesaClickeada) {
             const idMesaReal = mesaClickeada.id || mesaClickeada.idMesa;
-            
-            // Log de control para verificar si el backend envió el ID correctamente
-            console.log("Mesa clickeada:", mesaClickeada);
+
             if (!idMesaReal) {
                 mostrarNotificacion("Error: Java no está enviando el ID de la mesa. Revisa la limpieza de Maven.", "error");
                 return;
@@ -193,50 +192,66 @@ function iniciarModuloTransferencia() {
     }
 
     function dibujarPlano(canvasHTML, ctx, stateTarget, role) {
+        // 👇 LEER VARIABLES CSS DE :ROOT PARA USARLAS EN EL CANVAS
+        const rootStyles = getComputedStyle(document.documentElement);
+        const colors = {
+            bg: rootStyles.getPropertyValue('--surface-container').trim() || '#f1f3f6',
+            grid: rootStyles.getPropertyValue('--border-color').trim() || '#e8ebf0',
+            libre: rootStyles.getPropertyValue('--success').trim() || '#059669',
+            ocupada: rootStyles.getPropertyValue('--danger').trim() || '#dc2626',
+            reservada: rootStyles.getPropertyValue('--warning').trim() || '#d97706',
+            inactiva: rootStyles.getPropertyValue('--soft').trim() || '#9ca3af',
+            dark: rootStyles.getPropertyValue('--dark').trim() || '#111827',
+            surface: rootStyles.getPropertyValue('--surface').trim() || '#ffffff',
+            info: rootStyles.getPropertyValue('--info').trim() || '#4a7aff',
+            primary: rootStyles.getPropertyValue('--primary').trim() || '#6b1e28'
+        };
+
         ctx.clearRect(0, 0, canvasHTML.width, canvasHTML.height);
-        
+
         ctx.save();
         ctx.scale(stateTarget.scale, stateTarget.scale);
 
-        ctx.fillStyle = "#fafafa";
+        ctx.fillStyle = colors.bg;
         ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
 
-        ctx.strokeStyle = "#eef0f2"; ctx.lineWidth = 1;
+        ctx.strokeStyle = colors.grid;
+        ctx.lineWidth = 1;
         for (let i = 0; i < BASE_WIDTH; i += GRID_SIZE) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, BASE_HEIGHT); ctx.stroke(); }
         for (let i = 0; i < BASE_HEIGHT; i += GRID_SIZE) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(BASE_WIDTH, i); ctx.stroke(); }
 
         if (!stateTarget.idZona) { ctx.restore(); return; }
 
         const mesasAMostrar = state.mesas.filter(m => (m.idZona || m.zona?.id) === stateTarget.idZona);
-        
+
         mesasAMostrar.forEach((mesa) => {
             const idMesaReal = mesa.id || mesa.idMesa;
             const isSelected = (idMesaReal !== undefined && idMesaReal !== null) && (idMesaReal === stateTarget.idMesa);
-            drawGourmetTable(ctx, mesa, isSelected, role);
+            drawGourmetTable(ctx, mesa, isSelected, role, colors);
         });
-        
+
         ctx.restore();
     }
 
-    function drawGourmetTable(ctx, mesa, isSelected, role) {
+    function drawGourmetTable(ctx, mesa, isSelected, role, colors) {
         const C = parseInt(mesa.disponibilidadPersonas) || 4;
         ctx.save();
-        
-        let mainColor = "#6b1e28"; 
-        let strokeColor = "#4a121a";
 
-        if (mesa.estado === 'OCUPADA') { mainColor = "#d32f2f"; strokeColor = "#7f0000"; }
-        else if (mesa.estado === 'RESERVADA') { mainColor = "#ff9800"; strokeColor = "#e65100"; }
-        else if (mesa.estado === 'FUERA_SERVICIO' || mesa.estado === 'INACTIVA') { mainColor = "#757575"; strokeColor = "#424242"; }
+        let mainColor = colors.libre;
+        let strokeColor = colors.dark;
+
+        if (mesa.estado === 'OCUPADA') { mainColor = colors.ocupada; }
+        else if (mesa.estado === 'RESERVADA') { mainColor = colors.reservada; }
+        else if (mesa.estado === 'FUERA_SERVICIO' || mesa.estado === 'INACTIVA') { mainColor = colors.inactiva; }
 
         if (isSelected) {
             ctx.shadowBlur = 15;
             if (role === 'origen') {
-                ctx.shadowColor = "#0288d1";
-                strokeColor = "#01579b";
+                ctx.shadowColor = colors.info;
+                strokeColor = colors.info;
             } else {
-                ctx.shadowColor = "#3d8b5c";
-                strokeColor = "#1b5e20";
+                ctx.shadowColor = colors.primary;
+                strokeColor = colors.primary;
             }
         } else {
             ctx.shadowBlur = 0;
@@ -245,27 +260,27 @@ function iniciarModuloTransferencia() {
         if (C > 6) {
             const width = 96;
             const height = 54;
-            const xPos = mesa.posicionX - width / 2; 
+            const xPos = mesa.posicionX - width / 2;
             const yPos = mesa.posicionY - height / 2;
-            
-            ctx.fillStyle = "#333333"; ctx.shadowBlur = 0;
+
+            ctx.fillStyle = colors.dark; ctx.shadowBlur = 0;
             let sillasPorLado = Math.ceil((C - 2) / 2);
             let gapX = width / (sillasPorLado + 1);
-            
+
             for (let i = 1; i <= sillasPorLado; i++) {
                 ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos - 6, 6, 0, Math.PI * 2); ctx.fill();
                 ctx.beginPath(); ctx.arc(xPos + (i * gapX), yPos + height + 6, 6, 0, Math.PI * 2); ctx.fill();
             }
             ctx.beginPath(); ctx.arc(xPos - 6, mesa.posicionY, 6, 0, Math.PI * 2); ctx.fill();
             ctx.beginPath(); ctx.arc(xPos + width + 6, mesa.posicionY, 6, 0, Math.PI * 2); ctx.fill();
-            
-            if (isSelected) ctx.shadowBlur = 15; 
+
+            if (isSelected) ctx.shadowBlur = 15;
             ctx.fillStyle = mainColor; ctx.strokeStyle = strokeColor;
             ctx.lineWidth = isSelected ? 3 : 2;
             ctx.beginPath(); ctx.roundRect(xPos, yPos, width, height, 8); ctx.fill(); ctx.stroke();
         } else {
             const radius = 27;
-            ctx.fillStyle = "#333333"; ctx.shadowBlur = 0;
+            ctx.fillStyle = colors.dark; ctx.shadowBlur = 0;
             for (let i = 0; i < C; i++) {
                 const angle = (i * 2 * Math.PI) / C;
                 const chairX = mesa.posicionX + (radius + 8) * Math.cos(angle);
@@ -282,12 +297,84 @@ function iniciarModuloTransferencia() {
         }
 
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 14px Inter, Arial"; 
+        ctx.fillStyle = colors.surface;
+        ctx.font = "bold 14px Inter, Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(mesa.numeroMesa, mesa.posicionX, mesa.posicionY);
         ctx.restore();
+    }
+    async function cargarPerfilUsuario() {
+        const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+        const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+        if (!infoPerfilContainer) return;
+
+        try {
+            const perfilData = await apiProfile.obtenerInfoMe();
+
+            const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
+            const nombreRaw = empresaData?.nombre || "";
+
+            if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
+                nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+            } else if (nombreEmpresaContainer) {
+                nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+            }
+
+            const urlPerfil = "perfil.html";
+
+            if (perfilData && perfilData.usuario) {
+                const iniciales =
+                    (
+                        (perfilData.usuario.nombres || "").substring(0, 1) +
+                        (perfilData.usuario.apellidos || "").substring(0, 1)
+                    ).toUpperCase() || "EP";
+
+                const avatarHTML = perfilData.usuario.imagenUrl
+                    ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+                    : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+                const nombreCompleto =
+                    `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+                    "Usuario sin nombre";
+
+                const rol = perfilData.rol?.nombre || "Sin rol asignado";
+
+                infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    ${avatarHTML}
+                    <div class="profile-info">
+                        <strong>${nombreCompleto}</strong>
+                        <div style="font-size: 13px; color: var(--gray)">
+                            ${rol}
+                        </div>
+                    </div>
+                </a>
+            `;
+            } else {
+                infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    <div class="profile-text-avatar">UA</div>
+                    <div class="profile-info">
+                        <strong>Usuario Anónimo</strong>
+                        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+                    </div>
+                </a>
+            `;
+            }
+        } catch (error) {
+            console.error("Error al cargar el perfil:", error);
+            infoPerfilContainer.innerHTML = `
+            <a href="perfil.html" class="profile-link">
+                <div class="profile-text-avatar">EP</div>
+                <div class="profile-info">
+                    <strong>Error de conexión</strong>
+                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                </div>
+            </a>
+        `;
+        }
     }
 
     dom.btnConfirmar.addEventListener("click", async () => {
@@ -300,13 +387,13 @@ function iniciarModuloTransferencia() {
             if (!exito) throw new Error("Error en la transferencia");
 
             mostrarNotificacion("¡Mesas transferidas con éxito!", "success");
-            
+
             setTimeout(() => {
                 iniciarCarga();
                 goToStep(1);
                 dom.btnConfirmar.innerHTML = '<i class="fa-solid fa-check"></i> Ejecutar Transferencia';
                 dom.btnConfirmar.disabled = false;
-                
+
                 state.origen.idMesa = null;
                 state.destino.idMesa = null;
                 dom.statusOrig.className = "selection-status";
@@ -323,22 +410,15 @@ function iniciarModuloTransferencia() {
     });
 
     function mostrarNotificacion(texto, tipo) {
-        const icon = document.getElementById("notificationIcon");
-        const title = document.getElementById("notificationTitle");
-        dom.notification.className = "notification"; 
-        
+        let titulo = "Operación Exitosa";
+        let icono = "fa-circle-check";
+
         if (tipo === "error" || tipo === "warning") {
-            dom.notification.classList.add("error");
-            icon.className = "fa-solid fa-circle-xmark";
-            title.textContent = "Atención";
-        } else {
-            icon.className = "fa-solid fa-circle-check";
-            title.textContent = "Operación Exitosa";
+            titulo = "Atención";
+            icono = "fa-triangle-exclamation";
         }
 
-        document.getElementById("notificationText").textContent = texto;
-        dom.notification.classList.add("show");
-        setTimeout(() => dom.notification.classList.remove("show"), 4000);
+        showNotification(titulo, texto, tipo === "error" ? "error" : (tipo === "warning" ? "warning" : "success"), icono);
     }
 
     iniciarCarga();

@@ -1,969 +1,151 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft - Seguimiento de Pedidos</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        :root {
-
-            --background: #fbfcfb;
-
-            --primary: #6b1e28;
-            --primary-light: #8a3b47;
-
-            --dark: #262f3c;
-            --dark-light: #39485c;
-
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
-
-            --white: #ffffff;
-
-            --gray: #6f7782;
-
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--background);
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /* =====================================
-           SIDEBAR
-        ===================================== */
-
-        .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background: var(--dark);
-            padding: 28px 22px;
-            overflow: auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 42px;
-        }
-
-        .logo-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, .08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-        }
-
-        .logo h3 {
-            color: white;
-            margin: 0;
-            font-weight: 800;
-        }
-
-        .logo p {
-            margin: 0;
-            color: #c4ccd8;
-            font-size: 13px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            color: #d7dde7;
-            transition: .3s;
-            font-weight: 500;
-        }
-
-        .menu-link:hover {
-            background: rgba(255, 255, 255, .06);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        .menu-link.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .menu-link i {
-            width: 22px;
-            text-align: center;
-        }
-
-        /* =====================================
-           MAIN
-        ===================================== */
-
-        .main {
-            margin-left: 280px;
-            padding: 34px;
-        }
-
-        /* =====================================
-           TOPBAR
-        ===================================== */
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 34px;
-            gap: 20px;
-        }
-
-        .page-title h1 {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .page-title p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            width: 320px;
-            min-height: 56px;
-            border: none;
-            border-radius: 16px;
-            background: #f7f8fa;
-            padding: 14px 18px 14px 52px;
-            transition: .3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border: 1px solid var(--primary);
-            background: white;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 18px;
-            top: 19px;
-            color: var(--gray);
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: white;
-            padding: 10px 14px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .profile img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* =====================================
-           FILTERS
-        ===================================== */
-
-        .filters {
-            display: flex;
-            gap: 18px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            border: none;
-            background: white;
-            padding: 14px 22px;
-            border-radius: 16px;
-            font-weight: 600;
-            color: var(--dark);
-            box-shadow: var(--shadow);
-            transition: .3s;
-        }
-
-        .filter-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* =====================================
-           TABLE CARD
-        ===================================== */
-
-        .table-card {
-            background: white;
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 28px;
-            gap: 20px;
-        }
-
-        .table-header h4 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .table-header p {
-            margin: 0;
-            color: var(--gray);
-        }
-
-        .btn-premium {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 14px 22px;
-            font-weight: 600;
-            transition: .3s;
-        }
-
-        .btn-premium:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        /* =====================================
-           TABLE
-        ===================================== */
-
-        .table-modern {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 16px;
-        }
-
-        .table-modern thead th {
-            color: var(--gray);
-            font-size: 13px;
-            font-weight: 600;
-            border: none;
-            padding: 0 18px 10px 18px;
-        }
-
-        .table-modern tbody tr {
-            background: #fafafa;
-            transition: .3s;
-        }
-
-        .table-modern tbody tr:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-            background: white;
-        }
-
-        .table-modern tbody td {
-            padding: 22px 18px;
-            border: none;
-            vertical-align: middle;
-        }
-
-        .table-modern tbody tr td:first-child {
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-        }
-
-        .table-modern tbody tr td:last-child {
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-
-        .order-id {
-            font-weight: 800;
-            font-size: 16px;
-        }
-
-        .client-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .client-meta {
-            font-size: 13px;
-            color: var(--gray);
-        }
-
-        /* =====================================
-           STATUS
-        ===================================== */
-
-        .status {
-            padding: 10px 16px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status.pending {
-            background: rgba(217, 164, 65, .12);
-            color: var(--warning);
-        }
-
-        .status.progress {
-            background: rgba(107, 30, 40, .12);
-            color: var(--primary);
-        }
-
-        .status.ready {
-            background: rgba(61, 139, 92, .12);
-            color: var(--success);
-        }
-
-        .status.delivered {
-            background: rgba(38, 47, 60, .08);
-            color: var(--dark);
-        }
-
-        /* =====================================
-           PROGRESS
-        ===================================== */
-
-        .progress-modern {
-            width: 100%;
-            height: 10px;
-            background: #eceef2;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-bar-modern {
-            height: 100%;
-            border-radius: 20px;
-        }
-
-        .progress-20 {
-            width: 20%;
-            background: var(--warning);
-        }
-
-        .progress-60 {
-            width: 60%;
-            background: var(--primary);
-        }
-
-        .progress-100 {
-            width: 100%;
-            background: var(--success);
-        }
-
-        /* =====================================
-           ACTION BUTTONS
-        ===================================== */
-
-        .action-btn {
-            width: 46px;
-            height: 46px;
-            border: none;
-            border-radius: 16px;
-            background: white;
-            color: var(--dark);
-            transition: .3s;
-            box-shadow: 0 8px 25px rgba(38, 47, 60, .06);
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* =====================================
-           NOTIFICATION
-        ===================================== */
-
-        .notification {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            width: 380px;
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            border-left: 6px solid var(--success);
-            transform: translateX(420px);
-            transition: .3s;
-            z-index: 9999;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .notification-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: #edf7f1;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        /* =====================================
-           RESPONSIVE
-        ===================================== */
-
-        @media(max-width:992px) {
-
-            .sidebar {
-                width: 95px;
-            }
-
-            .sidebar .logo-text,
-            .sidebar .menu-link span {
-                display: none;
-            }
-
-            .main {
-                margin-left: 95px;
-            }
-
-        }
-
-        @media(max-width:768px) {
-
-            .main {
-                padding: 22px;
-            }
-
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .topbar-right {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .table-card {
-                overflow: auto;
-            }
-
-            .notification {
-                width: 90%;
-                right: 5%;
-            }
-
-        }
-    </style>
-
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestSoft - Monitor de Pedidos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/seguimiento-pedido.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 <body>
-<!-- SIDEBAR -->
-<aside class="sidebar">
-<div>
-<div class="logo">
-<div class="logo-icon">
-<i class="fa-solid fa-bell-concierge"></i>
-</div>
-<div class="logo-text">
-<h3>RestSoft</h3>
-<p>Enterprise POS</p>
-</div>
-</div>
-<div class="menu">
-<a class="menu-link" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="menu-link active" href="#">
-<i class="fa-solid fa-bag-shopping"></i>
-<span>Seguimiento</span>
-</a>
-<a class="menu-link" href="#">
-<i class="fa-solid fa-fire-burner"></i>
-<span>Cocina</span>
-</a>
-<a class="menu-link" href="#">
-<i class="fa-solid fa-box"></i>
-<span>Inventario</span>
-</a>
-<a class="menu-link" href="#">
-<i class="fa-solid fa-gear"></i>
-<span>Configuración</span>
-</a>
-</div>
-</div>
-</aside>
-<!-- MAIN -->
-<main class="main">
-<!-- TOPBAR -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="page-title">
-<h1>Seguimiento de Pedidos</h1>
-<p>Monitorea estados, tiempos y flujo operativo en tiempo real.</p>
-</div>
-<div class="topbar-right">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar pedido, mesa o cliente..." type="text"/>
-</div>
-<div class="profile">
-<img alt="" src="https://i.pravatar.cc/100?img=14"/>
-<div>
-<strong>Laura Gómez</strong>
-<div style="font-size:13px;color:var(--gray);">
-                            Operations Manager
-                        </div>
-</div>
-</div>
-</div>
-</div>
-<!-- FILTERS -->
-<div class="filters">
-<button class="filter-btn active">
-                Todos
-            </button>
-<button class="filter-btn">
-                Pendientes
-            </button>
-<button class="filter-btn">
-                Preparando
-            </button>
-<button class="filter-btn">
-                Listos
-            </button>
-<button class="filter-btn">
-                Entregados
-            </button>
-</div>
-<!-- TABLE -->
-<div class="table-card">
-<div class="table-header">
-<div>
-<h4>Pedidos Activos</h4>
-<p>Estado operacional de órdenes del restaurante</p>
-</div>
-<button class="btn-premium" onclick="showNotification()">
-                    Actualizar Estado
-                </button>
-</div>
-<table class="table-modern">
-<thead>
-<tr>
-<th>ID</th>
-<th>Cliente</th>
-<th>Mesa</th>
-<th>Estado</th>
-<th>Tiempo</th>
-<th>Progreso</th>
-<th>Total</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<!-- ROW -->
-<tr>
-<td data-label="ID">
-<div class="order-id">
-                                #RS-2048
-                            </div>
-</td>
-<td data-label="Cliente">
-<div class="client-name">
-                                Andrea Mendoza
-                            </div>
-<div class="client-meta">
-                                4 productos
-                            </div>
-</td>
-<td data-label="Mesa">
-                            Mesa 08
-                        </td>
-<td data-label="Estado">
-<span class="status pending">
-<i class="fa-solid fa-clock"></i>
-                                Pendiente
-                            </span>
-</td>
-<td data-label="Tiempo">
-                            4 min
-                        </td>
-<td data-label="Progreso">
-<div class="progress-modern">
-<div class="progress-bar-modern progress-20"></div>
-</div>
-</td>
-<td data-label="Total">
-<strong>$174.000</strong>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-</td>
-</tr>
-<!-- ROW -->
-<tr>
-<td data-label="ID">
-<div class="order-id">
-                                #RS-2052
-                            </div>
-</td>
-<td data-label="Cliente">
-<div class="client-name">
-                                Carlos Rivera
-                            </div>
-<div class="client-meta">
-                                6 productos
-                            </div>
-</td>
-<td data-label="Mesa">
-                            Mesa 12
-                        </td>
-<td data-label="Estado">
-<span class="status progress">
-<i class="fa-solid fa-fire"></i>
-                                Preparando
-                            </span>
-</td>
-<td data-label="Tiempo">
-                            14 min
-                        </td>
-<td data-label="Progreso">
-<div class="progress-modern">
-<div class="progress-bar-modern progress-60"></div>
-</div>
-</td>
-<td data-label="Total">
-<strong>$286.000</strong>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-</td>
-</tr>
-<!-- ROW -->
-<tr>
-<td data-label="ID">
-<div class="order-id">
-                                #RS-2060
-                            </div>
-</td>
-<td data-label="Cliente">
-<div class="client-name">
-                                Isabella Torres
-                            </div>
-<div class="client-meta">
-                                3 productos
-                            </div>
-</td>
-<td data-label="Mesa">
-                            Mesa 05
-                        </td>
-<td data-label="Estado">
-<span class="status ready">
-<i class="fa-solid fa-circle-check"></i>
-                                Listo
-                            </span>
-</td>
-<td data-label="Tiempo">
-                            18 min
-                        </td>
-<td data-label="Progreso">
-<div class="progress-modern">
-<div class="progress-bar-modern progress-100"></div>
-</div>
-</td>
-<td data-label="Total">
-<strong>$98.000</strong>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-</td>
-</tr>
-<!-- ROW -->
-<tr>
-<td data-label="ID">
-<div class="order-id">
-                                #RS-2063
-                            </div>
-</td>
-<td data-label="Cliente">
-<div class="client-name">
-                                Daniel Ruiz
-                            </div>
-<div class="client-meta">
-                                2 productos
-                            </div>
-</td>
-<td data-label="Mesa">
-                            Mesa 15
-                        </td>
-<td data-label="Estado">
-<span class="status delivered">
-<i class="fa-solid fa-truck-fast"></i>
-                                Entregado
-                            </span>
-</td>
-<td data-label="Tiempo">
-                            21 min
-                        </td>
-<td data-label="Progreso">
-<div class="progress-modern">
-<div class="progress-bar-modern progress-100"></div>
-</div>
-</td>
-<td data-label="Total">
-<strong>$132.000</strong>
-</td>
-<td data-label="">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</main>
-<!-- NOTIFICATION -->
-<div class="notification" id="notification">
-<div class="notification-content">
-<div class="notification-icon">
-<i class="fa-solid fa-circle-check"></i>
-</div>
-<div>
-<strong>Estado actualizado</strong>
-<div style="font-size:14px;color:var(--gray);margin-top:4px;">
-                    El seguimiento de pedidos fue actualizado correctamente.
-                </div>
-</div>
-</div>
-</div>
-<!-- JS -->
-<script>
 
-        const notification = document.getElementById('notification');
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        function showNotification() {
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+      <h3 id="nombreEmpresa"></h3>
+    </div>
+    <div class="menu-title">Navegación</div>
+    <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard / Inicio</span></a>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="empleados.html">Empleados</a><a class="" href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class="" href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="inventario.html">Inventario</a><a class="" href="producto-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class="" href="salidas-mermas.html">Salidas/Mermas</a><a class="" href="categorias-inventario.html">Categorías</a><a class="" href="proveedores.html">Proveedores</a><a class="" href="alertas-stock.html">Alertas Stock</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu open">
+      <a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class="" href="pedido-cocina.html">Pedido Cocina</a><a class="active" href="seguimiento-pedidos.html">Seguimiento</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="reservas.html">Reservas</a><a class="" href="calendario-reservas.html">Calendario</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="facturacion.html">Facturación</a><a class="" href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class="" href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="menu-productos.html">Menú</a><a class="" href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar Platillo</a><a class="" href="promociones.html">Promociones</a><a class="" href="categorias-menu.html">Categorías Menú</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a><a class="" href="tiempos-preparacion.html">Tiempos</a><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-user-group"></i> Clientes</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="clientes.html">Clientes</a><a class="" href="cliente-crear.html">Crear Cliente</a><a class="" href="historial-cliente.html">Historial</a><a class="" href="fidelizacion.html">Fidelización</a><a class="" href="promociones-clientes.html">Promociones</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="reportes.html">Reportes</a><a class="" href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a class="" href="reporte-empleados.html">Empleados</a><a class="" href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+    </div>
+    <button class="menu-group-btn">
+      <span><i class="fa-solid fa-gear"></i> Configuración</span><i class="fa-solid fa-chevron-right chevron"></i>
+    </button>
+    <div class="submenu">
+      <a class="" href="configuracion-interfaz.html">Interfaz</a>
+      <a class="" href="perfil.html">Mi Perfil</a>
+      <a class="" href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a class="" href="backup-restauracion.html">Backup</a>
+    </div>
+  </div>
 
-            notification.classList.add('show');
+  <main class="main">
+    <div class="topbar">
+      <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-title">
+        <h1>Monitor de Pedidos</h1>
+        <p>Seguimiento visual de órdenes y tiempos de preparación en tiempo real.</p>
+      </div>
+      <div class="topbar-right">
+        <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">Cargando perfil...</p>
+        </div>
+      </div>
+    </div>
 
-            setTimeout(() => {
+    <div class="filters" id="filtersContainer">
+      <button class="filter-btn active" data-filter="TODOS">Todos</button>
+      <button class="filter-btn" data-filter="PENDIENTE">Pendientes</button>
+      <button class="filter-btn" data-filter="PREPARANDO">Preparando</button>
+      <button class="filter-btn" data-filter="LISTO">Listos</button>
+    </div>
 
-                notification.classList.remove('show');
+    <div class="table-card">
+      <div class="table-header">
+        <div>
+          <h4>Órdenes Activas</h4>
+          <p>Estado de mesas, meseros y unidades de producto</p>
+        </div>
+      </div>
 
-            }, 3000);
+      <div class="table-responsive">
+        <table class="table-modern">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Mesero</th>
+              <th>Mesa(s)</th>
+              <th>Productos (Unidades y Tiempos)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPedidos">
+            <tr>
+              <td colspan="5" class="empty-state">Cargando pedidos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 
-        }
-
-    </script>
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+  <script type="module" src="js/datos/sidebar.js"></script>
+  <script type="module" src="js/datos/pedidoSeguimiento.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script type="module" src="js/datos/notificaciones.js"></script>
 </body>
 </html>

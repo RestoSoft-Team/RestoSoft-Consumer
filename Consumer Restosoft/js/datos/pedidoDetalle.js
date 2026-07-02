@@ -1,6 +1,8 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
+import { connectWebSocket } from '../consumo/websocket.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+import { showNotification } from './notificaciones.js';
 
-const ID_EMPRESA = 1;
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
@@ -16,14 +18,19 @@ const dom = {
     statServicio: document.getElementById('stat-servicio'),
     statTotal: document.getElementById('stat-total'),
     btnMarcarListo: document.getElementById('btnMarcarListo'),
-    // Modal
+    btnEnviarTicket: document.getElementById('btnEnviarTicket'),
     btnAbrirModal: document.getElementById('btnAbrirModalProductos'),
     modalProductos: document.getElementById('modalProductos'),
     modalCloseBtn: document.getElementById('modalProductosCloseBtn'),
     categoriasContainer: document.getElementById('categoriasContainer'),
     platosContainer: document.getElementById('platosContainer'),
-    // Notificación
-    notification: document.getElementById('notification')
+    // Cancelación
+    btnCancelarPedido: document.getElementById('btnCancelarPedido'),
+    modalCancelar: document.getElementById('modalCancelar'),
+    motivoCancelacion: document.getElementById('motivoCancelacion'),
+    errorMotivo: document.getElementById('errorMotivo'),
+    btnCerrarModalCancelar: document.getElementById('btnCerrarModalCancelar'),
+    btnConfirmarCancelacion: document.getElementById('btnConfirmarCancelacion')
 };
 
 let todasLasMesas = [];
@@ -40,12 +47,15 @@ if (document.readyState === 'loading') {
 }
 
 async function initDetallePage() {
+    cargarPerfilUsuario();
+    setupCancelarPedidoListeners(); // Registramos los eventos del modal de cancelación
+
     try {
         const [mesas, pedidos, cats, platos] = await Promise.all([
-            api.getMesas(ID_EMPRESA),
-            api.getPedidosActivos(ID_EMPRESA),
-            api.getCategorias(ID_EMPRESA),
-            api.getPlatos(ID_EMPRESA)
+            api.getMesas(),
+            api.getPedidosActivos(),
+            api.getCategorias(),
+            api.getPlatos()
         ]);
 
         todasLasMesas = mesas;
@@ -53,59 +63,161 @@ async function initDetallePage() {
         categorias = cats;
         todosLosPlatos = platos;
 
-        // Cargar selector de mesas ocupadas
-        cargarMesasOcupadas();
+        cargarPedidosDropdown();
 
-        // Verificar si venimos de la pantalla de mesas con un ID específico
-        const idMesaSeleccionada = sessionStorage.getItem('mesaDetalleId');
-        if (idMesaSeleccionada) {
-            dom.selectMesaPedido.value = idMesaSeleccionada;
-            sessionStorage.removeItem('mesaDetalleId'); // Limpiar
+        const vieneDePedidos = sessionStorage.getItem('vieneDePedidos') === 'true';
+        const vieneDeMesas = sessionStorage.getItem('vieneDeMesas') === 'true';
+
+        if (vieneDePedidos) {
+            sessionStorage.removeItem('vieneDePedidos');
+            const idPedidoActivo = await api.getPedidoActivo();
+            if (idPedidoActivo) dom.selectMesaPedido.value = idPedidoActivo;
+            await api.cerrarPedidoActivo();
         }
-        
-        // Cargar pedido inicial
-        cargarPedidoDeMesa();
+        else if (vieneDeMesas) {
+            sessionStorage.removeItem('vieneDeMesas');
+            const mesaAbierta = await api.getMesaAbierta();
+            if (mesaAbierta) {
+                const ped = await api.getPedidoActivoByMesa(mesaAbierta.id);
+                if (ped) dom.selectMesaPedido.value = ped.id;
+            }
+            await api.cerrarMesa();
+        }
+        else {
+            await api.cerrarMesa();
+            await api.cerrarPedidoActivo();
+        }
 
-        // Listeners
-        dom.selectMesaPedido.addEventListener('change', cargarPedidoDeMesa);
+        cargarPedidoSeleccionado();
+
+        dom.selectMesaPedido.addEventListener('change', cargarPedidoSeleccionado);
         dom.btnAbrirModal.addEventListener('click', abrirModalProductos);
         dom.modalCloseBtn.addEventListener('click', () => dom.modalProductos.classList.remove('show'));
         dom.modalProductos.addEventListener('click', (e) => { if (e.target === dom.modalProductos) dom.modalProductos.classList.remove('show'); });
-        dom.btnMarcarListo.addEventListener('click', () => showNotification("Pedido Actualizado", "El pedido fue marcado como listo.", "success"));
-        
+
+        dom.btnMarcarListo.innerHTML = '<i class="fa-solid fa-cash-register"></i> Ir a Pagar';
+        dom.btnMarcarListo.addEventListener('click', async () => {
+            if (!pedidoActual) return;
+
+            await api.setPedidoActivo(pedidoActual.id);
+            sessionStorage.setItem('vieneDePedidoDetalle', 'true');
+            window.location.href = 'pagos.html';
+        });
+
+        dom.btnEnviarTicket.addEventListener('click', async () => {
+            if (!pedidoActual) return;
+
+            if (!pedidoActual.emailCliente || pedidoActual.emailCliente.trim() === '') {
+                showNotification("Sin Correo", "Este pedido no tiene un correo de cliente registrado para enviar el ticket.", "warning", "fa-circle-exclamation");
+                return;
+            }
+
+            dom.btnEnviarTicket.disabled = true;
+            dom.btnEnviarTicket.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            try {
+                await api.enviarTicketCorreo(pedidoActual.id);
+                showNotification("Ticket Enviado", `El ticket fue enviado correctamente a ${pedidoActual.emailCliente}.`, "success", "fa-paper-plane");
+            } catch (error) {
+                showNotification("Error", error.message || "No se pudo enviar el ticket.", "error", "fa-triangle-exclamation");
+            } finally {
+                dom.btnEnviarTicket.disabled = false;
+                dom.btnEnviarTicket.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Ticket por Correo';
+            }
+        });
+
         dom.categoriasContainer.addEventListener('click', handleCategoriasClick);
         dom.platosContainer.addEventListener('click', handlePlatosClick);
+        dom.listaProductos.addEventListener('click', handleAccordionClick);
+
+        setInterval(actualizarTiemposDOM, 1000);
+
+        connectWebSocket((canal, data) => {
+            if (canal === 'COCINA' && data.idPedido && pedidoActual && parseInt(data.idPedido) === pedidoActual.id) {
+                if (data.tipo === 'PRODUCTO_AGREGADO' || data.tipo === 'ESTADO_ACTUALIZADO') {
+                    setTimeout(() => { cargarPedidoSeleccionado(); }, 300);
+                }
+            }
+        });
 
     } catch (error) {
         console.error("Error inicial:", error);
     }
 }
 
-function cargarMesasOcupadas() {
-    const mesasOcupadas = todasLasMesas.filter(m => m.estado === 'OCUPADA');
-    if (mesasOcupadas.length === 0) {
-        dom.selectMesaPedido.innerHTML = '<option value="">No hay mesas ocupadas</option>';
-        return;
+function setupCancelarPedidoListeners() {
+    if (dom.btnCancelarPedido) {
+        dom.btnCancelarPedido.addEventListener('click', () => {
+            if (!pedidoActual) return;
+            dom.motivoCancelacion.value = '';
+            dom.errorMotivo.style.display = 'none';
+            dom.modalCancelar.style.display = 'flex';
+        });
     }
-    dom.selectMesaPedido.innerHTML = '<option value="">Seleccione una mesa...</option>' + 
-        mesasOcupadas.map(m => `<option value="${m.id}">Mesa ${m.numeroMesa}</option>`).join('');
+
+    if (dom.btnCerrarModalCancelar) {
+        dom.btnCerrarModalCancelar.addEventListener('click', () => {
+            dom.modalCancelar.style.display = 'none';
+        });
+    }
+
+    if (dom.btnConfirmarCancelacion) {
+        dom.btnConfirmarCancelacion.addEventListener('click', async () => {
+            const motivo = dom.motivoCancelacion.value.trim();
+
+            // Validación obligatoria
+            if (!motivo) {
+                dom.errorMotivo.style.display = 'block';
+                return;
+            }
+
+            dom.btnConfirmarCancelacion.disabled = true;
+            dom.btnConfirmarCancelacion.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cancelando...';
+
+            try {
+                await api.cancelarPedido(pedidoActual.id, motivo);
+                
+                dom.modalCancelar.style.display = 'none';
+                showNotification("Pedido Cancelado", "El pedido fue cancelado y las mesas liberadas correctamente.", "success", "fa-circle-check");
+                
+                // Redirigir a pedidos después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'pedidos.html';
+                }, 2000);
+
+            } catch (error) {
+                showNotification("Error", error.message || "No se pudo cancelar el pedido.", "error", "fa-triangle-exclamation");
+                dom.btnConfirmarCancelacion.disabled = false;
+                dom.btnConfirmarCancelacion.innerHTML = '<i class="fa-solid fa-ban"></i> Confirmar Cancelación';
+            }
+        });
+    }
 }
 
-async function cargarPedidoDeMesa() {
-    const idMesa = parseInt(dom.selectMesaPedido.value);
-    if (!idMesa) {
+function cargarPedidosDropdown() {
+    if (pedidosActivos.length === 0) {
+        dom.selectMesaPedido.innerHTML = '<option value="">No hay pedidos activos</option>';
+        return;
+    }
+    dom.selectMesaPedido.innerHTML = '<option value="">Seleccione un pedido...</option>' +
+        pedidosActivos.map(p => {
+            const mesasTxt = p.numerosMesas && p.numerosMesas.length > 0 ? p.numerosMesas.join(' + ') : 'Sin mesa';
+            return `<option value="${p.id}">Pedido #${p.id} (${mesasTxt})</option>`;
+        }).join('');
+}
+
+async function cargarPedidoSeleccionado() {
+    const idPedido = parseInt(dom.selectMesaPedido.value);
+    if (!idPedido) {
         limpiarVistaPedido();
         return;
     }
 
-    try {
-        pedidoActual = await api.getPedidoActivoByMesa(idMesa);
-    } catch (error) {
-        pedidoActual = null;
-    }
+    pedidosActivos = await api.getPedidosActivos();
+    pedidoActual = pedidosActivos.find(p => p.id === idPedido);
 
     if (!pedidoActual) {
-        showNotification("Sin pedido", "Esta mesa no tiene un pedido activo registrado.", "warning");
+        showNotification("Sin pedido", "No se encontró el pedido.", "warning", "fa-circle-exclamation");
         limpiarVistaPedido();
         return;
     }
@@ -113,62 +225,136 @@ async function cargarPedidoDeMesa() {
     dom.txtPedidoId.textContent = `Pedido #RS-${pedidoActual.id}`;
     dom.txtPedidoFecha.textContent = `Orden creada el ${new Date(pedidoActual.fecha).toLocaleString('es-CO')}`;
     dom.txtEstadoPedido.innerHTML = `<i class="fa-solid fa-clock"></i> ${pedidoActual.estado}`;
-    
     dom.txtMesero.textContent = pedidoActual.nombresMeseros?.join(', ') || 'Sin asignar';
-    dom.txtMesasUnidas.textContent = pedidoActual.mesasUnidasInfo || 'Mesa Principal';
+
+    // Lógica para mostrar/ocultar botón de cancelar
+    if (dom.btnCancelarPedido) {
+        if (pedidoActual.estado !== 'PAGADO' && pedidoActual.estado !== 'CANCELADO') {
+            dom.btnCancelarPedido.style.display = 'inline-flex';
+        } else {
+            dom.btnCancelarPedido.style.display = 'none';
+        }
+    }
+
+    if (pedidoActual.numerosMesas && pedidoActual.numerosMesas.length > 0) {
+        dom.txtMesasUnidas.innerHTML = pedidoActual.numerosMesas.map(n =>
+            `<span class="tag-badge mesa" style="display:inline-block; margin: 2px;">${n}</span>`
+        ).join('');
+    } else {
+        dom.txtMesasUnidas.textContent = 'Ninguna';
+    }
 
     const detalles = await api.getDetallesPedido(pedidoActual.id);
     renderProductosPedido(detalles);
 }
+
 function limpiarVistaPedido() {
     dom.txtPedidoId.textContent = 'Pedido #RS-0000';
-    dom.txtPedidoFecha.textContent = 'Seleccione una mesa para ver el pedido';
-    dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos en este pedido.</p></div>';
+    dom.txtPedidoFecha.textContent = 'Seleccione un pedido para ver el detalle';
+    dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos para mostrar.</p></div>';
     actualizarEstadisticas([]);
+    if (dom.btnCancelarPedido) dom.btnCancelarPedido.style.display = 'none';
 }
 
 function renderProductosPedido(detalles) {
-    if (detalles.length === 0) {
+    if (!detalles || detalles.length === 0) {
         dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos en este pedido.</p></div>';
-    } else {
-        dom.listaProductos.innerHTML = detalles.map(item => {
-            const total = item.cantidad;
-            const listos = item.cantidadPreparada || 0;
-            const estadoTxt = item.estado || 'PENDIENTE';
-            
-            const nombrePlato = item.nombrePlato || 'Producto';
-            const tipoPlato = item.categoriaPlato || 'General';
-            
-            let estadoClass = 'state-pending';
-            if (estadoTxt === 'PREPARANDO') estadoClass = 'state-preparing';
-            if (estadoTxt === 'LISTO') estadoClass = 'state-ready';
+        actualizarEstadisticas([]);
+        return;
+    }
 
-            return `
+    const pedidoEnProgreso = (pedidoActual.estado === 'PREPARANDO' || pedidoActual.estado === 'LISTO');
+
+    dom.listaProductos.innerHTML = detalles.map(det => {
+        const unidades = det.unidades || [];
+        const totalUnidades = unidades.length || det.cantidad;
+        const precioTotal = det.precioUnitario * totalUnidades;
+        const nombrePlato = det.nombrePlato || 'Producto';
+        const tipoPlato = det.categoriaPlato || 'General';
+
+        let unidadesHTML = '';
+        if (unidades.length > 0) {
+            unidadesHTML = `<div class="units-accordion">`;
+            unidades.forEach((u, i) => {
+                const estadoTxt = u.estado || 'PENDIENTE';
+                let estadoClass = 'state-pending';
+                let estadoTextoBonito = 'Pendiente';
+                let badgeNuevo = '';
+
+                if (estadoTxt === 'PREPARANDO') {
+                    estadoClass = 'state-preparing';
+                    estadoTextoBonito = 'En Cocina';
+                } else if (estadoTxt === 'LISTO') {
+                    estadoClass = 'state-ready';
+                    estadoTextoBonito = 'Listo';
+                } else if (estadoTxt === 'ENTREGADO') {
+                    estadoClass = 'state-ready';
+                    estadoTextoBonito = 'Entregado';
+                } else if (estadoTxt === 'PENDIENTE' && pedidoEnProgreso) {
+                    badgeNuevo = '<span class="badge-new">¡NUEVO!</span>';
+                    estadoTextoBonito = 'Agregado';
+                }
+
+                const start = u.fechaInicio ? new Date(u.fechaInicio).getTime() : 0;
+                const end = u.fechaListo ? new Date(u.fechaListo).getTime() : 0;
+                let timerHTML = `<span class="unit-time-static">En espera</span>`;
+                if (start > 0) {
+                    timerHTML = `<span class="unit-timer" data-start="${start}" data-end="${end}">00:00</span>`;
+                } else if (end > 0) {
+                    timerHTML = `<span class="unit-time-static"><i class="fa-solid fa-check"></i></span>`;
+                }
+
+                unidadesHTML += `
+                    <div class="unit-row ${estadoTxt}">
+                        <div class="unit-info">
+                            <span class="unit-label">Unidad ${i + 1} ${badgeNuevo}</span>
+                            <span class="item-status ${estadoClass}">${estadoTextoBonito}</span>
+                        </div>
+                        <div class="unit-time-box">${timerHTML}</div>
+                    </div>
+                `;
+            });
+            unidadesHTML += `</div>`;
+        }
+
+        const toggleIcon = unidades.length > 1 ? '<i class="fa-solid fa-chevron-down toggle-icon"></i>' : '';
+        const claseDiv = unidades.length === 1 ? 'auto-open' : (unidades.length > 1 ? 'clickable' : '');
+
+        return `
+            <div class="product-accordion-item ${claseDiv}">
                 <div class="product-item">
                     <div class="product-left">
                         <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
                         <div>
-                            <div class="product-name">${nombrePlato}</div>
+                            <div class="product-name">
+                                ${nombrePlato} 
+                                ${unidades.length > 1 ? `<span class="qty-badge">x${unidades.length}</span>` : ''}
+                            </div>
                             <div class="product-desc">
-                                <span style="color: var(--primary); font-weight: 600;">${tipoPlato}</span> | 
-                                Total: ${total} • Listos: <strong>${listos}</strong>
+                                <span style="color: var(--primary); font-weight: 600;">${tipoPlato}</span>
                             </div>
                         </div>
                     </div>
                     <div class="product-right">
-                        <div class="qty">Cantidad: ${total}</div>
-                        <span class="item-status ${estadoClass}">${estadoTxt}</span>
-                        <div class="price">${fmtCOP.format(item.precioUnitario * total)}</div>
+                        <div class="price">${fmtCOP.format(precioTotal)}</div>
+                        ${toggleIcon}
                     </div>
                 </div>
-            `;
-        }).join('');
-    }
+                ${unidadesHTML}
+            </div>
+        `;
+    }).join('');
+
     actualizarEstadisticas(detalles);
+    actualizarTiemposDOM();
 }
 
 function actualizarEstadisticas(detalles) {
-    const subtotal = detalles.reduce((acc, item) => acc + (item.precioUnitario * item.cantidad), 0);
+    const subtotal = detalles.reduce((acc, item) => {
+        const cant = item.unidades ? item.unidades.length : item.cantidad;
+        return acc + (item.precioUnitario * cant);
+    }, 0);
+
     const impuestos = subtotal * 0.19;
     const servicio = subtotal * 0.10;
     const total = subtotal + impuestos + servicio;
@@ -179,9 +365,40 @@ function actualizarEstadisticas(detalles) {
     dom.statTotal.textContent = fmtCOP.format(total);
 }
 
-// --- LÓGICA MODAL PRODUCTOS ---
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        const nombreRaw = perfilData?.empresa?.nombre || "";
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales = ((perfilData.usuario.nombres || "").substring(0, 1) + (perfilData.usuario.apellidos || "").substring(0, 1)).toUpperCase() || "EP";
+            const avatarHTML = perfilData.usuario.imagenUrl ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />` : `<div class="profile-text-avatar">${iniciales}</div>`;
+            const nombreCompleto = `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() || "Usuario";
+            const rol = perfilData.rol?.nombre || "Empleado";
+
+            infoPerfilContainer.innerHTML = `<a href="perfil.html" class="profile-link">${avatarHTML}<div class="profile-info"><strong>${nombreCompleto}</strong><div style="font-size:13px; color:var(--gray);">${rol}</div></div></a>`;
+        }
+    } catch (e) { console.error("Error perfil:", e); }
+}
+
+function handleAccordionClick(e) {
+    const item = e.target.closest('.product-accordion-item');
+    if (!item || !item.classList.contains('clickable')) return;
+    if (e.target.closest('.btn-add-cart') || e.target.closest('button')) return;
+    item.classList.toggle('active');
+}
+
 function abrirModalProductos() {
-    if (!pedidoActual) { showNotification("Atención", "Selecciona una mesa con pedido activo primero.", "warning"); return; }
+    if (!pedidoActual) {
+        showNotification("Atención", "Selecciona un pedido activo primero.", "warning", "fa-circle-exclamation");
+        return;
+    }
     renderCategorias();
     renderPlatos();
     dom.modalProductos.classList.add('show');
@@ -189,9 +406,7 @@ function abrirModalProductos() {
 
 function renderCategorias() {
     dom.categoriasContainer.innerHTML = `<button class="categoria-pill active" data-cat="todas">Todos</button>`;
-    categorias.forEach(cat => {
-        dom.categoriasContainer.innerHTML += `<button class="categoria-pill" data-cat="${cat.id}">${cat.nombre}</button>`;
-    });
+    categorias.forEach(cat => dom.categoriasContainer.innerHTML += `<button class="categoria-pill" data-cat="${cat.id}">${cat.nombre}</button>`);
 }
 
 function handleCategoriasClick(e) {
@@ -211,12 +426,10 @@ function renderPlatos() {
             return String(catId) === String(categoriaActiva);
         });
     }
-
     if (platosFiltrados.length === 0) {
         dom.platosContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay platos.</p></div>`;
         return;
     }
-
     dom.platosContainer.innerHTML = platosFiltrados.map(plato => `
         <div class="plato-card">
             <div class="plato-header">
@@ -237,21 +450,18 @@ function renderPlatos() {
                     <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
-        </div>
-    `).join('');
+        </div>`).join('');
 }
 
 async function handlePlatosClick(e) {
     const qtyBtn = e.target.closest('.qty-btn');
     const addBtn = e.target.closest('.btn-add-cart');
-
     if (qtyBtn) {
         const input = qtyBtn.parentElement.querySelector('.qty-input');
         let val = parseInt(input.value);
         if (qtyBtn.dataset.action === 'minus' && val > 1) input.value = val - 1;
         if (qtyBtn.dataset.action === 'plus') input.value = val + 1;
     }
-
     if (addBtn) {
         const input = addBtn.parentElement.querySelector('.qty-input');
         const cantidad = parseInt(input.value);
@@ -259,55 +469,34 @@ async function handlePlatosClick(e) {
         const precio = parseFloat(addBtn.dataset.precio);
 
         try {
-            // Guardar en backend
             await api.addDetallePedido({
                 idpedido: pedidoActual.id,
                 idplato: idPlato,
                 cantidad: cantidad,
                 precioUnitario: precio
             });
-
-            showNotification("Producto Agregado", `Se agregaron ${cantidad} unidades al pedido #RS-${pedidoActual.id}.`, "success");
-            
-            // Recargar la vista del pedido para mostrar el nuevo producto
-            cargarPedidoDeMesa();
         } catch (error) {
-            showNotification("Error", "No se pudo agregar el producto.", "danger");
+            showNotification("Error", "No se pudo agregar el producto.", "error", "fa-triangle-exclamation");
         }
     }
 }
 
-function showNotification(titulo, mensaje, tipo = 'success') {
-    const notification = dom.notification;
-    const iconDiv = notification.querySelector('.notification-icon');
-    const strong = notification.querySelector('strong');
-    const textDiv = notification.querySelector('#notifMensaje');
+function actualizarTiemposDOM() {
+    document.querySelectorAll('.unit-timer').forEach(el => {
+        const start = parseInt(el.dataset.start);
+        const end = parseInt(el.dataset.end);
+        if (start === 0) return;
 
-    notification.style.borderLeftColor = '';
-    iconDiv.style.background = '';
-    iconDiv.style.color = '';
-    iconDiv.innerHTML = '';
+        const endTime = end !== 0 ? end : Date.now();
+        const diff = Math.floor((endTime - start) / 1000);
+        const m = Math.floor(diff / 60).toString().padStart(2, '0');
+        const s = (diff % 60).toString().padStart(2, '0');
+        el.textContent = `${m}:${s}`;
 
-    if (tipo === 'success') {
-        notification.style.borderLeftColor = 'var(--success)';
-        iconDiv.style.background = '#edf7f1';
-        iconDiv.style.color = 'var(--success)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-    } else if (tipo === 'danger') {
-        notification.style.borderLeftColor = 'var(--danger)';
-        iconDiv.style.background = '#fde8e8';
-        iconDiv.style.color = 'var(--danger)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-    } else if (tipo === 'warning') {
-        notification.style.borderLeftColor = 'var(--warning)';
-        iconDiv.style.background = '#fdf3e2';
-        iconDiv.style.color = 'var(--warning)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-    }
-
-    strong.textContent = titulo;
-    textDiv.textContent = mensaje;
-
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3500);
+        if (end === 0) {
+            el.className = 'unit-timer running';
+        } else {
+            el.className = 'unit-timer finished';
+        }
+    });
 }

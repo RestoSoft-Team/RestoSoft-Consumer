@@ -1,12 +1,13 @@
 import { api } from '../consumo/apiMesas.js';
 import { apiPedido } from '../consumo/apiCrearPedido.js';
+import { connectWebSocket } from '../consumo/websocket.js'; 
+import { apiProfile } from '../consumo/apiProfile.js';
 
 // =========================================
 // 1. ESTADO Y CONFIGURACIÓN GLOBAL
 // =========================================
 const state = {
     mesas: [],
-    // ... resto de tu código
     zonas: [],
     filtroActivo: 'todas',
     busqueda: '',
@@ -38,10 +39,8 @@ const dom = {
 };
 
 // =========================================
-// 2. UTILIDADES (Seguridad y Render)
+// 2. UTILIDADES
 // =========================================
-
-// Evita inyecciones XSS (Cross-Site Scripting)
 const escapeHTML = (str) => {
     if (str == null) return '';
     return String(str)
@@ -54,7 +53,6 @@ const escapeHTML = (str) => {
 
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-// Mapeo limpio de estados
 const ESTADOS_MESA = {
     LIBRE: { text: 'Disponible', color: 'table-free', status: 'status-success' },
     OCUPADA: { text: 'Ocupada', color: 'table-busy', status: 'status-danger' },
@@ -63,62 +61,60 @@ const ESTADOS_MESA = {
 };
 
 // =========================================
-// 3. CAPA DE DATOS (Caché y Backoff)
+// 3. CAPA DE DATOS
 // =========================================
-async function fetchConBackoff(idEmpresa, intento = 0) {
+async function fetchConBackoff(intento = 0) {
     const MAX_INTENTOS = 5;
     const DELAY_BASE = 1000;
     
     try {
         const [mesas, zonas] = await Promise.all([
-            api.obtenerMesas(idEmpresa),
-            api.obtenerZonas(idEmpresa)
+            api.obtenerMesas(),
+            api.obtenerZonas()
         ]);
         if (mesas && mesas.length > 0) return { mesas, zonas };
         throw new Error("EMPTY_DATA");
     } catch (error) {
         if (intento < MAX_INTENTOS) {
             await sleep(DELAY_BASE * Math.pow(2, intento));
-            return fetchConBackoff(idEmpresa, intento + 1);
+            return fetchConBackoff(intento + 1);
         }
         throw new Error("SERVICE_UNAVAILABLE");
     }
 }
 
-async function obtenerDatosOptimizados(idEmpresa) {
-    const ahora = Date.now();
-    if (cache.datos && (ahora - cache.ultimaVez < cache.TTL)) {
+async function obtenerDatosOptimizados() {
+    const agora = Date.now();
+    if (cache.datos && (agora - cache.ultimaVez < cache.TTL)) {
         return cache.datos;
     }
-    const data = await fetchConBackoff(idEmpresa);
+    const data = await fetchConBackoff();
     cache.datos = data;
-    cache.ultimaVez = ahora;
+    cache.ultimaVez = agora;
     return data;
 }
 
 // =========================================
-// 4. INICIALIZACIÓN Y POLLING INTELIGENTE
+// 4. INICIALIZACIÓN Y WEBSOCKET
 // =========================================
 document.addEventListener('DOMContentLoaded', initApp);
 
 async function initApp() {
-    const ID_EMPRESA = 1; // En producción: obtener de sesión/JWT
     renderSkeletonCards();
     setupEventListeners();
+    cargarPerfilUsuario();
 
     try {
-        await cargarYRenderizarDatos(ID_EMPRESA);
+        await cargarYRenderizarDatos();
         
-        // Iniciar actualización automática (Polling)
-        state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
-        
-        // Pausar polling si el usuario sale de la pestaña (Ahorro de recursos)
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && state.intervalId) {
-                clearInterval(state.intervalId);
-                state.intervalId = null;
-            } else if (!document.hidden && !state.intervalId) {
-                state.intervalId = setInterval(() => cargarYRenderizarDatos(ID_EMPRESA, true), 60000);
+        connectWebSocket((canal, data) => {
+            if (canal === 'COCINA') {
+                if (data.tipo === 'NUEVO_PEDIDO' || data.tipo === 'ESTADO_ACTUALIZADO' || data.tipo === 'MESA_RESERVADA' || data.tipo === 'MESA_LIBERADA') {
+                    
+                    cache.datos = null; 
+                    
+                    cargarYRenderizarDatos(true);
+                }
             }
         });
 
@@ -127,11 +123,11 @@ async function initApp() {
     }
 }
 
-async function cargarYRenderizarDatos(idEmpresa, isBackgroundUpdate = false) {
+async function cargarYRenderizarDatos(isBackgroundUpdate = false) {
     try {
-        if (!isBackgroundUpdate) cache.datos = null; // Forzar fetch fresco en carga inicial
+        if (!isBackgroundUpdate) cache.datos = null; 
         
-        const { mesas, zonas } = await obtenerDatosOptimizados(idEmpresa);
+        const { mesas, zonas } = await obtenerDatosOptimizados();
         state.mesas = mesas;
         state.zonas = zonas;
 
@@ -139,7 +135,7 @@ async function cargarYRenderizarDatos(idEmpresa, isBackgroundUpdate = false) {
         renderFilters();
         renderTables();
     } catch (error) {
-        if (!isBackgroundUpdate) throw error; // Si es carga inicial, mostrar pantalla de error
+        if (!isBackgroundUpdate) throw error; 
         console.error("El refresco automático falló, pero la UI se mantiene estable:", error);
     }
 }
@@ -167,7 +163,7 @@ function renderFilters() {
         { id: 'estado-LIBRE', texto: 'Disponibles' },
         { id: 'estado-OCUPADA', texto: 'Ocupadas' },
         { id: 'estado-RESERVADA', texto: 'Reservadas' },
-        { id: 'estado-FUERA_SERVICIO', texto: 'Fuera de Servicio' }
+        { id: 'estado-FUERA_SERVICIO', texto: 'Fuera de Dienst' }
     ];
 
     const botonesHTML = filtrosBase.map(f => crearBotonFiltro(f.id, f.texto)).join('');
@@ -183,7 +179,6 @@ function crearBotonFiltro(id, texto) {
 function renderTables() {
     let mesasFiltradas = state.mesas;
 
-    // Filtro por Estado o Zona
     if (state.filtroActivo.startsWith('estado-')) {
         mesasFiltradas = mesasFiltradas.filter(m => m.estado === state.filtroActivo.split('-')[1]);
     } else if (state.filtroActivo.startsWith('zona-')) {
@@ -191,7 +186,6 @@ function renderTables() {
         mesasFiltradas = mesasFiltradas.filter(m => m.idZona === idZona);
     }
 
-    // Filtro por Búsqueda (Input)
     if (state.busqueda) {
         const query = state.busqueda.toLowerCase();
         mesasFiltradas = mesasFiltradas.filter(m => {
@@ -206,7 +200,6 @@ function renderTables() {
         return;
     }
 
-    // Uso de DocumentFragment para rendimiento
     const fragment = document.createDocumentFragment();
     const wrapper = document.createElement('div');
 
@@ -246,10 +239,85 @@ function renderTables() {
 }
 
 // =========================================
-// 6. EVENTOS Y DELEGACIÓN (Patrón Empresarial)
+// 6. PERFIL DE USUARIO (ADAPTADO DE RESERVAS)
+// =========================================
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+
+        const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
+        const nombreRaw = empresaData?.nombre || "";
+
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else if (nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+
+        const urlPerfil = "perfil.html";
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales =
+                (
+                    (perfilData.usuario.nombres || "").substring(0, 1) +
+                    (perfilData.usuario.apellidos || "").substring(0, 1)
+                ).toUpperCase() || "EP";
+
+            const avatarHTML = perfilData.usuario.imagenUrl
+                ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+                : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+            const nombreCompleto =
+                `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+                "Usuario sin nombre";
+
+            const rol = perfilData.rol?.nombre || "Sin rol asignado";
+
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    ${avatarHTML}
+                    <div class="profile-info">
+                        <strong>${nombreCompleto}</strong>
+                        <div style="font-size: 13px; color: var(--gray)">
+                            ${rol}
+                        </div>
+                    </div>
+                </a>
+            `;
+        } else {
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    <div class="profile-text-avatar">UA</div>
+                    <div class="profile-info">
+                        <strong>Usuario Anónimo</strong>
+                        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+                    </div>
+                </a>
+            `;
+        }
+    } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+        infoPerfilContainer.innerHTML = `
+            <a href="perfil.html" class="profile-link">
+                <div class="profile-text-avatar">EP</div>
+                <div class="profile-info">
+                    <strong>Error de conexión</strong>
+                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                </div>
+            </a>
+        `;
+    }
+}
+
+// =========================================
+// 7. EVENTOS
 // =========================================
 function setupEventListeners() {
-    // Delegación para Filtros
     dom.filtersContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.filter-btn');
         if (!btn) return;
@@ -259,7 +327,6 @@ function setupEventListeners() {
         renderTables();
     });
 
-    // Delegación para Acciones de Mesas (Gestionar / Ver)
     dom.tablesGrid.addEventListener('click', (e) => {
         const btnVer = e.target.closest('.btn-ver');
         const btnGestionar = e.target.closest('.btn-gestionar');
@@ -268,25 +335,34 @@ function setupEventListeners() {
         if (btnGestionar) handleGestionarMesa(parseInt(btnGestionar.dataset.id));
     });
 
-    // Buscador con debounce básico
     let searchTimeout;
     dom.searchInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             state.busqueda = e.target.value.trim();
             renderTables();
-        }, 300); // Espera 300ms después de que el usuario deja de escribir
+        }, 300);
     });
 
-    // Cerrar Modal
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.modalOverlay.addEventListener('click', (e) => {
         if (e.target === dom.modalOverlay) closeModal();
     });
+    
+    // Listener para redirección segura
+    dom.modalBody.addEventListener('click', async (e) => {
+        const btnRedirect = e.target.closest('.btn-redirect');
+        if (btnRedirect) {
+            e.preventDefault();
+            const url = btnRedirect.dataset.url;
+            const idMesa = parseInt(btnRedirect.dataset.id);
+            await navegarSeguroBackend(idMesa, url);
+        }
+    });
 }
 
 // =========================================
-// 7. LÓGICA DE MODALES (Acciones 100% Seguras)
+// 8. LÓGICA DE MODALES
 // =========================================
 function handleVerMesa(idMesa) {
     const mesa = state.mesas.find(m => m.id === idMesa);
@@ -313,12 +389,11 @@ function handleGestionarMesa(idMesa) {
     dom.modalTitle.innerHTML = `<i class="fa-solid fa-gear"></i> Gestionar Mesa ${escapeHTML(mesa.numeroMesa)}`;
     let actionsHTML = '';
 
-    // Usamos botones, NO enlaces con URLs. El ID no se expone.
     if (mesa.estado === 'LIBRE') {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--success)">Disponible</strong>. ¿Deseas iniciar un nuevo pedido?</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pedido-crear.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-plus"></i> Crear Nuevo Pedido
                 </button>
             </div>
@@ -327,10 +402,10 @@ function handleGestionarMesa(idMesa) {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--danger)">Ocupada</strong>. Selecciona una acción:</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-outline-custom btn-redirect" data-url="../Pedidos/pedido-detalle.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-outline-custom btn-redirect" data-url="pedido-detalle.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-utensils"></i> Agregar Producto
                 </button>
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../pagos.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pagos.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-cash-register"></i> Cobrar Cuenta
                 </button>
             </div>
@@ -339,7 +414,7 @@ function handleGestionarMesa(idMesa) {
         actionsHTML = `
             <p>La mesa está <strong style="color:var(--warning)">Reservada</strong>. Esperando la llegada del cliente.</p>
             <div class="modal-actions">
-                <button class="btn-premium btn-primary-custom btn-redirect" data-url="../Pedidos/pedido-crear.html" data-id="${mesa.id}">
+                <button class="btn-premium btn-primary-custom btn-redirect" data-url="pedido-crear.html" data-id="${mesa.id}">
                     <i class="fa-solid fa-bell-concierge"></i> Iniciar Pedido de Reserva
                 </button>
             </div>
@@ -354,26 +429,13 @@ function handleGestionarMesa(idMesa) {
 
 async function navegarSeguroBackend(idMesa, urlDestino) {
     try {
-        // 1. Avisar al backend (Puntero no bloqueante)
-        await apiPedido.abrirMesa(1, idMesa); // 1 = ID del usuario logueado simulado
-
-        // 2. Redirigir a la URL 100% limpia
+        await apiPedido.abrirMesa(idMesa); 
+        sessionStorage.setItem('vieneDeMesas', 'true');
         window.location.href = urlDestino;
     } catch (error) {
         alert("No se pudo abrir la página de pedidos.");
     }
 }
-// Dentro de setupEventListeners() o al final de tu JS
-dom.modalBody.addEventListener('click', async (e) => {
-    const btnRedirect = e.target.closest('.btn-redirect');
-    if (btnRedirect) {
-        e.preventDefault();
-        const url = btnRedirect.dataset.url;
-        const idMesa = parseInt(btnRedirect.dataset.id);
-        
-        await navegarSeguroBackend(idMesa, url);
-    }
-});
 
 function openModal() { dom.modalOverlay.classList.add('show'); }
 function closeModal() { dom.modalOverlay.classList.remove('show'); }

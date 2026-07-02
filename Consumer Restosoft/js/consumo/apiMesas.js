@@ -1,13 +1,10 @@
 import { API_BASE, token } from "../consumo/config.js";
+const authHeader = { 'Authorization': `Bearer ${token}` };
 
 export const api = {
   obtenerMesas: async () => {
     try {
-      const response = await fetch(`${API_BASE}/mesas`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(`${API_BASE}/mesas`, { headers: authHeader });
       if (!response.ok) throw new Error("Error al obtener mesas");
       return await response.json();
     } catch (error) {
@@ -15,14 +12,9 @@ export const api = {
       return [];
     }
   },
-
   obtenerZonas: async () => {
     try {
-      const response = await fetch(`${API_BASE}/zonas`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(`${API_BASE}/zonas`, { headers: authHeader });
       if (!response.ok) throw new Error("Error al obtener zonas");
       return await response.json();
     } catch (error) {
@@ -30,22 +22,17 @@ export const api = {
       return [];
     }
   },
-
   intercambiarMesas: async (idMesaA, idMesaB) => {
     try {
       const response = await fetch(`${API_BASE}/mesas/${idMesaA}/${idMesaB}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json", ...authHeader }
       });
-
-      if (!response.ok)
-        throw new Error("Error en el servidor al intercambiar mesas");
-      return true; // Retorna verdadero si el backend respondió exitosamente (200 OK)
+      if (!response.ok) throw new Error("Error en el servidor al intercambiar mesas");
+      return true;
     } catch (error) {
       console.error("Fallo de API al transferir:", error);
       return false;
     }
-  },
+  }
 };

@@ -2,1029 +2,260 @@
 <html lang="es">
 
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RestSoft - Mapa de Mesas</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <style>
-        :root {
-
-            --background: #fbfcfb;
-
-            --primary: #6b1e28;
-            --primary-light: #8a3b47;
-
-            --dark: #262f3c;
-            --dark-light: #39485c;
-
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
-
-            --white: #ffffff;
-
-            --gray: #6f7782;
-
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--background);
-            color: var(--dark);
-            overflow-x: hidden;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /* =========================================
-           SIDEBAR
-        ========================================= */
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--dark);
-            padding: 28px 22px;
-            overflow: auto;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 42px;
-        }
-
-        .brand-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, .08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-        }
-
-        .brand h3 {
-            color: white;
-            font-weight: 800;
-            margin: 0;
-        }
-
-        .brand p {
-            margin: 0;
-            color: #c5ccd7;
-            font-size: 13px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 18px;
-            border-radius: 18px;
-            color: #d7dde7;
-            font-weight: 500;
-            transition: .3s;
-        }
-
-        .menu-link:hover {
-            background: rgba(255, 255, 255, .06);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        .menu-link.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .menu-link i {
-            width: 22px;
-            text-align: center;
-        }
-
-        /* =========================================
-           MAIN
-        ========================================= */
-
-        .main {
-            margin-left: 280px;
-            padding: 34px;
-        }
-
-        /* =========================================
-           TOPBAR
-        ========================================= */
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 34px;
-            gap: 20px;
-        }
-
-        .page-title h1 {
-            font-size: 38px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .page-title p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            width: 320px;
-            min-height: 56px;
-            background: #f7f8fa;
-            border: none;
-            border-radius: 16px;
-            padding: 14px 18px 14px 52px;
-            transition: .3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border: 1px solid var(--primary);
-            background: white;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 18px;
-            top: 19px;
-            color: var(--gray);
-        }
-
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: white;
-            padding: 10px 14px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .profile img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* =========================================
-           LAYOUT
-        ========================================= */
-
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 28px;
-        }
-
-        /* =========================================
-           PANEL
-        ========================================= */
-
-        .panel {
-            background: white;
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            height: fit-content;
-        }
-
-        .panel-title {
-            margin-bottom: 26px;
-        }
-
-        .panel-title h4 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .panel-title p {
-            color: var(--gray);
-            margin: 0;
-        }
-
-        /* =========================================
-           STATUS LEGEND
-        ========================================= */
-
-        .legend {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            border-radius: 18px;
-            background: #fafafa;
-        }
-
-        .legend-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .legend-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-        }
-
-        .dot-success {
-            background: var(--success);
-        }
-
-        .dot-danger {
-            background: var(--danger);
-        }
-
-        .dot-warning {
-            background: var(--warning);
-        }
-
-        .legend strong {
-            font-size: 14px;
-        }
-
-        /* =========================================
-           MAP
-        ========================================= */
-
-        .map-card {
-            background: white;
-            border-radius: 34px;
-            padding: 34px;
-            box-shadow: var(--shadow);
-            min-height: 850px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .map-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 34px;
-        }
-
-        .map-header h3 {
-            font-size: 28px;
-            font-weight: 800;
-            margin: 0;
-        }
-
-        .btn-premium {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            padding: 14px 22px;
-            font-weight: 600;
-            transition: .3s;
-        }
-
-        .btn-premium:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
-        /* =========================================
-           RESTAURANT MAP
-        ========================================= */
-
-        .restaurant-map {
-            position: relative;
-            width: 100%;
-            min-height: 680px;
-            border-radius: 30px;
-            background: #fafafa;
-            overflow: hidden;
-            border: 1px solid #f0f0f0;
-        }
-
-        /* AREAS */
-
-        .area-label {
-            position: absolute;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--gray);
-            letter-spacing: 1px;
-        }
-
-        .kitchen {
-            top: 24px;
-            right: 40px;
-        }
-
-        .bar {
-            bottom: 34px;
-            left: 40px;
-        }
-
-        .vip {
-            top: 40px;
-            left: 40px;
-        }
-
-        /* TABLES */
-
-        .table-item {
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            border-radius: 32px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            transition: .3s;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-        }
-
-        .table-item:hover {
-            transform: translateY(-6px) scale(1.02);
-        }
-
-        .table-item h4 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .table-item span {
-            font-size: 13px;
-            opacity: .9;
-            margin-top: 6px;
-        }
-
-        .table-success {
-            background: var(--success);
-        }
-
-        .table-danger {
-            background: var(--danger);
-        }
-
-        .table-warning {
-            background: var(--warning);
-        }
-
-        /* TABLE POSITIONS */
-
-        .t1 {
-            top: 90px;
-            left: 80px;
-        }
-
-        .t2 {
-            top: 90px;
-            left: 280px;
-        }
-
-        .t3 {
-            top: 90px;
-            left: 480px;
-        }
-
-        .t4 {
-            top: 280px;
-            left: 120px;
-        }
-
-        .t5 {
-            top: 280px;
-            left: 360px;
-        }
-
-        .t6 {
-            top: 280px;
-            left: 600px;
-        }
-
-        .t7 {
-            top: 500px;
-            left: 180px;
-        }
-
-        .t8 {
-            top: 500px;
-            left: 460px;
-        }
-
-        /* =========================================
-           INFO CARD
-        ========================================= */
-
-        .info-card {
-            margin-top: 24px;
-            padding: 22px;
-            border-radius: 24px;
-            background: #fafafa;
-        }
-
-        .info-card h5 {
-            font-weight: 700;
-            margin-bottom: 18px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            font-size: 14px;
-        }
-
-        .info-item span {
-            color: var(--gray);
-        }
-
-        /* =========================================
-           NOTIFICATION
-        ========================================= */
-
-        .notification {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            width: 380px;
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, .12);
-            border-left: 6px solid var(--success);
-            transform: translateX(420px);
-            transition: .3s;
-            z-index: 9999;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification-content {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .notification-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: #edf7f1;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        /* =========================================
-           RESPONSIVE
-        ========================================= */
-
-        @media(max-width:1200px) {
-
-            .layout-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-        @media(max-width:992px) {
-
-            .sidebar {
-                width: 95px;
-            }
-
-            .sidebar .brand-text,
-            .sidebar .menu-link span {
-                display: none;
-            }
-
-            .main {
-                margin-left: 95px;
-            }
-
-        }
-
-        @media(max-width:768px) {
-
-            .main {
-                padding: 22px;
-            }
-
-            .topbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .topbar-right {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .restaurant-map {
-                overflow: auto;
-            }
-
-            .notification {
-                width: 90%;
-                right: 5%;
-            }
-
-        }
-    </style>
-
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestSoft - Mapa de Mesas en Vivo</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/mapa-mesas.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <script type="module" src="js/datos/theme-loader.js"></script>
 
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
-
-    <aside class="sidebar">
-
-        <div>
-
-            <div class="brand">
-
-                <div class="brand-icon">
-                    <i class="fa-solid fa-table"></i>
-                </div>
-
-                <div class="brand-text">
-                    <h3>RestSoft</h3>
-                    <p>Restaurant Enterprise</p>
-                </div>
-
-            </div>
-
-            <div class="menu">
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="#" class="menu-link active">
-                    <i class="fa-solid fa-map"></i>
-                    <span>Mapa Mesas</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-bell-concierge"></i>
-                    <span>Pedidos</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>Reservas</span>
-                </a>
-
-                <a href="#" class="menu-link">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Configuración</span>
-                </a>
-
-            </div>
-
-        </div>
-
-    </aside>
-
-    <!-- MAIN -->
-
-    <main class="main">
-
-        <!-- TOPBAR -->
-
-        <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-
-            <div class="page-title">
-                <h1>Mapa de Mesas</h1>
-                <p>Visualiza ocupación, reservas y disponibilidad del restaurante.</p>
-            </div>
-
-            <div class="topbar-right">
-
-                <div class="search-box">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                    <input type="text" placeholder="Buscar mesa o cliente...">
-
-                </div>
-
-                <div class="profile">
-
-                    <img src="https://i.pravatar.cc/100?img=45" alt="">
-
-                    <div>
-                        <strong>Valentina Ruiz</strong>
-                        <div style="font-size:13px;color:var(--gray);">
-                            Floor Manager
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- GRID -->
-
-        <div class="layout-grid">
-
-            <!-- LEFT PANEL -->
-
-            <div class="panel">
-
-                <div class="panel-title">
-
-                    <h4>Estado General</h4>
-
-                    <p>Distribución operacional del salón</p>
-
-                </div>
-
-                <!-- LEGEND -->
-
-                <div class="legend">
-
-                    <div class="legend-item">
-
-                        <div class="legend-left">
-
-                            <div class="legend-dot dot-success"></div>
-
-                            <strong>Disponible</strong>
-
-                        </div>
-
-                        <span>18 Mesas</span>
-
-                    </div>
-
-                    <div class="legend-item">
-
-                        <div class="legend-left">
-
-                            <div class="legend-dot dot-danger"></div>
-
-                            <strong>Ocupada</strong>
-
-                        </div>
-
-                        <span>12 Mesas</span>
-
-                    </div>
-
-                    <div class="legend-item">
-
-                        <div class="legend-left">
-
-                            <div class="legend-dot dot-warning"></div>
-
-                            <strong>Reservada</strong>
-
-                        </div>
-
-                        <span>05 Mesas</span>
-
-                    </div>
-
-                </div>
-
-                <!-- INFO -->
-
-                <div class="info-card">
-
-                    <h5>Resumen Operacional</h5>
-
-                    <div class="info-item">
-                        <span>Capacidad Total</span>
-                        <strong>96 Personas</strong>
-                    </div>
-
-                    <div class="info-item">
-                        <span>Ocupación Actual</span>
-                        <strong>68%</strong>
-                    </div>
-
-                    <div class="info-item">
-                        <span>Reservas Hoy</span>
-                        <strong>34</strong>
-                    </div>
-
-                    <div class="info-item">
-                        <span>Mesas VIP</span>
-                        <strong>08</strong>
-                    </div>
-
-                    <div class="info-item">
-                        <span>Tiempo Promedio</span>
-                        <strong>1h 18m</strong>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- MAP -->
-
-            <div class="map-card">
-
-                <div class="map-header">
-
-                    <h3>Plano Restaurante</h3>
-
-                    <button class="btn-premium" onclick="showNotification()">
-                        Actualizar Estado
-                    </button>
-
-                </div>
-
-                <div class="restaurant-map">
-
-                    <!-- AREA LABELS -->
-
-                    <div class="area-label vip">
-                        ZONA VIP
-                    </div>
-
-                    <div class="area-label kitchen">
-                        COCINA
-                    </div>
-
-                    <div class="area-label bar">
-                        BAR & LOUNGE
-                    </div>
-
-                    <!-- TABLES -->
-
-                    <div class="table-item table-success t1">
-
-                        <h4>01</h4>
-
-                        <span>Libre</span>
-
-                    </div>
-
-                    <div class="table-item table-danger t2">
-
-                        <h4>02</h4>
-
-                        <span>Ocupada</span>
-
-                    </div>
-
-                    <div class="table-item table-warning t3">
-
-                        <h4>03</h4>
-
-                        <span>Reservada</span>
-
-                    </div>
-
-                    <div class="table-item table-danger t4">
-
-                        <h4>04</h4>
-
-                        <span>6 Personas</span>
-
-                    </div>
-
-                    <div class="table-item table-success t5">
-
-                        <h4>05</h4>
-
-                        <span>Disponible</span>
-
-                    </div>
-
-                    <div class="table-item table-warning t6">
-
-                        <h4>06</h4>
-
-                        <span>8:30 PM</span>
-
-                    </div>
-
-                    <div class="table-item table-danger t7">
-
-                        <h4>07</h4>
-
-                        <span>VIP</span>
-
-                    </div>
-
-                    <div class="table-item table-success t8">
-
-                        <h4>08</h4>
-
-                        <span>Libre</span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- NOTIFICATION -->
-
-    <div class="notification" id="notification">
-
-        <div class="notification-content">
-
-            <div class="notification-icon">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-
-            <div>
-
-                <strong>Mapa actualizado</strong>
-
-                <div style="font-size:14px;color:var(--gray);margin-top:4px;">
-                    El estado de las mesas fue sincronizado correctamente.
-                </div>
-
-            </div>
-
-        </div>
-
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+        <h3 id="nombreEmpresa"></h3>
+      </div>
+      <div class="menu-title">Navegación</div>
+      <a class="menu-item" href="Dashboard-example.html"
+        ><i class="fa-solid fa-chart-line"></i
+        ><span>Dashboard / Inicio</span></a
+      ><button class="menu-group-btn">
+        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="empleados.html">Empleados</a
+        ><a class="" href="empleado-crear.html">Crear Empleado</a
+        ><a class="" href="empleado-editar.html">Editar Empleado</a
+        ><a class="" href="roles-permisos.html">Roles y Permisos</a
+        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
+        ><a class="" href="asistencia.html">Asistencia</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="inventario.html">Inventario</a
+        ><a class="" href="producto-crear.html">Crear Producto</a
+        ><a class="" href="producto-editar.html">Editar Producto</a
+        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
+        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
+        ><a class="" href="categorias-inventario.html">Categorías</a
+        ><a class="" href="proveedores.html">Proveedores</a
+        ><a class="" href="alertas-stock.html">Alertas Stock</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="pedidos.html">Pedidos</a
+        ><a class="" href="pedido-crear.html">Crear Pedido</a
+        ><a class="" href="pedido-detalle.html">Detalle Pedido</a
+        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
+        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu open">
+        <a class="" href="mesas.html">Mesas</a
+        ><a class="active" href="mapa-mesas.html">Mapa Mesas</a
+        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
+        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="active" href="reservas.html">Reservas</a
+        ><a class="" href="calendario-reservas.html">Calendario</a>
+      </div>
+      <button class="menu-group-btn">
+        <span
+          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+          Pagos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="facturacion.html">Facturación</a
+        ><a class="" href="generar-factura.html">Generar Factura</a
+        ><a class="" href="pagos.html">Pagos</a
+        ><a class="" href="propinas.html">Propinas</a
+        ><a class="" href="cierre-caja.html">Cierre Caja</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="menu-productos.html">Menú</a
+        ><a class="" href="platillo-crear.html">Crear Platillo</a
+        ><a class="" href="platillo-editar.html">Editar Platillo</a
+        ><a class="" href="promociones.html">Promociones</a
+        ><a class="" href="categorias-menu.html">Categorías Menú</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
+        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
+        ><a class="" href="tiempos-preparacion.html">Tiempos</a
+        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-user-group"></i> Clientes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="clientes.html">Clientes</a
+        ><a class="" href="cliente-crear.html">Crear Cliente</a
+        ><a class="" href="historial-cliente.html">Historial</a
+        ><a class="" href="fidelizacion.html">Fidelización</a
+        ><a class="" href="promociones-clientes.html">Promociones</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="reportes.html">Reportes</a
+        ><a class="" href="reporte-ventas.html">Ventas</a
+        ><a class="" href="reporte-inventario.html">Inventario</a
+        ><a class="" href="reporte-empleados.html">Empleados</a
+        ><a class="" href="reporte-financiero.html">Financiero</a
+        ><a class="" href="reporte-reservas.html">Reservas</a
+        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+      </div>
+      <button class="menu-group-btn">
+        <span><i class="fa-solid fa-gear"></i> Configuración</span
+        ><i class="fa-solid fa-chevron-right chevron"></i>
+      </button>
+      <div class="submenu">
+        <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="perfil.html">Mi Perfil</a>
+        <a class="" href="usuarios-sistema.html">Usuarios</a
+        ><a class="" href="impresoras.html">Impresoras</a
+        ><a class="" href="metodos-pago.html">Métodos Pago</a
+        ><a class="" href="alertas.html">Alertas</a
+        ><a class="" href="backup-restauracion.html">Backup</a>
+      </div>
     </div>
 
-    <!-- JS -->
+  <main class="main">
+    <div class="topbar">
+      <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-title">
+        <h1>Mapa de Mesas</h1>
+        <p>Visualiza la ocupación y distribución del restaurante en tiempo real.</p>
+      </div>
+      <div class="topbar-right">
+        <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px">
+              Cargando perfil...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <script>
+    <div class="layout-grid">
+      <div class="panel">
+        <div class="panel-title">
+          <h4>Estado General</h4>
+          <p>Distribución operacional de la zona</p>
+        </div>
 
-        const notification = document.getElementById('notification');
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-left">
+              <div class="legend-dot dot-success"></div>
+              <strong>Disponibles</strong>
+            </div>
+            <span id="stat-disponibles">0 Mesas</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <div class="legend-dot dot-danger"></div>
+              <strong>Ocupadas</strong>
+            </div>
+            <span id="stat-ocupadas">0 Mesas</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <div class="legend-dot dot-warning"></div>
+              <strong>Reservadas</strong>
+            </div>
+            <span id="stat-reservadas">0 Mesas</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-left">
+              <div class="legend-dot dot-inactive"></div>
+              <strong>Fuera de Servicio</strong>
+            </div>
+            <span id="stat-fuera-servicio">0 Mesas</span>
+          </div>
+        </div>
 
-        function showNotification() {
+        <div class="info-card">
+          <h5>Resumen de Zona</h5>
+          <div class="info-item">
+            <span>Capacidad Total</span>
+            <strong id="stat-capacidad">0 Personas</strong>
+          </div>
+          <div class="info-item">
+            <span>Ocupación Actual</span>
+            <strong id="stat-porcentaje">0%</strong>
+          </div>
+          <div class="info-item">
+            <span>Total de Mesas</span>
+            <strong id="stat-totales">0</strong>
+          </div>
+        </div>
+      </div>
 
-            notification.classList.add('show');
+      <div class="map-card">
+        <div class="map-header">
+          <h3>Plano Mesas</h3>
+          <div class="floating-toolbar">
+            <select id="zonaSelector" class="custom-input">
+              <option value="">Cargando zonas...</option>
+            </select>
+            <button class="btn-refresh" id="btnRecargarMapa" title="Actualizar Plano">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+        </div>
 
-            setTimeout(() => {
+        <div id="canvasWrapper" class="canvas-container">
+          <canvas id="restaurantCanvas" width="800" height="600"></canvas>
+        </div>
+      </div>
+    </div>
+  </main>
 
-                notification.classList.remove('show');
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
-            }, 3000);
-
-        }
-
-    </script>
-
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+  <script type="module" src="js/datos/mapa-mesas.js"></script>
+  <script src="js/datos/sidebar.js"></script>
+  <script type="module" src="js/datos/notificaciones.js"></script>
 </body>
 
 </html>
