@@ -1,5 +1,7 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
 import { connectWebSocket } from '../consumo/websocket.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+import { showNotification } from './notificaciones.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -16,12 +18,19 @@ const dom = {
     statServicio: document.getElementById('stat-servicio'),
     statTotal: document.getElementById('stat-total'),
     btnMarcarListo: document.getElementById('btnMarcarListo'),
+    btnEnviarTicket: document.getElementById('btnEnviarTicket'),
     btnAbrirModal: document.getElementById('btnAbrirModalProductos'),
     modalProductos: document.getElementById('modalProductos'),
     modalCloseBtn: document.getElementById('modalProductosCloseBtn'),
     categoriasContainer: document.getElementById('categoriasContainer'),
     platosContainer: document.getElementById('platosContainer'),
-    notification: document.getElementById('notification')
+    // Cancelación
+    btnCancelarPedido: document.getElementById('btnCancelarPedido'),
+    modalCancelar: document.getElementById('modalCancelar'),
+    motivoCancelacion: document.getElementById('motivoCancelacion'),
+    errorMotivo: document.getElementById('errorMotivo'),
+    btnCerrarModalCancelar: document.getElementById('btnCerrarModalCancelar'),
+    btnConfirmarCancelacion: document.getElementById('btnConfirmarCancelacion')
 };
 
 let todasLasMesas = [];
@@ -38,6 +47,9 @@ if (document.readyState === 'loading') {
 }
 
 async function initDetallePage() {
+    cargarPerfilUsuario();
+    setupCancelarPedidoListeners(); // Registramos los eventos del modal de cancelación
+
     try {
         const [mesas, pedidos, cats, platos] = await Promise.all([
             api.getMesas(),
@@ -55,15 +67,13 @@ async function initDetallePage() {
 
         const vieneDePedidos = sessionStorage.getItem('vieneDePedidos') === 'true';
         const vieneDeMesas = sessionStorage.getItem('vieneDeMesas') === 'true';
-        
+
         if (vieneDePedidos) {
             sessionStorage.removeItem('vieneDePedidos');
             const idPedidoActivo = await api.getPedidoActivo();
-            if (idPedidoActivo) {
-                dom.selectMesaPedido.value = idPedidoActivo;
-            }
-            await api.cerrarPedidoActivo(); 
-        } 
+            if (idPedidoActivo) dom.selectMesaPedido.value = idPedidoActivo;
+            await api.cerrarPedidoActivo();
+        }
         else if (vieneDeMesas) {
             sessionStorage.removeItem('vieneDeMesas');
             const mesaAbierta = await api.getMesaAbierta();
@@ -71,8 +81,8 @@ async function initDetallePage() {
                 const ped = await api.getPedidoActivoByMesa(mesaAbierta.id);
                 if (ped) dom.selectMesaPedido.value = ped.id;
             }
-            await api.cerrarMesa(); 
-        } 
+            await api.cerrarMesa();
+        }
         else {
             await api.cerrarMesa();
             await api.cerrarPedidoActivo();
@@ -84,7 +94,37 @@ async function initDetallePage() {
         dom.btnAbrirModal.addEventListener('click', abrirModalProductos);
         dom.modalCloseBtn.addEventListener('click', () => dom.modalProductos.classList.remove('show'));
         dom.modalProductos.addEventListener('click', (e) => { if (e.target === dom.modalProductos) dom.modalProductos.classList.remove('show'); });
-        dom.btnMarcarListo.addEventListener('click', () => showNotification("Pedido Actualizado", "El pedido fue marcado como listo.", "success"));
+
+        dom.btnMarcarListo.innerHTML = '<i class="fa-solid fa-cash-register"></i> Ir a Pagar';
+        dom.btnMarcarListo.addEventListener('click', async () => {
+            if (!pedidoActual) return;
+
+            await api.setPedidoActivo(pedidoActual.id);
+            sessionStorage.setItem('vieneDePedidoDetalle', 'true');
+            window.location.href = 'pagos.html';
+        });
+
+        dom.btnEnviarTicket.addEventListener('click', async () => {
+            if (!pedidoActual) return;
+
+            if (!pedidoActual.emailCliente || pedidoActual.emailCliente.trim() === '') {
+                showNotification("Sin Correo", "Este pedido no tiene un correo de cliente registrado para enviar el ticket.", "warning", "fa-circle-exclamation");
+                return;
+            }
+
+            dom.btnEnviarTicket.disabled = true;
+            dom.btnEnviarTicket.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            try {
+                await api.enviarTicketCorreo(pedidoActual.id);
+                showNotification("Ticket Enviado", `El ticket fue enviado correctamente a ${pedidoActual.emailCliente}.`, "success", "fa-paper-plane");
+            } catch (error) {
+                showNotification("Error", error.message || "No se pudo enviar el ticket.", "error", "fa-triangle-exclamation");
+            } finally {
+                dom.btnEnviarTicket.disabled = false;
+                dom.btnEnviarTicket.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Ticket por Correo';
+            }
+        });
 
         dom.categoriasContainer.addEventListener('click', handleCategoriasClick);
         dom.platosContainer.addEventListener('click', handlePlatosClick);
@@ -92,19 +132,65 @@ async function initDetallePage() {
 
         setInterval(actualizarTiemposDOM, 1000);
 
-        // 👇 WEBSOCKET: Escuchar cambios en el pedido actual
         connectWebSocket((canal, data) => {
             if (canal === 'COCINA' && data.idPedido && pedidoActual && parseInt(data.idPedido) === pedidoActual.id) {
                 if (data.tipo === 'PRODUCTO_AGREGADO' || data.tipo === 'ESTADO_ACTUALIZADO') {
-                    setTimeout(() => {
-                        cargarPedidoSeleccionado();
-                    }, 300);
+                    setTimeout(() => { cargarPedidoSeleccionado(); }, 300);
                 }
             }
         });
 
     } catch (error) {
         console.error("Error inicial:", error);
+    }
+}
+
+function setupCancelarPedidoListeners() {
+    if (dom.btnCancelarPedido) {
+        dom.btnCancelarPedido.addEventListener('click', () => {
+            if (!pedidoActual) return;
+            dom.motivoCancelacion.value = '';
+            dom.errorMotivo.style.display = 'none';
+            dom.modalCancelar.style.display = 'flex';
+        });
+    }
+
+    if (dom.btnCerrarModalCancelar) {
+        dom.btnCerrarModalCancelar.addEventListener('click', () => {
+            dom.modalCancelar.style.display = 'none';
+        });
+    }
+
+    if (dom.btnConfirmarCancelacion) {
+        dom.btnConfirmarCancelacion.addEventListener('click', async () => {
+            const motivo = dom.motivoCancelacion.value.trim();
+
+            // Validación obligatoria
+            if (!motivo) {
+                dom.errorMotivo.style.display = 'block';
+                return;
+            }
+
+            dom.btnConfirmarCancelacion.disabled = true;
+            dom.btnConfirmarCancelacion.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cancelando...';
+
+            try {
+                await api.cancelarPedido(pedidoActual.id, motivo);
+                
+                dom.modalCancelar.style.display = 'none';
+                showNotification("Pedido Cancelado", "El pedido fue cancelado y las mesas liberadas correctamente.", "success", "fa-circle-check");
+                
+                // Redirigir a pedidos después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = 'pedidos.html';
+                }, 2000);
+
+            } catch (error) {
+                showNotification("Error", error.message || "No se pudo cancelar el pedido.", "error", "fa-triangle-exclamation");
+                dom.btnConfirmarCancelacion.disabled = false;
+                dom.btnConfirmarCancelacion.innerHTML = '<i class="fa-solid fa-ban"></i> Confirmar Cancelación';
+            }
+        });
     }
 }
 
@@ -131,7 +217,7 @@ async function cargarPedidoSeleccionado() {
     pedidoActual = pedidosActivos.find(p => p.id === idPedido);
 
     if (!pedidoActual) {
-        showNotification("Sin pedido", "No se encontró el pedido.", "warning");
+        showNotification("Sin pedido", "No se encontró el pedido.", "warning", "fa-circle-exclamation");
         limpiarVistaPedido();
         return;
     }
@@ -140,6 +226,15 @@ async function cargarPedidoSeleccionado() {
     dom.txtPedidoFecha.textContent = `Orden creada el ${new Date(pedidoActual.fecha).toLocaleString('es-CO')}`;
     dom.txtEstadoPedido.innerHTML = `<i class="fa-solid fa-clock"></i> ${pedidoActual.estado}`;
     dom.txtMesero.textContent = pedidoActual.nombresMeseros?.join(', ') || 'Sin asignar';
+
+    // Lógica para mostrar/ocultar botón de cancelar
+    if (dom.btnCancelarPedido) {
+        if (pedidoActual.estado !== 'PAGADO' && pedidoActual.estado !== 'CANCELADO') {
+            dom.btnCancelarPedido.style.display = 'inline-flex';
+        } else {
+            dom.btnCancelarPedido.style.display = 'none';
+        }
+    }
 
     if (pedidoActual.numerosMesas && pedidoActual.numerosMesas.length > 0) {
         dom.txtMesasUnidas.innerHTML = pedidoActual.numerosMesas.map(n =>
@@ -158,6 +253,7 @@ function limpiarVistaPedido() {
     dom.txtPedidoFecha.textContent = 'Seleccione un pedido para ver el detalle';
     dom.listaProductos.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay productos para mostrar.</p></div>';
     actualizarEstadisticas([]);
+    if (dom.btnCancelarPedido) dom.btnCancelarPedido.style.display = 'none';
 }
 
 function renderProductosPedido(detalles) {
@@ -179,19 +275,21 @@ function renderProductosPedido(detalles) {
         let unidadesHTML = '';
         if (unidades.length > 0) {
             unidadesHTML = `<div class="units-accordion">`;
-            
             unidades.forEach((u, i) => {
                 const estadoTxt = u.estado || 'PENDIENTE';
                 let estadoClass = 'state-pending';
                 let estadoTextoBonito = 'Pendiente';
                 let badgeNuevo = '';
-                
+
                 if (estadoTxt === 'PREPARANDO') {
                     estadoClass = 'state-preparing';
                     estadoTextoBonito = 'En Cocina';
                 } else if (estadoTxt === 'LISTO') {
                     estadoClass = 'state-ready';
                     estadoTextoBonito = 'Listo';
+                } else if (estadoTxt === 'ENTREGADO') {
+                    estadoClass = 'state-ready';
+                    estadoTextoBonito = 'Entregado';
                 } else if (estadoTxt === 'PENDIENTE' && pedidoEnProgreso) {
                     badgeNuevo = '<span class="badge-new">¡NUEVO!</span>';
                     estadoTextoBonito = 'Agregado';
@@ -256,7 +354,7 @@ function actualizarEstadisticas(detalles) {
         const cant = item.unidades ? item.unidades.length : item.cantidad;
         return acc + (item.precioUnitario * cant);
     }, 0);
-    
+
     const impuestos = subtotal * 0.19;
     const servicio = subtotal * 0.10;
     const total = subtotal + impuestos + servicio;
@@ -267,6 +365,28 @@ function actualizarEstadisticas(detalles) {
     dom.statTotal.textContent = fmtCOP.format(total);
 }
 
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        const nombreRaw = perfilData?.empresa?.nombre || "";
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales = ((perfilData.usuario.nombres || "").substring(0, 1) + (perfilData.usuario.apellidos || "").substring(0, 1)).toUpperCase() || "EP";
+            const avatarHTML = perfilData.usuario.imagenUrl ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />` : `<div class="profile-text-avatar">${iniciales}</div>`;
+            const nombreCompleto = `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() || "Usuario";
+            const rol = perfilData.rol?.nombre || "Empleado";
+
+            infoPerfilContainer.innerHTML = `<a href="perfil.html" class="profile-link">${avatarHTML}<div class="profile-info"><strong>${nombreCompleto}</strong><div style="font-size:13px; color:var(--gray);">${rol}</div></div></a>`;
+        }
+    } catch (e) { console.error("Error perfil:", e); }
+}
+
 function handleAccordionClick(e) {
     const item = e.target.closest('.product-accordion-item');
     if (!item || !item.classList.contains('clickable')) return;
@@ -275,7 +395,10 @@ function handleAccordionClick(e) {
 }
 
 function abrirModalProductos() {
-    if (!pedidoActual) { showNotification("Atención", "Selecciona un pedido activo primero.", "warning"); return; }
+    if (!pedidoActual) {
+        showNotification("Atención", "Selecciona un pedido activo primero.", "warning", "fa-circle-exclamation");
+        return;
+    }
     renderCategorias();
     renderPlatos();
     dom.modalProductos.classList.add('show');
@@ -283,9 +406,7 @@ function abrirModalProductos() {
 
 function renderCategorias() {
     dom.categoriasContainer.innerHTML = `<button class="categoria-pill active" data-cat="todas">Todos</button>`;
-    categorias.forEach(cat => {
-        dom.categoriasContainer.innerHTML += `<button class="categoria-pill" data-cat="${cat.id}">${cat.nombre}</button>`;
-    });
+    categorias.forEach(cat => dom.categoriasContainer.innerHTML += `<button class="categoria-pill" data-cat="${cat.id}">${cat.nombre}</button>`);
 }
 
 function handleCategoriasClick(e) {
@@ -305,12 +426,10 @@ function renderPlatos() {
             return String(catId) === String(categoriaActiva);
         });
     }
-
     if (platosFiltrados.length === 0) {
         dom.platosContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay platos.</p></div>`;
         return;
     }
-
     dom.platosContainer.innerHTML = platosFiltrados.map(plato => `
         <div class="plato-card">
             <div class="plato-header">
@@ -331,21 +450,18 @@ function renderPlatos() {
                     <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
-        </div>
-    `).join('');
+        </div>`).join('');
 }
 
 async function handlePlatosClick(e) {
     const qtyBtn = e.target.closest('.qty-btn');
     const addBtn = e.target.closest('.btn-add-cart');
-
     if (qtyBtn) {
         const input = qtyBtn.parentElement.querySelector('.qty-input');
         let val = parseInt(input.value);
         if (qtyBtn.dataset.action === 'minus' && val > 1) input.value = val - 1;
         if (qtyBtn.dataset.action === 'plus') input.value = val + 1;
     }
-
     if (addBtn) {
         const input = addBtn.parentElement.querySelector('.qty-input');
         const cantidad = parseInt(input.value);
@@ -359,12 +475,8 @@ async function handlePlatosClick(e) {
                 cantidad: cantidad,
                 precioUnitario: precio
             });
-
-            showNotification("Producto Agregado", `Se agregaron ${cantidad} unidades al pedido #RS-${pedidoActual.id}.`, "success");
-            
-            // 👇 No forzamos fetch. El WebSocket se encargará de recargar la vista en tiempo real.
         } catch (error) {
-            showNotification("Error", "No se pudo agregar el producto.", "danger");
+            showNotification("Error", "No se pudo agregar el producto.", "error", "fa-triangle-exclamation");
         }
     }
 }
@@ -387,39 +499,4 @@ function actualizarTiemposDOM() {
             el.className = 'unit-timer finished';
         }
     });
-}
-
-function showNotification(titulo, mensaje, tipo = 'success') {
-    const notification = dom.notification;
-    const iconDiv = notification.querySelector('.notification-icon');
-    const strong = notification.querySelector('strong');
-    const textDiv = notification.querySelector('#notifMensaje');
-
-    notification.style.borderLeftColor = '';
-    iconDiv.style.background = '';
-    iconDiv.style.color = '';
-    iconDiv.innerHTML = '';
-
-    if (tipo === 'success') {
-        notification.style.borderLeftColor = 'var(--success)';
-        iconDiv.style.background = '#edf7f1';
-        iconDiv.style.color = 'var(--success)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-    } else if (tipo === 'danger') {
-        notification.style.borderLeftColor = 'var(--danger)';
-        iconDiv.style.background = '#fde8e8';
-        iconDiv.style.color = 'var(--danger)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-    } else if (tipo === 'warning') {
-        notification.style.borderLeftColor = 'var(--warning)';
-        iconDiv.style.background = '#fdf3e2';
-        iconDiv.style.color = 'var(--warning)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-    }
-
-    strong.textContent = titulo;
-    textDiv.textContent = mensaje;
-
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3500);
 }

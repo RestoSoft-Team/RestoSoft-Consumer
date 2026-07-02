@@ -1,6 +1,7 @@
 import { api } from '../consumo/apiMesas.js';
 import { apiPedido } from '../consumo/apiCrearPedido.js';
-import { connectWebSocket } from '../consumo/websocket.js'; // 👈 IMPORT WEBSOCKET
+import { connectWebSocket } from '../consumo/websocket.js'; 
+import { apiProfile } from '../consumo/apiProfile.js';
 
 // =========================================
 // 1. ESTADO Y CONFIGURACIÓN GLOBAL
@@ -101,20 +102,18 @@ document.addEventListener('DOMContentLoaded', initApp);
 async function initApp() {
     renderSkeletonCards();
     setupEventListeners();
+    cargarPerfilUsuario();
 
     try {
         await cargarYRenderizarDatos();
         
-        // 👇 CONEXIÓN WEBSOCKET (Eliminamos el setInterval)
         connectWebSocket((canal, data) => {
             if (canal === 'COCINA') {
-                // Si se crea un pedido o se reserva/libera una mesa, actualizamos las tarjetas
                 if (data.tipo === 'NUEVO_PEDIDO' || data.tipo === 'ESTADO_ACTUALIZADO' || data.tipo === 'MESA_RESERVADA' || data.tipo === 'MESA_LIBERADA') {
                     
-                    // 👇 FORZAMOS QUE SE PIDAN DATOS NUEVOS AL BACKEND AL LIMPIAR LA CACHÉ
                     cache.datos = null; 
                     
-                    cargarYRenderizarDatos(true); // true = actualización en segundo plano
+                    cargarYRenderizarDatos(true);
                 }
             }
         });
@@ -240,7 +239,83 @@ function renderTables() {
 }
 
 // =========================================
-// 6. EVENTOS
+// 6. PERFIL DE USUARIO (ADAPTADO DE RESERVAS)
+// =========================================
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+
+        const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
+        const nombreRaw = empresaData?.nombre || "";
+
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else if (nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+
+        const urlPerfil = "perfil.html";
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales =
+                (
+                    (perfilData.usuario.nombres || "").substring(0, 1) +
+                    (perfilData.usuario.apellidos || "").substring(0, 1)
+                ).toUpperCase() || "EP";
+
+            const avatarHTML = perfilData.usuario.imagenUrl
+                ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+                : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+            const nombreCompleto =
+                `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+                "Usuario sin nombre";
+
+            const rol = perfilData.rol?.nombre || "Sin rol asignado";
+
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    ${avatarHTML}
+                    <div class="profile-info">
+                        <strong>${nombreCompleto}</strong>
+                        <div style="font-size: 13px; color: var(--gray)">
+                            ${rol}
+                        </div>
+                    </div>
+                </a>
+            `;
+        } else {
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    <div class="profile-text-avatar">UA</div>
+                    <div class="profile-info">
+                        <strong>Usuario Anónimo</strong>
+                        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+                    </div>
+                </a>
+            `;
+        }
+    } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+        infoPerfilContainer.innerHTML = `
+            <a href="perfil.html" class="profile-link">
+                <div class="profile-text-avatar">EP</div>
+                <div class="profile-info">
+                    <strong>Error de conexión</strong>
+                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                </div>
+            </a>
+        `;
+    }
+}
+
+// =========================================
+// 7. EVENTOS
 // =========================================
 function setupEventListeners() {
     dom.filtersContainer.addEventListener('click', (e) => {
@@ -287,7 +362,7 @@ function setupEventListeners() {
 }
 
 // =========================================
-// 7. LÓGICA DE MODALES
+// 8. LÓGICA DE MODALES
 // =========================================
 function handleVerMesa(idMesa) {
     const mesa = state.mesas.find(m => m.id === idMesa);

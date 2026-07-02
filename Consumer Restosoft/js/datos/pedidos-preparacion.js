@@ -1,7 +1,11 @@
 import { apiCocina } from '../consumo/apiCocina.js';
-import { connectWebSocket } from '../consumo/websocket.js'; // 👈 IMPORT
+import { connectWebSocket } from '../consumo/websocket.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+import { showNotification } from './notificaciones.js'; 
 
 const TIEMPO_MAX_PREPARACION = 15;
+const API_BASE = "http://localhost:8080/api";
+const TOKEN = localStorage.getItem("token") || "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4Mjg2MjA0MiwiZXhwIjoxNzgyOTQ4NDQyfQ.XLxugCL6NLafEF8vqHWdjzLTMyyqgtAqCxFF1-dEkg0";
 
 const dom = {
     statActivos: document.getElementById('stat-activos'),
@@ -12,15 +16,16 @@ const dom = {
     inputBusqueda: document.getElementById('inputBusqueda'),
     filtroEstado: document.getElementById('filtroEstado'),
     btnActualizar: document.getElementById('btnActualizar'),
-    notification: document.getElementById('notification'),
     modalPlatillos: document.getElementById('modalPlatillos'),
     modalPlatillosBody: document.getElementById('modalPlatillosBody'),
     modalPlatillosCloseBtn: document.getElementById('modalPlatillosCloseBtn')
 };
 
-let pedidosData = [];
+let pedidosData = []; 
+let todosLosPedidosHoy = []; 
 let estadoFiltro = 'TODOS';
 let busquedaFiltro = '';
+let isLoading = false;
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -29,9 +34,11 @@ if (document.readyState === 'loading') {
 }
 
 async function init() {
+    cargarPerfilUsuario();
     await cargarDatos();
 
-    // 2. Conexión WebSocket para tiempo real
+    setInterval(actualizarTiemposEnVivo, 1000);
+
     connectWebSocket((canal, data) => {
         if (canal === 'COCINA') {
             if (data.tipo === 'NUEVO_PEDIDO' || data.tipo === 'PRODUCTO_AGREGADO' || data.tipo === 'ESTADO_ACTUALIZADO') {
@@ -59,23 +66,43 @@ async function init() {
 }
 
 async function cargarDatos() {
+    if (isLoading) return;
+    isLoading = true;
+    
     try {
-        pedidosData = await apiCocina.getPedidosActivos();
-        pedidosData = await Promise.all(pedidosData.map(async p => {
-            const detalles = await apiCocina.getDetallesPedido(p.id);
-            return { ...p, detalles };
-        }));
+        const response = await fetch(`${API_BASE}/pedido`, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+        const todosLosPedidos = response.ok ? await response.json() : [];
+        
+        const hoy = new Date().setHours(0, 0, 0, 0);
+        todosLosPedidosHoy = await Promise.all(
+            todosLosPedidos
+                .filter(p => new Date(p.fecha).setHours(0, 0, 0, 0) === hoy)
+                .map(async p => {
+                    if (!p.detalles || p.detalles.length === 0) {
+                        const detalles = await apiCocina.getDetallesPedido(p.id);
+                        return { ...p, detalles };
+                    }
+                    return p;
+                })
+        );
+
+        pedidosData = todosLosPedidosHoy.filter(p => 
+            p.estado === 'PENDIENTE' || p.estado === 'PREPARANDO' || p.estado === 'LISTO'
+        );
+
         renderStats();
         renderTabla();
     } catch (error) {
         console.error("Error al cargar pedidos:", error);
         dom.tablaPedidos.innerHTML = '<tr><td colspan="6" class="text-center text-danger p-4">Error de conexión.</td></tr>';
+    } finally {
+        setTimeout(() => { isLoading = false; }, 300);
     }
 }
 
 function getMinutosPreparacion(pedido) {
     let maxMinutos = 0;
-    pedido.detalles.forEach(det => {
+    pedido.detalles?.forEach(det => {
         (det.unidades || []).forEach(u => {
             if (u.estado === 'PREPARANDO' && u.fechaInicio) {
                 const minutos = Math.floor((Date.now() - new Date(u.fechaInicio).getTime()) / 60000);
@@ -86,34 +113,54 @@ function getMinutosPreparacion(pedido) {
     return maxMinutos;
 }
 
+function getTiempoTotalPedido(pedido) {
+    let primeraFechaInicio = null;
+    let ultimaFechaListo = null;
+
+    pedido.detalles?.forEach(det => {
+        (det.unidades || []).forEach(u => {
+            if (u.fechaInicio) {
+                const inicio = new Date(u.fechaInicio).getTime();
+                if (!primeraFechaInicio || inicio < primeraFechaInicio) primeraFechaInicio = inicio;
+            }
+            if (u.fechaListo) {
+                const listo = new Date(u.fechaListo).getTime();
+                if (!ultimaFechaListo || listo > ultimaFechaListo) ultimaFechaListo = listo;
+            }
+        });
+    });
+
+    if (primeraFechaInicio && ultimaFechaListo) {
+        return Math.floor((ultimaFechaListo - primeraFechaInicio) / 60000);
+    }
+    return 0;
+}
+
 function estaRetrasado(pedido) {
     return getMinutosPreparacion(pedido) > TIEMPO_MAX_PREPARACION && pedido.estado === 'PREPARANDO';
 }
 
 function renderStats() {
-    let activos = 0;
-    let listos = 0;
-    let retrasados = 0;
-    let sumaTiempos = 0;
-    let contadorTiempos = 0;
+    let activos = 0, listosHoy = 0, retrasados = 0, sumaTiempos = 0, contadorTiempos = 0;
 
-    pedidosData.forEach(p => {
-        const minutos = getMinutosPreparacion(p);
-        if (minutos > 0) {
-            sumaTiempos += minutos;
-            contadorTiempos++;
-        }
-
-        if (p.estado === 'PREPARANDO') {
+    todosLosPedidosHoy.forEach(p => {
+        if (p.estado === 'PENDIENTE' || p.estado === 'PREPARANDO') {
             activos++;
-            if (minutos > TIEMPO_MAX_PREPARACION) retrasados++;
-        } else if (p.estado === 'LISTO') {
-            listos++;
+            if (p.estado === 'PREPARANDO' && getMinutosPreparacion(p) > TIEMPO_MAX_PREPARACION) {
+                retrasados++;
+            }
+        } else if (p.estado === 'LISTO' || p.estado === 'ENTREGADO' || p.estado === 'PAGADO') {
+            listosHoy++;
+            const tiempo = getTiempoTotalPedido(p);
+            if (tiempo > 0) {
+                sumaTiempos += tiempo;
+                contadorTiempos++;
+            }
         }
     });
 
     dom.statActivos.textContent = activos;
-    dom.statListos.textContent = listos;
+    dom.statListos.textContent = listosHoy;
     dom.statRetrasados.textContent = retrasados;
     dom.statTiempo.textContent = contadorTiempos > 0 ? `${Math.round(sumaTiempos / contadorTiempos)}m` : '0m';
 }
@@ -138,8 +185,15 @@ function renderTabla() {
 
     dom.tablaPedidos.innerHTML = pedidosFiltrados.map(p => {
         const mesa = p.numerosMesas?.join(' + ') || 'N/A';
-        const platillos = p.detalles.map(d => `${d.cantidad}x ${d.nombrePlato}`).join(', ');
         const minutos = getMinutosPreparacion(p);
+        
+        const platosAgrupados = {};
+        p.detalles.forEach(d => {
+            const nombre = d.nombrePlato;
+            if (!platosAgrupados[nombre]) platosAgrupados[nombre] = 0;
+            platosAgrupados[nombre] += d.cantidad || (d.unidades ? d.unidades.length : 0);
+        });
+        const platillos = Object.keys(platosAgrupados).map(n => `${platosAgrupados[n]}x ${n}`).join(', ');
         
         let estadoTxt = p.estado;
         let estadoClass = p.estado;
@@ -166,7 +220,7 @@ function renderTabla() {
                         ${platillos}
                     </div>
                 </td>
-                <td data-label="Tiempo"><strong>${minutos} min</strong></td>
+                <td data-label="Tiempo"><strong class="tiempo-celda" data-id="${p.id}">${minutos} min</strong></td>
                 <td data-label="Estado"><span class="status ${estadoClass}">${estadoTxt}</span></td>
                 <td data-label="Acción">${botonHTML}</td>
             </tr>
@@ -189,16 +243,61 @@ function renderTabla() {
     });
 }
 
+function actualizarTiemposEnVivo() {
+    document.querySelectorAll('.tiempo-celda').forEach(el => {
+        const idPedido = parseInt(el.dataset.id);
+        const pedido = pedidosData.find(p => p.id === idPedido);
+        if (pedido && pedido.estado === 'PREPARANDO') {
+            const minutos = getMinutosPreparacion(pedido);
+            el.textContent = `${minutos} min`;
+        }
+    });
+}
+
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        const nombreRaw = perfilData?.empresa?.nombre || "";
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales = ((perfilData.usuario.nombres || "").substring(0, 1) + (perfilData.usuario.apellidos || "").substring(0, 1)).toUpperCase() || "EP";
+            const avatarHTML = perfilData.usuario.imagenUrl ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />` : `<div class="profile-text-avatar">${iniciales}</div>`;
+            const nombreCompleto = `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() || "Usuario";
+            const rol = perfilData.rol?.nombre || "Empleado";
+
+            infoPerfilContainer.innerHTML = `<a href="perfil.html" class="profile-link">${avatarHTML}<div class="profile-info"><strong>${nombreCompleto}</strong><div style="font-size:13px; color:var(--gray);">${rol}</div></div></a>`;
+        }
+    } catch (e) { console.error("Error perfil:", e); }
+}
+
 function abrirModalPlatillos(idPedido) {
     const pedido = pedidosData.find(p => p.id === idPedido);
     if (!pedido) return;
 
-    const itemsHTML = pedido.detalles.map(d => `
-        <div class="platillo-item-modal">
-            <span><strong>${d.cantidad}x</strong> ${d.nombrePlato}</span>
-            <span style="color: var(--gray); font-size: 13px;">${d.categoriaPlato || ''}</span>
-        </div>
-    `).join('');
+    const platosAgrupados = {};
+    pedido.detalles.forEach(d => {
+        const nombre = d.nombrePlato;
+        if (!platosAgrupados[nombre]) {
+            platosAgrupados[nombre] = { cantidad: 0, categoria: d.categoriaPlato || '' };
+        }
+        platosAgrupados[nombre].cantidad += d.cantidad || (d.unidades ? d.unidades.length : 0);
+    });
+
+    const itemsHTML = Object.keys(platosAgrupados).map(nombre => {
+        const data = platosAgrupados[nombre];
+        return `
+            <div class="platillo-item-modal">
+                <span><strong>${data.cantidad}x</strong> ${nombre}</span>
+                <span style="color: var(--gray); font-size: 13px;">${data.categoria}</span>
+            </div>
+        `;
+    }).join('');
 
     dom.modalPlatillosBody.innerHTML = `
         <p style="color: var(--gray); margin-bottom: 15px;">Pedido #RS-${pedido.id} - Mesa: ${pedido.numerosMesas?.join(' + ') || 'N/A'}</p>
@@ -232,41 +331,10 @@ async function marcarPedidoListo(idPedido) {
         const promesas = unidadesActualizar.map(id => apiCocina.actualizarUnidad(id, 'LISTO'));
         await Promise.all(promesas);
 
-        showNotification("Pedido Listo", `El pedido #RS-${idPedido} fue marcado como listo para entregar.`, "success");
-        // El WebSocket se encargará de recargar, pero forzamos por optimismo:
+        showNotification("Pedido Listo", `El pedido #RS-${idPedido} fue marcado como listo para entregar.`, "success", "fa-circle-check");
         await cargarDatos();
     } catch (error) {
-        showNotification("Error", "No se pudo actualizar el pedido.", "danger");
+        showNotification("Error", "No se pudo actualizar el pedido.", "error", "fa-triangle-exclamation");
         if (btn) btn.disabled = false;
     }
-}
-
-function showNotification(titulo, mensaje, tipo = 'success') {
-    const notification = dom.notification;
-    const iconDiv = notification.querySelector('.notification-icon');
-    const strong = notification.querySelector('h5');
-    const textDiv = notification.querySelector('p');
-
-    notification.style.borderLeftColor = '';
-    iconDiv.style.background = '';
-    iconDiv.style.color = '';
-    iconDiv.innerHTML = '';
-
-    if (tipo === 'success') {
-        notification.style.borderLeftColor = 'var(--success)';
-        iconDiv.style.background = 'rgba(61, 139, 92, 0.12)';
-        iconDiv.style.color = 'var(--success)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-    } else if (tipo === 'danger') {
-        notification.style.borderLeftColor = 'var(--danger)';
-        iconDiv.style.background = 'rgba(187, 58, 75, 0.12)';
-        iconDiv.style.color = 'var(--danger)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-    }
-
-    strong.textContent = titulo;
-    textDiv.textContent = mensaje;
-
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3500);
 }

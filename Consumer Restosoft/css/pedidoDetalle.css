@@ -1,19 +1,42 @@
 :root {
-    --background: #fbfcfb;
-    --primary: #6b1e28;
-    --primary-light: #8a3b47;
-    --dark: #262f3c;
-    --dark-light: #39485c;
-    --soft: #b09da2;
-    --soft-light: #d9d2d4;
-    --white: #ffffff;
-    --gray: #6f7782;
-    --gray-light: #eef0f2;
-    --success: #3d8b5c;
-    --warning: #d9a441;
-    --danger: #bb3a4b;
-    --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-    --radius: 24px;
+  /* Marca */
+  --primary: #6b1e28;
+  --primary-light: #8a3b47;
+  --primary-soft: rgba(107, 30, 40, 0.08);
+  
+  /* Fondo y Superficie */
+  --background: #f8f9fb;
+  --surface: #ffffff;
+  --surface-container: #f1f3f6;
+  --border-color: #e8ebf0;
+  
+  /* Texto */
+  --dark: #111827;
+  --gray: #6b7280;
+  --soft: #9ca3af;
+  --white:var(--background);
+  
+  /* Estados */
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  
+  /* Sombras y Bordes (Estos no suelen cambiarse desde la API, los dejamos fijos) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  /* Tamaños fijos */
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 78px;
+  --topbar-height: 80px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,8 +48,66 @@ a { text-decoration: none; }
 .page-title h1 { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
 .page-title p { color: var(--gray); margin: 0; }
 .topbar-right { display: flex; align-items: center; gap: 18px; }
-.profile { background: white; padding: 10px 14px; border-radius: 20px; display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow); }
-.profile img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+/* El contenedor principal ahora solo sirve de base */
+.profile {
+  background: transparent; /* El fondo se pasa al enlace interno */
+}
+
+/* Esta es tu tarjeta adaptada como enlace clickable */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* Tu espacio original */
+  background: white; /* Tu fondo original */
+  padding: 10px 14px; /* Tu padding original */
+  border-radius: 20px; /* Tu borde original */
+  box-shadow: var(--shadow); /* Tu sombra original */
+  text-decoration: none; /* Quita el subrayado del enlace */
+  color: inherit; /* Hereda el color de letra del proyecto */
+  width: 100%;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* Efecto hover: se oscurece sutilmente el fondo al pasar el mouse */
+.profile-link:hover {
+  background-color: #f9fafb; /* Un gris casi imperceptible */
+  transform: translateY(-1px); /* Efecto sutil de elevación */
+  cursor: pointer;
+}
+
+/* Tu avatar de texto adaptado a las medidas de tu imagen (48px) */
+.profile-text-avatar {
+  width: 48px; /* Ajustado a 48px para emparejar con la foto */
+  height: 48px; /* Ajustado a 48px para emparejar con la foto */
+  border-radius: 50%;
+  background-color: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px; /* Subido a 16px para que balancee con el nuevo tamaño */
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Tu imagen original con object-fit para evitar que se deforme */
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover; /* Evita que las fotos estiradas se vean mal */
+  flex-shrink: 0;
+}
+
+/* Asegura que los textos sigan ordenados en columna */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
 
 .card-premium { background: white; border-radius: 28px; padding: 30px; box-shadow: var(--shadow); margin-bottom: 28px; }
 .card-header-custom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
@@ -177,10 +258,28 @@ label { font-weight: 600; margin-bottom: 12px; display: block; }
 .categoria-pill.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 
 .platos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; overflow-y: auto; padding-right: 10px; }
-.plato-card { background: var(--white); border: 1px solid var(--gray-light); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.plato-card { 
+    background: var(--surface); 
+    border: 2px solid var(--gray-light);
+    border-radius: 20px; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    transition: all 0.3s ease; 
+}
+
+.plato-card:hover { 
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    transform: translateY(-5px); /* Eleva un poco la tarjeta */
+    box-shadow: var(--shadow); 
+}
+
+/* Mantenemos los colores internos igual para que no se pierdan */
 .plato-header { display: flex; gap: 15px; margin-bottom: 15px; }
-.plato-icon { width: 50px; height: 50px; background: #f3ebec; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; }
-.plato-info h5 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; }
+.plato-icon { width: 50px; height: 50px; background: #f3ebec; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; flex-shrink: 0; }
+.plato-info h5 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; color: var(--dark); }
 .plato-info p { margin: 0; font-size: 13px; color: var(--gray); }
 .plato-precio { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 15px; }
 .plato-actions { display: flex; align-items: center; gap: 10px; }

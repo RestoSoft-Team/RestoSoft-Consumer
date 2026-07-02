@@ -1,5 +1,5 @@
 const API_BASE = "http://localhost:8080/api";
-const TOKEN = localStorage.getItem("token") || "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4Mjc3MzYyMiwiZXhwIjoxNzgyODYwMDIyfQ.u7CG1zEdY36gDCpqDnl7_qTnOqUba9SzsGGVbG1Y94g";
+const TOKEN = localStorage.getItem("token") || "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3ODI5NjM3NTgsImV4cCI6MTc4MzA1MDE1OH0.1WTCvqGMvtjPGPAHfR-d8_rpwphG3kqdBs7eki7uqKQ";
 const authHeader = { 'Authorization': `Bearer ${TOKEN}` };
 
 export const apiPedidoDetalle = {
@@ -7,7 +7,7 @@ export const apiPedidoDetalle = {
         const response = await fetch(`${API_BASE}/mesas`, { headers: authHeader });
         return response.ok ? await response.json() : [];
     },
-    
+
     getMesaAbierta: async () => {
         try {
             const response = await fetch(`${API_BASE}/sesion/mesa-activa`, { method: 'GET', headers: { ...authHeader } });
@@ -27,12 +27,19 @@ export const apiPedidoDetalle = {
         const response = await fetch(`${API_BASE}/pedido/${idPedido}`, { headers: authHeader });
         return response.ok ? await response.json() : null;
     },
+
     getPedidosActivos: async () => {
         const response = await fetch(`${API_BASE}/pedido`, { headers: authHeader });
         if (!response.ok) return [];
         const pedidos = await response.json();
         return pedidos.filter(p => p.estado !== 'PAGADO' && p.estado !== 'CANCELADO');
     },
+
+    getTodosLosPedidos: async () => {
+        const response = await fetch(`${API_BASE}/pedido`, { headers: authHeader });
+        return response.ok ? await response.json() : [];
+    },
+
     getDetallesPedido: async (idPedido) => {
         const response = await fetch(`${API_BASE}/detallepedido/${idPedido}`, { headers: authHeader });
         return response.ok ? await response.json() : [];
@@ -57,7 +64,7 @@ export const apiPedidoDetalle = {
     getPedidoActivoByMesa: async (idMesa) => {
         try {
             const response = await fetch(`${API_BASE}/pedido/mesa/${idMesa}`, { headers: authHeader });
-            if (response.status === 404 || response.status === 500) return null; 
+            if (response.status === 404 || response.status === 500) return null;
             if (!response.ok) throw new Error("Error al obtener el pedido");
             return await response.json();
         } catch (error) { return null; }
@@ -76,5 +83,53 @@ export const apiPedidoDetalle = {
         try {
             await fetch(`${API_BASE}/sesion/pedido-activo`, { method: 'DELETE', headers: { ...authHeader } });
         } catch (error) { console.error("Error al cerrar pedido:", error); }
+    },
+    enviarTicketCorreo: async (idPedido) => {
+        const response = await fetch(`${API_BASE}/pedido/enviar-ticket/${idPedido}`, {
+            method: 'POST',
+            headers: { ...authHeader }
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || "No se pudo enviar el ticket.");
+        }
+        return true;
+    },
+
+    setPedidoActivo: async (idPedido) => {
+        try {
+            await fetch(`${API_BASE}/sesion/pedido-activo/${idPedido}`, {
+                method: 'POST',
+                headers: { ...authHeader }
+            });
+        } catch (error) {
+            console.error("Error al guardar pedido activo:", error);
+        }
+    },
+
+    procesarPago: async (idPedido, payload) => {
+        const response = await fetch(`${API_BASE}/pedido/procesar-pago/${idPedido}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeader },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || "No se pudo procesar el pago.");
+        }
+        return true;
+    },
+
+    cancelarPedido: async (idPedido, motivo) => {
+        const response = await fetch(`${API_BASE}/pedido/cancelar/${idPedido}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', ...authHeader },
+            body: JSON.stringify({ motivo: motivo })
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || "No se pudo cancelar el pedido.");
+        }
+        return true;
     }
 };

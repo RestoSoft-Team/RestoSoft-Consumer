@@ -1,5 +1,7 @@
 import { apiCocina } from '../consumo/apiCocina.js';
 import { connectWebSocket } from '../consumo/websocket.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+
 
 const dom = {
     colPendientes: document.getElementById('col-pendientes'),
@@ -23,6 +25,7 @@ if (document.readyState === 'loading') {
 }
 
 async function init() {
+    cargarPerfilUsuario();
     await cargarDatos();
     connectWebSocket((canal, data) => {
         if (canal === 'COCINA') {
@@ -156,10 +159,10 @@ function obtenerInnerHTMLTarjeta(pedido) {
             return order[a.estado] - order[b.estado];
         });
 
-        allUnits.forEach(u => {
+                allUnits.forEach(u => {
             const textoPlato = `<strong>${u.nombrePlato}</strong> <span class="unit-num">(U.${contadorUnidad})</span>`;
             
-            if (u.estado === 'LISTO') {
+            if (u.estado === 'LISTO' || u.estado === 'ENTREGADO') {
                 unidadesListasHTML += `<li class="item-row item-done"><span>${textoPlato}</span> <i class="fa-solid fa-circle-check"></i></li>`;
             }
             else if (u.estado === 'PREPARANDO') {
@@ -214,6 +217,78 @@ function obtenerInnerHTMLTarjeta(pedido) {
         </div>
     `;
 }
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+
+        const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
+        const nombreRaw = empresaData?.nombre || "";
+
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else if (nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+
+        const urlPerfil = "perfil.html";
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales =
+                (
+                    (perfilData.usuario.nombres || "").substring(0, 1) +
+                    (perfilData.usuario.apellidos || "").substring(0, 1)
+                ).toUpperCase() || "EP";
+
+            const avatarHTML = perfilData.usuario.imagenUrl
+                ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+                : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+            const nombreCompleto =
+                `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+                "Usuario sin nombre";
+
+            const rol = perfilData.rol?.nombre || "Sin rol asignado";
+
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    ${avatarHTML}
+                    <div class="profile-info">
+                        <strong>${nombreCompleto}</strong>
+                        <div style="font-size: 13px; color: var(--gray)">
+                            ${rol}
+                        </div>
+                    </div>
+                </a>
+            `;
+        } else {
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    <div class="profile-text-avatar">UA</div>
+                    <div class="profile-info">
+                        <strong>Usuario Anónimo</strong>
+                        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+                    </div>
+                </a>
+            `;
+        }
+    } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+        infoPerfilContainer.innerHTML = `
+            <a href="perfil.html" class="profile-link">
+                <div class="profile-text-avatar">EP</div>
+                <div class="profile-info">
+                    <strong>Error de conexión</strong>
+                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                </div>
+            </a>
+        `;
+    }
+}
 
 async function procesarAccion(idPedido, estadoDestino, idUnidad = null) {
     const pedido = pedidosData.find(p => p.id === idPedido);
@@ -251,34 +326,4 @@ async function procesarAccion(idPedido, estadoDestino, idUnidad = null) {
         showNotification("Error", "No se pudo actualizar el estado.", "danger");
         if (btn) btn.disabled = false;
     }
-}
-
-function showNotification(titulo, mensaje, tipo = 'success') {
-    const notification = dom.notification;
-    const iconDiv = notification.querySelector('.notification-icon');
-    const strong = notification.querySelector('strong');
-    const textDiv = notification.querySelector('#notifMensaje');
-
-    notification.style.borderLeftColor = '';
-    iconDiv.style.background = '';
-    iconDiv.style.color = '';
-    iconDiv.innerHTML = '';
-
-    if (tipo === 'success') {
-        notification.style.borderLeftColor = 'var(--success)';
-        iconDiv.style.background = '#edf7f1';
-        iconDiv.style.color = 'var(--success)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
-    } else if (tipo === 'danger') {
-        notification.style.borderLeftColor = 'var(--danger)';
-        iconDiv.style.background = '#fde8e8';
-        iconDiv.style.color = 'var(--danger)';
-        iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-    }
-
-    strong.textContent = titulo;
-    textDiv.textContent = mensaje;
-
-    notification.classList.add('show');
-    setTimeout(() => notification.classList.remove('show'), 3500);
 }

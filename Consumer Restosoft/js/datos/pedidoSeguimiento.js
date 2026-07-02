@@ -1,15 +1,17 @@
 import { apiSeguimiento as api } from '../consumo/apiSeguimientoPedido.js';
+import { connectWebSocket } from '../consumo/websocket.js';
+import { apiProfile } from '../consumo/apiProfile.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
 const dom = {
     tablaPedidos: document.getElementById('tablaPedidos'),
-    filtersContainer: document.getElementById('filtersContainer'),
-    btnActualizar: document.getElementById('btnActualizar')
+    filtersContainer: document.getElementById('filtersContainer')
 };
 
 let todosLosPedidos = [];
 let filtroActivo = 'TODOS';
+let isLoading = false; // 👇 Bandera para evitar spam de peticiones al backend
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -18,6 +20,7 @@ if (document.readyState === 'loading') {
 }
 
 async function init() {
+    cargarPerfilUsuario();
     await cargarPedidos();
     
     dom.filtersContainer.addEventListener('click', (e) => {
@@ -29,21 +32,28 @@ async function init() {
         renderTabla();
     });
 
-    dom.btnActualizar.addEventListener('click', cargarPedidos);
-
-    // Actualizar cronómetros cada segundo visualmente
     setInterval(actualizarTiemposDOM, 1000);
     
-    // Auto-recargar datos cada 15 segundos para ver cambios hechos desde cocina
-    setInterval(cargarPedidos, 15000);
+    // 👇 WEBSOCKET EN TIEMPO REAL
+    connectWebSocket((canal, data) => {
+        if (canal === 'COCINA') {
+            cargarPedidos(); // Recarga silenciosa y animada
+        }
+    });
 }
 
 async function cargarPedidos() {
+    if (isLoading) return; // Si ya está cargando, ignora las peticiones duplicadas
+    isLoading = true;
+    
     try {
         todosLosPedidos = await api.getPedidos();
         renderTabla();
     } catch (error) {
         console.error("Error:", error);
+    } finally {
+        // 👇 Pequeño delay (debounce) para evitar que 3 websockets seguidos saturen el servidor
+        setTimeout(() => { isLoading = false; }, 500);
     }
 }
 
@@ -58,13 +68,10 @@ function renderTabla() {
         return;
     }
 
-    dom.tablaPedidos.innerHTML = '';
-
-    pedidosFiltrados.forEach(p => {
-        const tr = document.createElement('tr');
-        
-        let productosHTML = '<div class="product-units">';
+    // 👇 Inyectamos todo el HTML de una sola vez para evitar parpadeos (Reflow)
+    let htmlFinal = pedidosFiltrados.map(p => {
         let total = 0;
+        let productosHTML = '<div class="product-units">';
         
         if (p.detalles && p.detalles.length > 0) {
             p.detalles.forEach(det => {
@@ -85,7 +92,6 @@ function renderTabla() {
                         </div>`;
                 } else {
                     unidades.forEach(u => {
-                        // 👇 EN LUGAR DE BOTONES, PONEMOS BADGES VISUALES 👇
                         let badge = `<span class="unit-badge ${u.estado}">${u.estado}</span>`;
 
                         productosHTML += `
@@ -111,16 +117,17 @@ function renderTabla() {
         }
         productosHTML += '</div>';
 
-        tr.innerHTML = `
-            <td data-label="ID"><div class="order-id">#RS-${p.id}</div></td>
-            <td data-label="Mesero"><div class="client-name">${p.nombresMeseros?.join(', ') || 'Sin asignar'}</div></td>
-            <td data-label="Mesa(s)">${p.numerosMesas?.join(', ') || 'N/A'}</td>
-            <td data-label="Productos">${productosHTML}</td>
-            <td data-label="Total"><strong>${fmtCOP.format(total)}</strong></td>
-        `;
-        dom.tablaPedidos.appendChild(tr);
-    });
-    
+        return `
+            <tr>
+                <td data-label="ID"><div class="order-id">#RS-${p.id}</div></td>
+                <td data-label="Mesero"><div class="client-name">${p.nombresMeseros?.join(', ') || 'Sin asignar'}</div></td>
+                <td data-label="Mesa(s)">${p.numerosMesas?.join(', ') || 'N/A'}</td>
+                <td data-label="Productos">${productosHTML}</td>
+                <td data-label="Total"><strong>${fmtCOP.format(total)}</strong></td>
+            </tr>`;
+    }).join('');
+
+    dom.tablaPedidos.innerHTML = htmlFinal;
     actualizarTiemposDOM();
 }
 
@@ -149,4 +156,27 @@ function actualizarTiemposDOM() {
             el.className = 'unit-timer finished'; 
         }
     });
+}
+
+// 👇 Cargar perfil dinámicamente
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        const nombreRaw = perfilData?.empresa?.nombre || "";
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+
+        const iniciales = ((perfilData.usuario.nombres || "").substring(0, 1) + (perfilData.usuario.apellidos || "").substring(0, 1)).toUpperCase() || "EP";
+        const avatarHTML = perfilData.usuario.imagenUrl ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />` : `<div class="profile-text-avatar">${iniciales}</div>`;
+        const nombreCompleto = `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() || "Usuario";
+        const rol = perfilData.rol?.nombre || "Empleado";
+
+        infoPerfilContainer.innerHTML = `<a href="perfil.html" class="profile-link" style="display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit;">${avatarHTML}<div><strong>${nombreCompleto}</strong><div style="font-size:13px; color:var(--gray);">${rol}</div></div></a>`;
+    } catch (e) {
+        console.error("Error perfil:", e);
+    }
 }

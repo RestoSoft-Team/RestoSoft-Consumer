@@ -1,7 +1,7 @@
 const API_BASE = "http://localhost:8080/api";
 // const token = localStorage.getItem("token");
 const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxNiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzgyNjkxMjQwLCJleHAiOjE3ODI3Nzc2NDB9.32d5LzAaR52loAERHojAkbFPakFWXD5qJncPGnMB_qk";
+  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6QHJlc3Rvc29mdC5jb20iLCJ1c3VhcmlvSWQiOjEyLCJlbXByZXNhSWQiOjEsInJvbCI6Ik1lc2VybyIsImlhdCI6MTc4Mjg2MjA0MiwiZXhwIjoxNzgyOTQ4NDQyfQ.XLxugCL6NLafEF8vqHWdjzLTMyyqgtAqCxFF1-dEkg0";
 
 
 export const estilosEmpresaApi = {

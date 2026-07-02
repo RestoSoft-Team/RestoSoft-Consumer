@@ -1,4 +1,6 @@
 import { api } from '../consumo/apiMesas.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+
 
 // 1. DIMENSIONES BASE Y ESTADO GLOBAL
 const BASE_WIDTH = 800;
@@ -31,11 +33,10 @@ const dom = {
 
 // 3. INICIALIZACIÓN Y RESPONSIVIDAD
 document.addEventListener('DOMContentLoaded', cargarDatos);
-// Escuchar cuando la ventana cambie de tamaño
 window.addEventListener('resize', ajustarResolucionCanvas);
 
 async function cargarDatos() {
-    
+    cargarPerfilUsuario(); 
     try {
         const [mesasData, zonasData] = await Promise.all([
             api.obtenerMesas(),
@@ -60,7 +61,6 @@ async function cargarDatos() {
     }
 }
 
-// 4. FUNCIÓN CRÍTICA: ESCALA DINÁMICA
 function ajustarResolucionCanvas() {
     if (!dom.canvasWrapper || !dom.canvas) return;
 
@@ -77,7 +77,6 @@ function ajustarResolucionCanvas() {
     renderCanvas();
 }
 
-// 5. EVENTOS
 dom.zonaSelector.addEventListener("change", (e) => {
     state.idZonaActual = parseInt(e.target.value);
     actualizarEstadisticas();
@@ -86,29 +85,22 @@ dom.zonaSelector.addEventListener("change", (e) => {
 
 dom.btnRecargar.addEventListener("click", cargarDatos);
 
-// HITBOX CON CONVERSIÓN DE ESCALA
 dom.canvas.addEventListener("mousemove", (e) => {
     const rect = dom.canvas.getBoundingClientRect();
-    
-    // Convertir clics reales a la cuadrícula de 800x600
     const mouseXVirtual = (e.clientX - rect.left) / state.scale;
     const mouseYVirtual = (e.clientY - rect.top) / state.scale;
 
     const hoverMesa = state.mesas.find(m => {
         if (m.idZona !== state.idZonaActual) return false;
-        
         if (m.disponibilidadPersonas > 6) {
-            // Hitbox ampliado para la mesa rectangular XL
             return Math.abs(m.posicionX - mouseXVirtual) <= 55 && Math.abs(m.posicionY - mouseYVirtual) <= 32;
         }
-        // Hitbox ampliado para la mesa redonda/cuadrada XL
         return Math.sqrt(Math.pow(m.posicionX - mouseXVirtual, 2) + Math.pow(m.posicionY - mouseYVirtual, 2)) <= 38;
     });
 
     dom.canvas.style.cursor = hoverMesa ? "pointer" : "default";
 });
 
-// 6. LÓGICA DE INTERFAZ
 function renderZonasSelect() {
     dom.zonaSelector.innerHTML = '<option value="">Selecciona una Zona...</option>' +
         state.zonas.map(z => `<option value="${z.id}" ${state.idZonaActual === z.id ? 'selected' : ''}>${z.nombreZona}</option>`).join('');
@@ -116,7 +108,6 @@ function renderZonasSelect() {
 
 function actualizarEstadisticas() {
     const mesasZona = state.mesas.filter(m => m.idZona === state.idZonaActual);
-
     const disponibles = mesasZona.filter(m => m.estado === 'LIBRE').length;
     const ocupadas = mesasZona.filter(m => m.estado === 'OCUPADA').length;
     const reservadas = mesasZona.filter(m => m.estado === 'RESERVADA').length;
@@ -135,21 +126,106 @@ function actualizarEstadisticas() {
     dom.statTotales.textContent = totales;
     dom.statPorcentaje.textContent = `${porcentaje}%`;
 }
+async function cargarPerfilUsuario() {
+    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+    
+    if (!infoPerfilContainer) return;
+
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+
+        const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
+        const nombreRaw = empresaData?.nombre || "";
+
+        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
+        } else if (nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        }
+
+        const urlPerfil = "perfil.html";
+
+        if (perfilData && perfilData.usuario) {
+            const iniciales =
+                (
+                    (perfilData.usuario.nombres || "").substring(0, 1) +
+                    (perfilData.usuario.apellidos || "").substring(0, 1)
+                ).toUpperCase() || "EP";
+
+            const avatarHTML = perfilData.usuario.imagenUrl
+                ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" />`
+                : `<div class="profile-text-avatar">${iniciales}</div>`;
+
+            const nombreCompleto =
+                `${perfilData.usuario.nombres || ""} ${perfilData.usuario.apellidos || ""}`.trim() ||
+                "Usuario sin nombre";
+
+            const rol = perfilData.rol?.nombre || "Sin rol asignado";
+
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    ${avatarHTML}
+                    <div class="profile-info">
+                        <strong>${nombreCompleto}</strong>
+                        <div style="font-size: 13px; color: var(--gray)">
+                            ${rol}
+                        </div>
+                    </div>
+                </a>
+            `;
+        } else {
+            infoPerfilContainer.innerHTML = `
+                <a href="${urlPerfil}" class="profile-link">
+                    <div class="profile-text-avatar">UA</div>
+                    <div class="profile-info">
+                        <strong>Usuario Anónimo</strong>
+                        <div style="font-size: 13px; color: var(--gray)">Invitado</div>
+                    </div>
+                </a>
+            `;
+        }
+    } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+        infoPerfilContainer.innerHTML = `
+            <a href="perfil.html" class="profile-link">
+                <div class="profile-text-avatar">EP</div>
+                <div class="profile-info">
+                    <strong>Error de conexión</strong>
+                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                </div>
+            </a>
+        `;
+    }
+}
 
 // 7. MOTOR VECTORIAL (DIBUJO ESCALADO)
 function renderCanvas() {
     const { ctx, canvas } = dom;
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // 👇 LEER VARIABLES CSS DE :ROOT PARA USARLAS EN EL CANVAS
+    const rootStyles = getComputedStyle(document.documentElement);
+    const colors = {
+        bg: rootStyles.getPropertyValue('--surface-container').trim() || '#f1f3f6',
+        grid: rootStyles.getPropertyValue('--border-color').trim() || '#e8ebf0',
+        libre: rootStyles.getPropertyValue('--success').trim() || '#059669',
+        ocupada: rootStyles.getPropertyValue('--danger').trim() || '#dc2626',
+        reservada: rootStyles.getPropertyValue('--warning').trim() || '#d97706',
+        inactiva: rootStyles.getPropertyValue('--soft').trim() || '#9ca3af',
+        dark: rootStyles.getPropertyValue('--dark').trim() || '#111827',
+        surface: rootStyles.getPropertyValue('--surface').trim() || '#ffffff'
+    };
     
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    // APLICAR ESCALA
     ctx.scale(state.scale, state.scale);
 
-    ctx.fillStyle = "#fafafa"; 
+    // Fondo
+    ctx.fillStyle = colors.bg; 
     ctx.fillRect(0, 0, BASE_WIDTH, BASE_HEIGHT);
 
-    ctx.strokeStyle = "#eef0f2"; 
+    // Cuadrícula
+    ctx.strokeStyle = colors.grid; 
     ctx.lineWidth = 1;
     for (let i = 0; i < BASE_WIDTH; i += GRID_SIZE) { 
         ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, BASE_HEIGHT); ctx.stroke();
@@ -164,24 +240,27 @@ function renderCanvas() {
     }
 
     const mesasAMostrar = state.mesas.filter(m => m.idZona === state.idZonaActual);
-    mesasAMostrar.forEach((mesa) => drawGourmetTable(ctx, mesa));
+    mesasAMostrar.forEach((mesa) => drawGourmetTable(ctx, mesa, colors));
 
     ctx.restore();
 }
 
-function drawGourmetTable(ctx, mesa) {
+
+function drawGourmetTable(ctx, mesa, colors) {
     const C = parseInt(mesa.disponibilidadPersonas) || 4;
     ctx.save();
 
-    let mainColor = "#22521b"; 
-    let strokeColor = "#4a121a";
+    // 👇 ASIGNAR COLORES DESDE LAS VARIABLES CSS
+    let mainColor = colors.libre; 
+    let strokeColor = colors.dark;
+    let sillaColor = colors.dark;
 
     if (mesa.estado === 'OCUPADA') { 
-        mainColor = "#d32f2f"; strokeColor = "#7f0000";
+        mainColor = colors.ocupada; 
     } else if (mesa.estado === 'RESERVADA') { 
-        mainColor = "#ff9800"; strokeColor = "#e65100";
+        mainColor = colors.reservada; 
     } else if (mesa.estado === 'FUERA_SERVICIO' || mesa.estado === 'INACTIVA') { 
-        mainColor = "#757575"; strokeColor = "#424242";
+        mainColor = colors.inactiva; 
     }
 
     if (C > 6) {
@@ -189,7 +268,7 @@ function drawGourmetTable(ctx, mesa) {
         const xPos = mesa.posicionX - width / 2; 
         const yPos = mesa.posicionY - height / 2;
 
-        ctx.fillStyle = "#333333"; 
+        ctx.fillStyle = sillaColor; 
         let sillasPorLado = Math.ceil((C - 2) / 2);
         let gapX = width / (sillasPorLado + 1);
 
@@ -204,7 +283,7 @@ function drawGourmetTable(ctx, mesa) {
         ctx.beginPath(); ctx.roundRect(xPos, yPos, width, height, 8); ctx.fill(); ctx.stroke();
     } else {
         const radius = 27;
-        ctx.fillStyle = "#333333"; 
+        ctx.fillStyle = sillaColor; 
         for (let i = 0; i < C; i++) {
             const angle = (i * 2 * Math.PI) / C;
             const chairX = mesa.posicionX + (radius + 8) * Math.cos(angle);
@@ -222,7 +301,8 @@ function drawGourmetTable(ctx, mesa) {
         ctx.fill(); ctx.stroke();
     }
 
-    ctx.fillStyle = "#ffffff";
+    // Texto
+    ctx.fillStyle = colors.surface;
     ctx.font = "bold 14px Inter, Arial"; 
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";

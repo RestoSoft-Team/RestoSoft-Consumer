@@ -1,18 +1,43 @@
 :root {
-    --background: #fbfcfb;
-    --primary: #6b1e28;
-    --primary-light: #8a3b47;
-    --dark: #262f3c;
-    --dark-light: #39485c;
-    --white: #ffffff;
-    --gray: #6f7782;
-    --gray-light: #eef0f2;
-    --success: #3d8b5c;
-    --warning: #d9a441;
-    --danger: #bb3a4b;
-    --info: #4a7aff;
-    --shadow: 0 10px 40px rgba(38, 47, 60, 0.08);
-    --radius: 24px;
+  /* Marca */
+  --primary: #6b1e28;
+  --primary-light: #8a3b47;
+  --primary-soft: rgba(107, 30, 40, 0.08);
+  
+  /* Fondo y Superficie */
+  --background: #f8f9fb;
+  --surface: #ffffff;
+  --surface-container: #f1f3f6;
+  --border-color: #e8ebf0;
+  
+  /* Texto */
+  --dark: #111827;
+  --gray: #6b7280;
+  --gray-light: #eef0f2;
+  --soft: #9ca3af;
+  
+  /* Estados */
+  --success: #059669;
+  --success-soft: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  --info: #4a7aff;
+  --info-soft: rgba(74, 122, 255, 0.1);
+  
+  /* Sombras y Bordes */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  
+  --sidebar-width: 280px;
+  --sidebar-collapsed: 78px;
+  --topbar-height: 80px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -127,6 +152,67 @@ tbody tr td:last-child { border-radius: 0 18px 18px 0; }
 
 /* RESPONSIVE */
 .mobile-menu-btn { display: none; background: white; border: none; box-shadow: var(--shadow); width: 45px; height: 45px; border-radius: 12px; font-size: 20px; color: var(--dark); cursor: pointer; align-items: center; justify-content: center; }
+
+/* El contenedor principal ahora solo sirve de base */
+.profile {
+  background: transparent; /* El fondo se pasa al enlace interno */
+}
+
+/* Esta es tu tarjeta adaptada como enlace clickable */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 14px; /* Tu espacio original */
+  background: white; /* Tu fondo original */
+  padding: 10px 14px; /* Tu padding original */
+  border-radius: 20px; /* Tu borde original */
+  box-shadow: var(--shadow); /* Tu sombra original */
+  text-decoration: none; /* Quita el subrayado del enlace */
+  color: inherit; /* Hereda el color de letra del proyecto */
+  width: 100%;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+/* Efecto hover: se oscurece sutilmente el fondo al pasar el mouse */
+.profile-link:hover {
+  background-color: #f9fafb; /* Un gris casi imperceptible */
+  transform: translateY(-1px); /* Efecto sutil de elevación */
+  cursor: pointer;
+}
+
+/* Tu avatar de texto adaptado a las medidas de tu imagen (48px) */
+.profile-text-avatar {
+  width: 48px; /* Ajustado a 48px para emparejar con la foto */
+  height: 48px; /* Ajustado a 48px para emparejar con la foto */
+  border-radius: 50%;
+  background-color: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px; /* Subido a 16px para que balancee con el nuevo tamaño */
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Tu imagen original con object-fit para evitar que se deforme */
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover; /* Evita que las fotos estiradas se vean mal */
+  flex-shrink: 0;
+}
+
+/* Asegura que los textos sigan ordenados en columna */
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
 
 @media(max-width:992px) { 
     .sidebar { width: 90px; } 

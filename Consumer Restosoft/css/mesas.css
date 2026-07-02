@@ -14,6 +14,7 @@
   --dark: #111827;
   --gray: #6b7280;
   --soft: #9ca3af;
+  --white:var(--background);
   
   /* Estados */
   --success: #059669;
@@ -274,41 +275,62 @@ a {
 .modal-actions { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
 .modal-actions a, .modal-actions button { flex: 1; min-width: 180px; justify-content: center; }
 
-#perfil
+
+.profile {
+  background: transparent; /* El fondo se pasa al enlace interno */
+}
+
+/* Esta es tu tarjeta adaptada como enlace clickable */
 .profile-link {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    text-decoration: none;
-    color: inherit;
-    background: white;
-    padding: 10px 14px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    transition: .3s;
+  display: flex;
+  align-items: center;
+  gap: 14px; /* Tu espacio original */
+  background: white; /* Tu fondo original */
+  padding: 10px 14px; /* Tu padding original */
+  border-radius: 20px; /* Tu borde original */
+  box-shadow: var(--shadow); /* Tu sombra original */
+  text-decoration: none; /* Quita el subrayado del enlace */
+  color: inherit; /* Hereda el color de letra del proyecto */
+  width: 100%;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
+
+/* Efecto hover: se oscurece sutilmente el fondo al pasar el mouse */
 .profile-link:hover {
-    transform: translateY(-2px);
+  background-color: #f9fafb; /* Un gris casi imperceptible */
+  transform: translateY(-1px); /* Efecto sutil de elevación */
+  cursor: pointer;
 }
+
+/* Tu avatar de texto adaptado a las medidas de tu imagen (48px) */
 .profile-text-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 16px;
-    text-transform: uppercase;
+  width: 48px; /* Ajustado a 48px para emparejar con la foto */
+  height: 48px; /* Ajustado a 48px para emparejar con la foto */
+  border-radius: 50%;
+  background-color: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px; /* Subido a 16px para que balancee con el nuevo tamaño */
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
-.profile-info strong {
-    display: block;
-    font-size: 15px;
-    color: var(--dark);
+
+/* Tu imagen original con object-fit para evitar que se deforme */
+.profile img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover; /* Evita que las fotos estiradas se vean mal */
+  flex-shrink: 0;
 }
-.profile-info div {
-    font-size: 13px;
-    color: var(--gray);
+
+/* Asegura que los textos sigan ordenados en columna */
+.profile-info {
+  display: flex;
+  flex-direction: column;
 }

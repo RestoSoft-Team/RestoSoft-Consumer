@@ -1,272 +1,242 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RestSoft - Detalle del Pedido</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/pedidoDetalle.css">
-    <link rel="stylesheet" href="css/sidebar.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RestSoft - Detalle del Pedido</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/pedidoDetalle.css">
+  <link rel="stylesheet" href="css/sidebar.css">
+  <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
+
 <body>
 
-   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar">
-      <div class="logo">
-        <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-        <h3>RestSoft</h3>
-      </div>
-      <div class="menu-title">Navegación</div>
-      <a class="menu-item" href="Dashboard-example.html"
-        ><i class="fa-solid fa-chart-line"></i
-        ><span>Dashboard / Inicio</span></a
-      ><button class="menu-group-btn">
-        <span><i class="fa-solid fa-users"></i> Gestión de Empleados</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="empleados.html">Empleados</a
-        ><a class="" href="empleado-crear.html">Crear Empleado</a
-        ><a class="" href="empleado-editar.html">Editar Empleado</a
-        ><a class="" href="roles-permisos.html">Roles y Permisos</a
-        ><a class="" href="horarios-turnos.html">Horarios y Turnos</a
-        ><a class="" href="asistencia.html">Asistencia</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="inventario.html">Inventario</a
-        ><a class="" href="producto-crear.html">Crear Producto</a
-        ><a class="" href="producto-editar.html">Editar Producto</a
-        ><a class="" href="entradas-mercancia.html">Entradas Mercancía</a
-        ><a class="" href="salidas-mermas.html">Salidas/Mermas</a
-        ><a class="" href="categorias-inventario.html">Categorías</a
-        ><a class="" href="proveedores.html">Proveedores</a
-        ><a class="" href="alertas-stock.html">Alertas Stock</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu open">
-        <a class="" href="pedidos.html">Pedidos</a
-        ><a class="" href="pedido-crear.html">Crear Pedido</a
-        ><a class="active" href="pedido-detalle.html">Detalle Pedido</a
-        ><a class="" href="pedido-cocina.html">Pedido Cocina</a
-        ><a class="" href="seguimiento-pedidos.html">Seguimiento</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu ">
-        <a class="" href="mesas.html">Mesas</a
-        ><a class="" href="mapa-mesas.html">Mapa Mesas</a
-        ><a class="" href="transferir-mesa.html">Transferir Mesa</a
-        ><a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-calendar-days"></i> Reservas</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="reservas.html">Reservas</a
-        ><a class="" href="calendario-reservas.html">Calendario</a>
-      </div>
-      <button class="menu-group-btn">
-        <span
-          ><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
-          Pagos</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="facturacion.html">Facturación</a
-        ><a class="" href="generar-factura.html">Generar Factura</a
-        ><a class="" href="pagos.html">Pagos</a
-        ><a class="" href="propinas.html">Propinas</a
-        ><a class="" href="cierre-caja.html">Cierre Caja</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-utensils"></i> Menú y Productos</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="menu-productos.html">Menú</a
-        ><a class="" href="platillo-crear.html">Crear Platillo</a
-        ><a class="" href="platillo-editar.html">Editar Platillo</a
-        ><a class="" href="promociones.html">Promociones</a
-        ><a class="" href="categorias-menu.html">Categorías Menú</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="cocina-dashboard.html">Dashboard Cocina</a
-        ><a class="" href="pedidos-preparacion.html">Pedidos Preparación</a
-        ><a class="" href="tiempos-preparacion.html">Tiempos</a
-        ><a class="" href="notificaciones-cocina.html">Notificaciones</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-user-group"></i> Clientes</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="clientes.html">Clientes</a
-        ><a class="" href="cliente-crear.html">Crear Cliente</a
-        ><a class="" href="historial-cliente.html">Historial</a
-        ><a class="" href="fidelizacion.html">Fidelización</a
-        ><a class="" href="promociones-clientes.html">Promociones</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-chart-pie"></i> Reportes</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="reportes.html">Reportes</a
-        ><a class="" href="reporte-ventas.html">Ventas</a
-        ><a class="" href="reporte-inventario.html">Inventario</a
-        ><a class="" href="reporte-empleados.html">Empleados</a
-        ><a class="" href="reporte-financiero.html">Financiero</a
-        ><a class="" href="reporte-reservas.html">Reservas</a
-        ><a class="" href="estadisticas-ocupacion.html">Ocupación</a>
-      </div>
-      <button class="menu-group-btn">
-        <span><i class="fa-solid fa-gear"></i> Configuración</span
-        ><i class="fa-solid fa-chevron-right chevron"></i>
-      </button>
-      <div class="submenu">
-        <a class="" href="configuracion-general.html">General</a
-        ><a class="" href="usuarios-sistema.html">Usuarios</a
-        ><a class="" href="impresoras.html">Impresoras</a
-        ><a class="" href="metodos-pago.html">Métodos Pago</a
-        ><a class="" href="alertas.html">Alertas</a
-        ><a class="" href="backup-restauracion.html">Backup</a>
-      </div>
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+      <h3 id="nombreEmpresa"></h3>
     </div>
+    <div class="menu-title">Navegación</div>
+    <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+        Inicio</span></a>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="empleados.html">Empleados</a><a href="empleado-crear.html">Crear Empleado</a><a
+        href="empleado-editar.html">Editar Empleado</a><a href="roles-permisos.html">Roles y Permisos</a><a
+        href="horarios-turnos.html">Horarios y Turnos</a><a href="asistencia.html">Asistencia</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="inventario.html">Inventario</a><a href="producto-crear.html">Crear Producto</a><a
+        href="producto-editar.html">Editar Producto</a><a href="entradas-mercancia.html">Entradas Mercancía</a><a
+        href="salidas-mermas.html">Salidas/Mermas</a><a href="categorias-inventario.html">Categorías</a><a
+        href="proveedores.html">Proveedores</a><a href="alertas-stock.html">Alertas Stock</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu open">
+      <a href="pedidos.html">Pedidos</a><a href="pedido-crear.html">Crear Pedido</a><a class="active"
+        href="pedido-detalle.html">Detalle Pedido</a><a href="pedido-cocina.html">Pedido Cocina</a><a
+        href="seguimiento-pedidos.html">Seguimiento</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="mesas.html">Mesas</a><a href="mapa-mesas.html">Mapa Mesas</a><a href="transferir-mesa.html">Transferir
+        Mesa</a><a href="dividir-cuenta.html">Dividir Cuenta</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="reservas.html">Reservas</a><a href="calendario-reservas.html">Calendario</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y Pagos</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="facturacion.html">Facturación</a><a href="generar-factura.html">Generar Factura</a><a
+        href="pagos.html">Pagos</a><a href="propinas.html">Propinas</a><a href="cierre-caja.html">Cierre Caja</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="menu-productos.html">Menú</a><a href="platillo-crear.html">Crear Platillo</a><a
+        href="platillo-editar.html">Editar Platillo</a><a href="promociones.html">Promociones</a><a
+        href="categorias-menu.html">Categorías Menú</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="cocina-dashboard.html">Dashboard Cocina</a><a href="pedidos-preparacion.html">Pedidos Preparación</a><a
+        href="tiempos-preparacion.html">Tiempos</a><a href="notificaciones-cocina.html">Notificaciones</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="clientes.html">Clientes</a><a href="cliente-crear.html">Crear Cliente</a><a
+        href="historial-cliente.html">Historial</a><a href="fidelizacion.html">Fidelización</a><a
+        href="promociones-clientes.html">Promociones</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="reportes.html">Reportes</a><a href="reporte-ventas.html">Ventas</a><a
+        href="reporte-inventario.html">Inventario</a><a href="reporte-empleados.html">Empleados</a><a
+        href="reporte-financiero.html">Financiero</a><a href="reporte-reservas.html">Reservas</a><a
+        href="estadisticas-ocupacion.html">Ocupación</a>
+    </div>
+    <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+        class="fa-solid fa-chevron-right chevron"></i></button>
+    <div class="submenu">
+      <a href="configuracion-interfaz.html">Interfaz</a>
+      <a href="perfil.html">Mi Perfil</a>
+      <a href="usuarios-sistema.html">Usuarios</a><a href="impresoras.html">Impresoras</a><a
+        href="metodos-pago.html">Métodos Pago</a><a href="alertas.html">Alertas</a><a
+        href="backup-restauracion.html">Backup</a>
+    </div>
+  </div>
 
-    <main class="main">
-        <div class="topbar">
-            <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="page-title">
-                <h1>Detalle del Pedido</h1>
-                <p>Visualiza y administra la orden activa del restaurante.</p>
-            </div>
-            <div class="topbar-right">
-                <div class="profile">
-                    <img src="https://i.pravatar.cc/100?img=12" alt="">
-                    <div>
-                        <strong>Camila Torres</strong>
-                        <div style="font-size:13px;color:var(--gray);">Restaurant Manager</div>
-                    </div>
-                </div>
-            </div>
+  <main class="main">
+    <div class="topbar">
+      <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+      <div class="page-title">
+        <h1>Detalle del Pedido</h1>
+        <p>Visualiza y administra la orden activa del restaurante.</p>
         </div>
-
-        <!-- Información del Pedido y Selector -->
+        <div class="topbar-right">
+          <div id="infoPerfilContainer" class="profile">
+            <p style="color: var(--gray); text-align: center; padding: 20px; margin: 0;">Cargando perfil...</p>
+          </div>
+        </div>
+        </div>
+        
         <div class="card-premium">
-            <div class="card-header-custom">
-                <div>
-                    <h4 id="txtPedidoId">Pedido #RS-0000</h4>
-                    <p id="txtPedidoFecha">Cargando pedido...</p>
-                </div>
-                <span class="status warning" id="txtEstadoPedido">
-                    <i class="fa-solid fa-clock"></i> En preparación
-                </span>
-            </div>
-
-            <div class="row g-4 align-items-end">
-                <div class="col-md-4">
-                    <label>Seleccionar Pedido (Mesas)</label>
-                    <select class="form-select" id="selectMesaPedido">
-                        <option value="">Cargando pedidos...</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <div class="info-box">
-                        <span>Mesero Asignado</span>
-                        <h5 id="txtMesero">-</h5>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="info-box">
-                        <span>Mesas Asignadas</span>
-                        <h5 id="txtMesasUnidas">-</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Productos -->
-            <div class="col-lg-8">
-                <div class="card-premium">
-                    <div class="card-header-custom">
-                        <div>
-                            <h4>Productos Ordenados</h4>
-                            <p>Click sobre un producto para ver el detalle de las unidades</p>
-                        </div>
-                        <button class="btn-premium" id="btnAbrirModalProductos">
-                            <i class="fa-solid fa-plus"></i> Agregar Producto
-                        </button>
-                    </div>
-                    <div id="listaProductosPedido"></div>
-                </div>
-            </div>
-
-            <!-- Resumen -->
-            <div class="col-lg-4">
-                <div class="card-premium">
-                    <div class="card-header-custom">
-                        <div>
-                            <h4>Resumen</h4>
-                            <p>Total del pedido</p>
-                        </div>
-                    </div>
-                    <div class="summary-box">
-                        <div class="summary-line"><span>Subtotal</span><strong id="stat-subtotal">$0</strong></div>
-                        <div class="summary-line"><span>Impuestos (19%)</span><strong id="stat-impuestos">$0</strong></div>
-                        <div class="summary-line"><span>Servicio (10%)</span><strong id="stat-servicio">$0</strong></div>
-                        <div class="summary-total"><span>Total</span><span id="stat-total">$0</span></div>
-                    </div>
-                    <div class="d-grid gap-3 mt-4">
-                        <button class="btn-premium" id="btnMarcarListo">Marcar como listo</button>
-                        <button class="btn-outline-premium" id="btnImprimir">Imprimir Ticket</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- MODAL AGREGAR PRODUCTOS -->
-    <div id="modalProductos" class="modal-overlay">
-        <div class="modal-box modal-lg">
-            <button class="modal-close" id="modalProductosCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-            <h3><i class="fa-solid fa-utensils"></i> Menú del Restaurante</h3>
-            <div class="categorias-container" id="categoriasContainer"></div>
-            <div class="platos-grid" id="platosContainer"></div>
-        </div>
-    </div>
-
-    <div class="notification" id="notification">
-        <div class="notification-wrap">
-            <div class="notification-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="card-header-custom">
             <div>
-                <strong id="notifTitulo">Pedido actualizado</strong>
-                <div id="notifMensaje" style="font-size:14px;color:var(--gray);margin-top:4px;">El pedido fue marcado como listo para entrega.</div>
+              <h4 id="txtPedidoId">Pedido #RS-0000</h4>
+              <p id="txtPedidoFecha">Cargando pedido...</p>
             </div>
+            <div class="d-flex gap-2">
+              <span class="status warning" id="txtEstadoPedido" style="margin-right: 10px;">
+                <i class="fa-solid fa-clock"></i> En preparación
+              </span>
+              <button class="btn-danger-custom" id="btnCancelarPedido"
+                style="background: var(--danger); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: 600; display: none;">
+                <i class="fa-solid fa-ban"></i> Cancelar Pedido
+              </button>
+            </div>
+          </div>
+        
+          <div class="row g-4 align-items-end">
+            <div class="col-md-4">
+              <label>Seleccionar Pedido (Mesas)</label>
+              <select class="form-select" id="selectMesaPedido">
+                <option value="">Cargando pedidos...</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+          <div class="info-box">
+            <span>Mesero Asignado</span>
+            <h5 id="txtMesero">-</h5>
+          </div>
         </div>
+        <div class="col-md-4">
+          <div class="info-box">
+            <span>Mesas Asignadas</span>
+            <h5 id="txtMesasUnidas">-</h5>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script type="module" src="js/datos/sidebar.js"></script>
-    <script type="module" src="js/datos/pedidoDetalle.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script type="module" src="js/datos/notificaciones.js"></script>
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card-premium">
+          <div class="card-header-custom">
+            <div>
+              <h4>Productos Ordenados</h4>
+              <p>Click sobre un producto para ver el detalle de las unidades</p>
+            </div>
+            <button class="btn-premium" id="btnAbrirModalProductos">
+              <i class="fa-solid fa-plus"></i> Agregar Producto
+            </button>
+          </div>
+          <div id="listaProductosPedido"></div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card-premium">
+          <div class="card-header-custom">
+            <div>
+              <h4>Resumen</h4>
+              <p>Total del pedido</p>
+            </div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-line"><span>Subtotal</span><strong id="stat-subtotal">$0</strong></div>
+            <div class="summary-line"><span>Impuestos (19%)</span><strong id="stat-impuestos">$0</strong></div>
+            <div class="summary-line"><span>Servicio (10%)</span><strong id="stat-servicio">$0</strong></div>
+            <div class="summary-total"><span>Total</span><span id="stat-total">$0</span></div>
+          </div>
+          <div class="d-grid gap-3 mt-4">
+            <button class="btn-premium" id="btnMarcarListo">Marcar como listo</button>
+            <button class="btn-outline-premium" id="btnEnviarTicket"><i class="fa-solid fa-paper-plane"></i> Enviar
+              Ticket por Correo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="modalProductos" class="modal-overlay">
+    <div class="modal-box modal-lg">
+      <button class="modal-close" id="modalProductosCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      <h3><i class="fa-solid fa-utensils"></i> Menú del Restaurante</h3>
+      <div class="categorias-container" id="categoriasContainer"></div>
+      <div class="platos-grid" id="platosContainer"></div>
+    </div>
+  </div>
+
+  <div id="modalCancelar" class="modal-overlay" style="display: none;">
+    <div class="modal-box" style="max-width: 500px;">
+      <h3 style="color: var(--danger); margin-bottom: 20px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Cancelar Pedido
+      </h3>
+      <p style="color: var(--gray); margin-bottom: 20px;">
+        Estás a punto de cancelar este pedido. El estado pasará a "CANCELADO" y las mesas asociadas volverán a estar
+        "LIBRES".
+      </p>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Motivo de Cancelación (Obligatorio)</label>
+        <textarea class="form-control" id="motivoCancelacion" rows="3"
+          placeholder="Ej: El cliente se arrepintió, error en la cocina..." required></textarea>
+        <small id="errorMotivo" style="color: var(--danger); display: none; margin-top: 5px;">Debes ingresar un motivo
+          para cancelar.</small>
+      </div>
+      <div class="d-flex gap-2 justify-content-end mt-4">
+        <button class="btn-outline-premium" id="btnCerrarModalCancelar">Cerrar</button>
+        <button class="btn-danger-custom" id="btnConfirmarCancelacion"
+          style="background: var(--danger); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600;">
+          <i class="fa-solid fa-ban"></i> Confirmar Cancelación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/datos/sidebar.js"></script>
+  <script type="module" src="js/datos/pedidoDetalle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script type="module" src="js/datos/notificaciones.js"></script>
 </body>
+
 </html>
