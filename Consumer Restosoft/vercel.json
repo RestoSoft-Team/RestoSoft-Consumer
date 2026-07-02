@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/((?!api|css|js|img|assets|admin|login-cliente|registro-cliente|panel-cliente|no-encontrado|404|favicon\\.ico).*)",
+      "destination": "/cliente.html"
+    },
+    {
+      "source": "/no-encontrado",
+      "destination": "/404.html"
+    }
+  ]
+}
