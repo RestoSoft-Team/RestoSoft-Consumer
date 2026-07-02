@@ -266,7 +266,7 @@ async function cargarDatosIniciales() {
     const mensaje = encodeURIComponent(
       "El sistema está caído o no se pudieron cargar los datos. Por favor, consulta a los administradores.",
     );
-    window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    // window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
   } finally {
   }
 }

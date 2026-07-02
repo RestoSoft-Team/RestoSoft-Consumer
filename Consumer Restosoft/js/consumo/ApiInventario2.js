@@ -1,7 +1,6 @@
+import { token } from "../consumo/config.js";
 const API_BASE = "http://localhost:8080/api/insumos";
-// const token = localStorage.getItem("token");
-const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI4NjU3NjQsImV4cCI6MTc4Mjk1MjE2NH0.3E_0AVT2_o420YbNVEyWjPw8vXfuj2qyrzNxvnf88LI";
+
 
 export const api = {
   obtenerInsumos: async () => {

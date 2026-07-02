@@ -1,7 +1,4 @@
-const API_BASE = "http://localhost:8080/api";
-
-// Lee el token del localStorage o usa el hardcodeado para pruebas
-const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI4NjU3NjQsImV4cCI6MTc4Mjk1MjE2NH0.3E_0AVT2_o420YbNVEyWjPw8vXfuj2qyrzNxvnf88LI";
+import { API_BASE, token as TOKEN } from "../consumo/config.js";
 
 export default {
 

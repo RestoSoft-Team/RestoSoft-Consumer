@@ -1,9 +1,6 @@
-// /js/consumo/apiProveedores.js
+import { API_BASE, token } from "../consumo/config.js";
 
-const API_PROVEEDORES = "http://localhost:8080/api/proveedores";
-
-// Lee el token del localStorage o usa el hardcodeado para pruebas
-const token ="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5wZXJlekByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxMiwiZW1wcmVzYUlkIjozLCJyb2wiOiJNZXNlcm8iLCJpYXQiOjE3ODI4NjU3NjQsImV4cCI6MTc4Mjk1MjE2NH0.3E_0AVT2_o420YbNVEyWjPw8vXfuj2qyrzNxvnf88LI";
+const API_PROVEEDORES = API_BASE +"/proveedores";
 
 const ApiProveedores = {
     /**

@@ -895,6 +895,9 @@
                     </div>
                 </div>
                 <div class="topbar-actions">
+                    <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                     <div id="infoPerfilContainer" class="profile-box">
                         <p style="color: var(--gray); text-align: center; padding: 20px">
                             Cargando perfil...
@@ -1092,20 +1095,20 @@
     <script src="/js/datos/sidebar.js"></script>
     <script type="module" src="/js/datos/clientes.js"></script>
     <script>
-    document.getElementById('toggleEditPassword')?.addEventListener('click', function () {
-        const input = document.getElementById('editPassword');
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        
-        if (type === 'password') {
-            this.classList.remove('fa-eye-slash');
-            this.classList.add('fa-eye');
-        } else {
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-        }
-    });
-</script>
+        document.getElementById('toggleEditPassword')?.addEventListener('click', function () {
+            const input = document.getElementById('editPassword');
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            if (type === 'password') {
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            } else {
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
 </body>
 
 </html>
