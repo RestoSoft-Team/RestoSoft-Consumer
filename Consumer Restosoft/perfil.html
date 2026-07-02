@@ -25,7 +25,6 @@
     <link rel="stylesheet" href="css/sidebar.css" />
 
     <script type="module" src="js/datos/theme-loader.js"></script>
-
   </head>
   <body>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -158,24 +157,32 @@
       </button>
       <div class="submenu open">
         <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="configuracion-pagina-cliente.html">Configuracion</a>
         <a class="active" href="perfil.html">Mi Perfil</a>
-        <a class="" href="usuarios-sistema.html">Usuarios</a
-        ><a class="" href="impresoras.html">Impresoras</a
-        ><a class="" href="metodos-pago.html">Métodos Pago</a
-        ><a class="" href="alertas.html">Alertas</a
-        ><a class="" href="backup-restauracion.html">Backup</a>
       </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
       <div class="page-content">
-           <button id="menuToggle" class="mobile-menu-btn">
+        <button id="menuToggle" class="mobile-menu-btn">
           <i class="fa-solid fa-bars"></i>
         </button>
+
         <!-- PROFILE HERO CARD -->
         <div class="profile-hero">
-          <div class="profile-hero-banner"></div>
+          <div class="profile-hero-banner" style="position: relative">
+            <button
+              id="logoutBtn"
+              class="logout-icon-btn"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+              style="position: absolute; top: 15px; right: 15px; z-index: 2"
+            >
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+
           <div class="profile-hero-content">
             <div class="profile-hero-avatar-wrap">
               <div class="profile-hero-avatar" id="heroAvatar">
@@ -519,6 +526,5 @@
 
     <script type="module" src="js/datos/perfil.js"></script>
     <script type="module" src="js/datos/sidebar.js"></script>
-
   </body>
 </html>

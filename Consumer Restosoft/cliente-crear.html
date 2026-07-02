@@ -2,57 +2,54 @@
 <html lang="es">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>RestSoft | Crear Cliente</title>
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-
+    <link rel="stylesheet" href="/css/sidebar.css">
     <style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
         :root {
-
-            --background: #fbfcfb;
-
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
 
-            --dark: #262f3c;
-            --dark-light: #39485c;
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
 
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
 
-            --white: #ffffff;
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
 
-            --gray: #6f7782;
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
 
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
-
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -78,116 +75,13 @@
             transition: 0.3s;
         }
 
-        /* =========================================================
-           LAYOUT
-        ========================================================== */
-
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
-
-        .sidebar {
-            width: 280px;
-            background: var(--dark);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            padding: 28px 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 999;
-        }
-
-        .brand {
-            margin-bottom: 42px;
-        }
-
-        .brand h2 {
-            color: white;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .brand span {
-            color: #d4dae2;
-            font-size: 14px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 18px;
-            border-radius: 18px;
-            color: #d7dce5;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateX(4px);
-            color: white;
-        }
-
-        .menu-item.active {
-            background: var(--primary);
-            color: white;
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .menu-item i {
-            width: 22px;
-            font-size: 18px;
-        }
-
-        .sidebar-footer {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 24px;
-            color: white;
-        }
-
-        .sidebar-footer h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .sidebar-footer p {
-            color: #d6dce3;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 18px;
-        }
-
-        /* =========================================================
-           CONTENT
-        ========================================================== */
-
         .content {
-            margin-left: 280px;
-            width: calc(100% - 280px);
+            width: 100%;
             padding: 32px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -195,6 +89,12 @@
             align-items: center;
             gap: 22px;
             margin-bottom: 32px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .topbar-title h1 {
@@ -209,41 +109,65 @@
             margin: 0;
         }
 
-        .profile-box {
+        .profile {
+            background: transparent;
+        }
+
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 52px;
-            height: 52px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
-
-        .profile-box span {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        /* =========================================================
-           GRID
-        ========================================================== */
 
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1.4fr 0.8fr;
             gap: 24px;
+            align-items: stretch;
         }
 
         .card-panel {
@@ -252,10 +176,24 @@
             padding: 30px;
             box-shadow: var(--shadow);
             transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .card-panel:hover {
             transform: translateY(-4px);
+        }
+
+        .right-panel-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            height: 100%;
+        }
+
+        .actions-wrapper {
+            margin-top: auto;
         }
 
         .card-header-premium {
@@ -269,10 +207,6 @@
             margin: 0;
             font-weight: 800;
         }
-
-        /* =========================================================
-           FORM
-        ========================================================== */
 
         .form-group {
             margin-bottom: 22px;
@@ -304,9 +238,69 @@
             background: white;
         }
 
-        /* =========================================================
-           UPLOAD BOX
-        ========================================================== */
+        /* Estilos para el contenedor de la contraseña y el ojito */
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-wrapper .form-control-premium {
+            padding-right: 50px;
+            /* Espacio para que no choque con el icono */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray);
+            font-size: 16px;
+            z-index: 2;
+        }
+
+        .status-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 15px 20px;
+        }
+
+        .form-check.form-switch {
+            margin: 0;
+        }
+
+        .form-check-input {
+            width: 3em;
+            height: 1.5em;
+            cursor: pointer;
+            background-color: #ccc;
+            border: none;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary);
+        }
+
+        .form-check-input:focus {
+            box-shadow: none;
+        }
+
+        .status-text {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .status-text.active {
+            color: var(--primary);
+        }
+
+        .status-text.inactive {
+            color: var(--gray);
+        }
 
         .upload-box {
             border: 2px dashed #d9d9d9;
@@ -348,83 +342,6 @@
             line-height: 1.7;
         }
 
-        /* =========================================================
-           TAGS
-        ========================================================== */
-
-        .tag-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            padding: 12px 16px;
-            border-radius: 14px;
-            background: #f5f6f8;
-            color: var(--dark);
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .tag:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .tag.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* =========================================================
-           TOGGLES
-        ========================================================== */
-
-        .switch-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .switch-row:last-child {
-            border-bottom: none;
-        }
-
-        .switch-info h6 {
-            margin-bottom: 4px;
-            font-weight: 700;
-        }
-
-        .switch-info span {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .form-switch .form-check-input {
-            width: 52px;
-            height: 28px;
-            border: none;
-            background-color: #d9dde3;
-            cursor: pointer;
-        }
-
-        .form-switch .form-check-input:checked {
-            background-color: var(--primary);
-        }
-
-        .form-switch .form-check-input:focus {
-            box-shadow: none;
-        }
-
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
-
         .btn-premium {
             background: var(--primary);
             color: white;
@@ -432,12 +349,19 @@
             border-radius: 16px;
             padding: 14px 24px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-premium:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
             color: white;
+        }
+
+        .btn-premium:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-outline-premium {
@@ -447,6 +371,7 @@
             border-radius: 16px;
             padding: 12px 22px;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .btn-outline-premium:hover {
@@ -455,107 +380,107 @@
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           TOAST
-        ========================================================== */
-
-        .toast-premium {
+        /* ── NOTIFICACIÓN ── */
+        .notification-container {
             position: fixed;
+            top: 24px;
             right: 24px;
-            bottom: 24px;
-            width: 360px;
-            background: white;
-            border-radius: 22px;
-            padding: 22px;
+            z-index: 10000;
             display: flex;
-            gap: 16px;
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.12);
-            border-left: 6px solid var(--success);
-            transform: translateX(420px);
-            transition: 0.4s;
-            z-index: 9999;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .toast-premium.show {
+        .notification {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
+            transform: translateX(420px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
+        }
+
+        .notification.show {
             transform: translateX(0);
         }
 
-        .toast-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
-            background: rgba(61, 139, 92, 0.12);
-            color: var(--success);
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 14px;
             flex-shrink: 0;
         }
 
-        .toast-content h5 {
-            margin-bottom: 6px;
-            font-weight: 700;
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
         }
 
-        .toast-content p {
-            color: var(--gray);
-            margin: 0;
-            line-height: 1.6;
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
             font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
-
-        @media(max-width:1200px) {
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
         }
 
-        @media(max-width:992px) {
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
 
-            .sidebar {
-                width: 100px;
-                padding: 28px 14px;
-            }
+        .notification-close:hover {
+            color: var(--dark);
+        }
 
-            .sidebar .brand span,
-            .sidebar .menu-item span,
-            .sidebar-footer {
-                display: none;
-            }
-
-            .menu-item {
-                justify-content: center;
-            }
-
-            .brand h2 {
-                text-align: center;
-                font-size: 22px;
-            }
-
+        @media (max-width: 768px) {
             .content {
-                margin-left: 100px;
-                width: calc(100% - 100px);
-            }
-
-        }
-
-        @media(max-width:768px) {
-
-            .sidebar {
-                display: none;
-            }
-
-            .content {
-                margin-left: 0;
-                width: 100%;
                 padding: 20px;
             }
 
@@ -564,517 +489,244 @@
                 align-items: flex-start;
             }
 
-            .toast-premium {
-                width: calc(100% - 40px);
-                right: 20px;
+            .topbar-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
             }
 
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
-
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
 
 <body>
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div class="main-wrapper">
-
-        <!-- =========================================================
-         SIDEBAR
-    ========================================================== -->
-
-        <aside class="sidebar">
-
-            <div>
-
-                <div class="brand">
-
-                    <h2>RestSoft</h2>
-                    <span>Gestión de Clientes</span>
-
-                </div>
-
-                <nav class="menu">
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-
-                    <a href="#" class="menu-item active">
-                        <i class="fa-solid fa-user-plus"></i>
-                        <span>Nuevo Cliente</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Clientes</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-gift"></i>
-                        <span>Fidelización</span>
-                    </a>
-
-                    <a href="#" class="menu-item">
-                        <i class="fa-solid fa-ticket"></i>
-                        <span>Promociones</span>
-                    </a>
-
-                </nav>
-
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3 id="nombreEmpresa"></h3>
             </div>
-
-            <div class="sidebar-footer">
-
-                <h5>CRM Premium</h5>
-
-                <p>
-                    Centraliza datos de clientes,
-                    recompensas y seguimiento gastronómico.
-                </p>
-
-                <button class="btn btn-premium w-100">
-                    Ver Clientes
-                </button>
-
+            <div class="menu-title">Navegación</div>
+            <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                    Inicio</span></a>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
+                    href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar
+                    Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class=""
+                    href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
             </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="inventario.html">Inventario</a><a class=""
+                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
+                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
+                    href="salidas-mermas.html">Salidas/Mermas</a><a class=""
+                    href="categorias-inventario.html">Categorías</a><a class="menu-item active"
+                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
+                    Proveedor</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
+                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
+                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
+                    href="seguimiento-pedidos.html">Seguimiento</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
+                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
+                    href="dividir-cuenta.html">Dividir Cuenta</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
+                    href="reserva-crear.html">Crear Reserva</a><a class="" href="reserva-editar.html">Editar
+                    Reserva</a><a class="" href="calendario-reservas.html">Calendario</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
+                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
+                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
+                    href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar
+                    Platillo</a><a class="" href="promociones.html">Promociones</a><a class=""
+                    href="categorias-menu.html">Categorías Menú</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
+                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
+                    href="tiempos-preparation.html">Tiempos</a><a class=""
+                    href="notificaciones-cocina.html">Notificaciones</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
+                    href="cliente-crear.html">Crear Cliente</a><a class="" href="historial-cliente.html">Historial</a><a
+                    class="" href="fidelizacion.html">Fidelización</a><a class=""
+                    href="promociones-clientes.html">Promociones</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
+                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
+                    class="" href="reporte-empleados.html">Empleados</a><a class=""
+                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
+                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
+                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
+                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alerts</a><a
+                    class="" href="backup-restauracion.html">Backup</a></div>
+        </div>
 
-        </aside>
-
-        <!-- =========================================================
-         CONTENT
-    ========================================================== -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <main class="content">
-
-            <!-- TOPBAR -->
-
             <div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-
-                <div class="topbar-title">
-
-                    <h1>Crear Cliente</h1>
-
-                    <p>
-                        Registra nuevos clientes y administra su información premium.
-                    </p>
-
-                </div>
-
-                <div class="profile-box">
-
-                    <div>
-                        <h6>Laura Méndez</h6>
-                        <span>Gerente CRM</span>
+                <div class="topbar-left">
+                    <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                    <div class="topbar-title">
+                        <h1>Crear Cliente</h1>
+                        <p>Registra nuevos clientes y administra su información premium.</p>
                     </div>
-
-                    <img src="https://i.pravatar.cc/150?img=48">
-
                 </div>
-
+                <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
+                </div>
             </div>
 
-            <!-- GRID -->
-
             <div class="dashboard-grid">
-
                 <!-- FORMULARIO -->
-
                 <div class="card-panel">
-
                     <div class="card-header-premium">
-
                         <h4>Información del Cliente</h4>
-
                     </div>
-
-                    <div class="row g-4">
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Nombre Completo
-                                </label>
-
-                                <input type="text" class="form-control-premium" placeholder="Ingresa el nombre">
-
+                    <form id="formCrearCliente">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nombres *</label>
+                                    <input type="text" id="nombres" class="form-control-premium"
+                                        placeholder="Ingresa los nombres" required>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Documento
-                                </label>
-
-                                <input type="text" class="form-control-premium" placeholder="Número de documento">
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Apellidos *</label>
+                                    <input type="text" id="apellidos" class="form-control-premium"
+                                        placeholder="Ingresa los apellidos" required>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Correo Electrónico
-                                </label>
-
-                                <input type="email" class="form-control-premium" placeholder="correo@email.com">
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Correo Electrónico *</label>
+                                    <input type="email" id="email" class="form-control-premium"
+                                        placeholder="correo@email.com" required>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Teléfono
-                                </label>
-
-                                <input type="text" class="form-control-premium" placeholder="+57 300 000 0000">
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono *</label>
+                                    <input type="text" id="telefono" class="form-control-premium"
+                                        placeholder="+57 300 000 0000" required>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Fecha de Nacimiento
-                                </label>
-
-                                <input type="date" class="form-control-premium">
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Fecha de Nacimiento *</label>
+                                    <input type="date" id="fechaNacimiento" class="form-control-premium" required>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Categoría
-                                </label>
-
-                                <select class="form-control-premium">
-
-                                    <option>Seleccionar categoría</option>
-                                    <option>VIP</option>
-                                    <option>Frecuente</option>
-                                    <option>Corporativo</option>
-                                    <option>Nuevo Cliente</option>
-
-                                </select>
-
+                            <!-- CAMPO DE CONTRASEÑA CON EL OJITO -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Contraseña *</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" id="password" class="form-control-premium"
+                                            placeholder="Mínimo 8 caracteres" required>
+                                        <i class="fa-solid fa-eye toggle-password" id="togglePassword"
+                                            title="Mostrar/Ocultar contraseña"></i>
+                                    </div>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="col-12">
-
-                            <div class="form-group">
-
-                                <label class="form-label">
-                                    Dirección
-                                </label>
-
-                                <textarea class="form-control-premium" placeholder="Dirección del cliente"></textarea>
-
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label">Estado</label>
+                                    <div class="status-toggle-container">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="estadoCliente" checked>
+                                        </div>
+                                        <span id="estadoTexto" class="status-text active">Cliente Activo</span>
+                                    </div>
+                                </div>
                             </div>
-
                         </div>
-
-                    </div>
-
+                    </form>
                 </div>
 
                 <!-- PANEL DERECHO -->
-
-                <div class="d-flex flex-column gap-4">
-
+                <div class="right-panel-wrapper">
                     <!-- FOTO -->
-
                     <div class="card-panel">
-
                         <div class="card-header-premium">
-
                             <h4>Foto de Perfil</h4>
-
                         </div>
-
-                        <div class="upload-box">
-
+                        <div class="upload-box" id="uploadBox">
+                            <input type="file" id="imagen" hidden accept="image/*">
                             <div class="upload-icon">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
                             </div>
-
-                            <h5>Subir Imagen</h5>
-
-                            <p>
-                                Arrastra una imagen o haz clic
-                                para cargar la foto del cliente.
+                            <h5 id="uploadTitle">Subir Imagen</h5>
+                            <p id="uploadText">
+                                Arrastra una imagen o haz clic para cargar la foto del cliente.
                             </p>
-
                         </div>
-
-                    </div>
-
-                    <!-- PREFERENCIAS -->
-
-                    <div class="card-panel">
-
-                        <div class="card-header-premium">
-
-                            <h4>Preferencias</h4>
-
-                        </div>
-
-                        <div class="tag-group">
-
-                            <div class="tag active">
-                                Gourmet
-                            </div>
-
-                            <div class="tag">
-                                Vinos
-                            </div>
-
-                            <div class="tag">
-                                Vegano
-                            </div>
-
-                            <div class="tag">
-                                Postres
-                            </div>
-
-                            <div class="tag">
-                                Reservas VIP
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- CONFIGURACIÓN -->
-
-                    <div class="card-panel">
-
-                        <div class="card-header-premium">
-
-                            <h4>Configuración</h4>
-
-                        </div>
-
-                        <div class="switch-row">
-
-                            <div class="switch-info">
-
-                                <h6>Programa de Fidelización</h6>
-
-                                <span>Permitir acumulación de puntos</span>
-
-                            </div>
-
-                            <div class="form-check form-switch">
-
-                                <input class="form-check-input" type="checkbox" checked>
-
-                            </div>
-
-                        </div>
-
-                        <div class="switch-row">
-
-                            <div class="switch-info">
-
-                                <h6>Promociones</h6>
-
-                                <span>Enviar promociones por correo</span>
-
-                            </div>
-
-                            <div class="form-check form-switch">
-
-                                <input class="form-check-input" type="checkbox" checked>
-
-                            </div>
-
-                        </div>
-
-                        <div class="switch-row">
-
-                            <div class="switch-info">
-
-                                <h6>Cliente VIP</h6>
-
-                                <span>Acceso prioritario y beneficios</span>
-
-                            </div>
-
-                            <div class="form-check form-switch">
-
-                                <input class="form-check-input" type="checkbox">
-
-                            </div>
-
-                        </div>
-
                     </div>
 
                     <!-- ACTIONS -->
-
-                    <div class="d-flex gap-3">
-
-                        <button class="btn btn-outline-premium w-50">
-                            Cancelar
-                        </button>
-
-                        <button class="btn btn-premium w-50" onclick="showToast()">
+                    <div class="d-flex gap-3 actions-wrapper">
+                        <a href="clientes.html"
+                            class="btn btn-outline-premium w-50 text-center d-flex align-items-center justify-content-center">Cancelar</a>
+                        <button class="btn btn-premium w-50" id="btnGuardar">
                             Guardar Cliente
                         </button>
-
                     </div>
-
                 </div>
-
             </div>
-
         </main>
-
     </div>
 
-    <!-- =========================================================
-     TOAST
-========================================================== -->
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/datos/crearClientes.js"></script>
 
-    <div class="toast-premium" id="toast">
-
-        <div class="toast-icon">
-            <i class="fa-solid fa-circle-check"></i>
-        </div>
-
-        <div class="toast-content">
-
-            <h5>Cliente registrado</h5>
-
-            <p>
-                El nuevo cliente fue creado correctamente en el sistema.
-            </p>
-
-        </div>
-
-    </div>
-
-    <!-- =========================================================
-     SCRIPT
-========================================================== -->
-
+    <!-- Script para el funcionamiento del ojito en la contraseña -->
     <script>
+        document.getElementById('togglePassword')?.addEventListener('click', function () {
+            const input = document.getElementById('password');
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
 
-        const toast = document.getElementById('toast');
-
-        function showToast() {
-
-            toast.classList.add('show');
-
-            setTimeout(() => {
-
-                toast.classList.remove('show');
-
-            }, 3500);
-
-        }
-
+            // Cambiar el icono
+            if (type === 'password') {
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            } else {
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            }
+        });
     </script>
-
-
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
 </body>
 
 </html>

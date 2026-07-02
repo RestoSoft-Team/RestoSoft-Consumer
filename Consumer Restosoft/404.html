@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página no encontrada | RestSoft</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --c-dark: #0a0a0a;
+        --c-primary: #6b1e28;
+        --c-bg: #fbfcfb;
+        --c-text-sec: #5e5e5e;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--c-dark);
+        color: white;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
+      .error-container {
+        max-width: 600px;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+      }
+      .error-bg-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Playfair Display", serif;
+        font-size: 20rem;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.03);
+        z-index: 1;
+        pointer-events: none;
+      }
+      .error-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 32px;
+        font-size: 2rem;
+        color: var(--c-primary);
+      }
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 16px;
+        letter-spacing: -0.04em;
+      }
+      h1 span {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 400;
+        color: #d9a441;
+      }
+      p {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 40px;
+        font-weight: 300;
+        line-height: 1.6;
+      }
+      .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 32px;
+        background: white;
+        color: var(--c-dark);
+        text-decoration: none;
+        border-radius: 100px;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-back:hover {
+        background: var(--c-primary);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(107, 30, 40, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-bg-text">404</div>
+    <div class="error-container">
+      <div class="error-icon">
+        <i class="fa-solid fa-utensils"></i>
+      </div>
+      <h1>Ups, este plato <span>no existe</span></h1>
+      <p>
+        Parece que la página que intentas buscar no está disponible, cambió de
+        dirección o el nombre del restaurante no es correcto.
+      </p>
+      <a href="/" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+      </a>
+    </div>
+  </body>
+</html>
