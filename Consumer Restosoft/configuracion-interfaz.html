@@ -155,12 +155,8 @@
       </button>
       <div class="submenu open">
         <a class="active" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="configuracion-pagina-cliente.html">Configuracion</a>
         <a class="" href="perfil.html">Mi Perfil</a>
-        <a class="" href="usuarios-sistema.html">Usuarios</a
-        ><a class="" href="impresoras.html">Impresoras</a
-        ><a class="" href="metodos-pago.html">Métodos Pago</a
-        ><a class="" href="alertas.html">Alertas</a
-        ><a class="" href="backup-restauracion.html">Backup</a>
       </div>
     </div>
 
@@ -176,8 +172,24 @@
             <p>Personaliza la apariencia global de RestSoft.</p>
           </div>
         </div>
-
-        <div id="infoPerfilContainer" class="profile"></div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 3rem;
+          "
+        >
+          <button
+            id="logoutBtn"
+            class="logout-icon-btn"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+          <div id="infoPerfilContainer" class="profile"></div>
+        </div>
       </header>
 
       <main class="page-content">

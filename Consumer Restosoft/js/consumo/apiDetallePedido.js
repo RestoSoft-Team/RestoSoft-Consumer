@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080/api";
+import { API_BASE, token } from "../consumo/config.js";
 
 export const apiPedidoDetalle = {
     // Obtener todas las mesas para filtrar las ocupadas en el frontend
@@ -49,14 +49,14 @@ export const apiPedidoDetalle = {
         return await response.json();
     },
 
-       getPedidoActivoByMesa: async (idMesa) => {
+    getPedidoActivoByMesa: async (idMesa) => {
         try {
             const response = await fetch(`${API_BASE}/pedido/mesa/${idMesa}`);
-            if (response.status === 404 || response.status === 500) return null; 
+            if (response.status === 404 || response.status === 500) return null;
             if (!response.ok) throw new Error("Error al obtener el pedido");
             return await response.json();
         } catch (error) {
-            return null; 
+            return null;
         }
     },
 };

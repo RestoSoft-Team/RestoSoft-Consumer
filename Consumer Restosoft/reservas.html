@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/reservas.css" />
 
-     <script type="module" src="js/datos/theme-loader.js"></script>
+    <script type="module" src="js/datos/theme-loader.js"></script>
   </head>
 
   <body>
@@ -157,12 +157,8 @@
       </button>
       <div class="submenu">
         <a class="" href="configuracion-interfaz.html">Interfaz</a>
+        <a class="" href="configuracion-pagina-cliente.html">Configuracion</a>
         <a class="" href="perfil.html">Mi Perfil</a>
-        <a class="" href="usuarios-sistema.html">Usuarios</a
-        ><a class="" href="impresoras.html">Impresoras</a
-        ><a class="" href="metodos-pago.html">Métodos Pago</a
-        ><a class="" href="alertas.html">Alertas</a
-        ><a class="" href="backup-restauracion.html">Backup</a>
       </div>
     </div>
 
@@ -176,6 +172,14 @@
           <p>Gestión de reservas en tiempo real del restaurante</p>
         </div>
         <div class="topbar-right">
+          <button
+            id="logoutBtn"
+            class="logout-icon-btn"
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
           <div id="infoPerfilContainer" class="profile">
             <p style="color: var(--gray); text-align: center; padding: 20px">
               Cargando perfil...

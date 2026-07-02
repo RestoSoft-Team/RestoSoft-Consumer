@@ -1,51 +1,56 @@
 <!DOCTYPE html>
-
 <html lang="es">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>RestSoft | Clientes</title>
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<style>
-        /* =========================================================
-           ROOT
-        ========================================================== */
-
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>RestSoft | Clientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
         :root {
-
-            --background: #fbfcfb;
-
+            /* Marca */
             --primary: #6b1e28;
             --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
 
-            --dark: #262f3c;
-            --dark-light: #39485c;
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
 
-            --soft: #b09da2;
-            --soft-light: #d9d2d4;
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
 
-            --white: #ffffff;
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
 
-            --gray: #6f7782;
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
 
-            --success: #3d8b5c;
-            --warning: #d9a441;
-            --danger: #bb3a4b;
-
-            --shadow:
-                0 10px 40px rgba(38, 47, 60, 0.08);
-
-            --radius: 24px;
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
         }
 
-        /* =========================================================
-           GLOBAL
-        ========================================================== */
 
         * {
             margin: 0;
@@ -70,116 +75,12 @@
             transition: 0.3s;
         }
 
-        /* =========================================================
-           LAYOUT
-        ========================================================== */
 
-        .main-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* =========================================================
-           SIDEBAR
-        ========================================================== */
-
-        .sidebar {
-            width: 280px;
-            background: var(--dark);
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            padding: 28px 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 999;
-        }
-
-        .brand {
-            margin-bottom: 42px;
-        }
-
-        .brand h2 {
-            color: white;
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .brand span {
-            color: #d4dae2;
-            font-size: 14px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 18px;
-            border-radius: 18px;
-            color: #d7dce5;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateX(4px);
-            color: white;
-        }
-
-        .menu-item.active {
-            background: var(--primary);
-            color: white;
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        .menu-item i {
-            width: 22px;
-            font-size: 18px;
-        }
-
-        .sidebar-footer {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 24px;
-            color: white;
-        }
-
-        .sidebar-footer h5 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .sidebar-footer p {
-            color: #d7dde4;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 18px;
-        }
-
-        /* =========================================================
-           CONTENT
-        ========================================================== */
 
         .content {
-            margin-left: 280px;
-            width: calc(100% - 280px);
+            width: 100%;
             padding: 32px;
         }
-
-        /* =========================================================
-           TOPBAR
-        ========================================================== */
 
         .topbar {
             display: flex;
@@ -187,6 +88,12 @@
             align-items: center;
             gap: 22px;
             margin-bottom: 32px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .topbar-title h1 {
@@ -207,64 +114,59 @@
             gap: 18px;
         }
 
-        .search-box {
-            position: relative;
-            width: 320px;
+        .profile {
+            background: transparent;
         }
 
-        .search-box i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-
-        .search-box input {
-            width: 100%;
-            min-height: 55px;
-            background: #f7f8fa;
-            border: none;
-            border-radius: 16px;
-            padding: 14px 18px 14px 50px;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border: 1px solid var(--primary);
-            background: white;
-        }
-
-        .profile-box {
+        .profile-link {
             display: flex;
             align-items: center;
             gap: 14px;
             background: white;
-            padding: 10px 18px;
+            padding: 10px 14px;
             border-radius: 20px;
             box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
         }
 
-        .profile-box img {
-            width: 52px;
-            height: 52px;
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
-        .profile-box h6 {
-            margin: 0;
-            font-weight: 700;
+        .profile-info {
+            display: flex;
+            flex-direction: column;
         }
-
-        .profile-box span {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        /* =========================================================
-           STATS
-        ========================================================== */
 
         .stats-grid {
             margin-bottom: 28px;
@@ -346,10 +248,6 @@
             color: var(--danger);
         }
 
-        /* =========================================================
-           FILTERS
-        ========================================================== */
-
         .filters-card {
             background: white;
             border-radius: 28px;
@@ -373,9 +271,142 @@
             background: white;
         }
 
-        /* =========================================================
-           TABLE CARD
-        ========================================================== */
+        .detail-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 50px rgba(38, 47, 60, 0.12);
+            margin-bottom: 32px;
+            display: none;
+            overflow: hidden;
+            position: relative;
+            border: none;
+        }
+
+        .detail-card.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-cover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            height: 100px;
+            width: 100%;
+        }
+
+        .detail-content {
+            position: relative;
+            padding: 0 32px 32px 32px;
+            margin-top: -50px;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .detail-avatar img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .detail-close {
+            margin-top: 60px;
+            background: #f4f5f7;
+            color: var(--dark);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .detail-close:hover {
+            background: var(--danger);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .detail-body {
+            margin-top: 20px;
+        }
+
+        .detail-info h3 {
+            font-weight: 800;
+            font-size: 26px;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #fbfcfb;
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .detail-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .detail-item h6 {
+            color: var(--gray);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .detail-item p {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .detail-info #detailEstado .badge {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
         .table-card {
             background: white;
@@ -437,10 +468,6 @@
             border-bottom-right-radius: 18px;
         }
 
-        /* =========================================================
-           CLIENT USER
-        ========================================================== */
-
         .client-box {
             display: flex;
             align-items: center;
@@ -455,47 +482,9 @@
         }
 
         .client-box h6 {
-            margin-bottom: 4px;
+            margin-bottom: 0;
             font-weight: 700;
         }
-
-        .client-box span {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        /* =========================================================
-           STATUS
-        ========================================================== */
-
-        .status {
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .status.vip {
-            background: rgba(107, 30, 40, 0.12);
-            color: var(--primary);
-        }
-
-        .status.frequent {
-            background: rgba(61, 139, 92, 0.12);
-            color: var(--success);
-        }
-
-        .status.new {
-            background: rgba(217, 164, 65, 0.15);
-            color: var(--warning);
-        }
-
-        /* =========================================================
-           BUTTONS
-        ========================================================== */
 
         .btn-premium {
             background: var(--primary);
@@ -543,22 +532,142 @@
             transform: translateY(-2px);
         }
 
-        /* =========================================================
-           RESPONSIVE
-        ========================================================== */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            box-shadow: var(--shadow);
+        }
 
-        @media(max-width:992px) {
+        .modal-header {
+            border-bottom: 1px solid #eee;
+            padding: 24px;
+        }
 
-            .sidebar {
-                width: 100px;
-                padding: 28px 14px;
-            }
+        .modal-body {
+            padding: 24px;
+        }
 
-            .sidebar .brand span,
-            .sidebar .menu-item span,
-            .sidebar-footer {
-                display: none;
-            }
+        .modal-footer {
+            border-top: 1px solid #eee;
+            padding: 24px;
+        }
+
+        .modal-title {
+            font-weight: 800;
+        }
+
+        /* ── FORM CHECK ─────────────────────────────────────────── */
+        .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .form-check-input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 0.25rem rgba(107, 30, 40, 0.25);
+        }
+
+        /* ── NOTIFICACIÓN ── */
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
+            transform: translateX(420px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────────────── */
+        @media (max-width: 992px) {
 
             .menu-item {
                 justify-content: center;
@@ -570,20 +679,13 @@
             }
 
             .content {
-                margin-left: 100px;
-                width: calc(100% - 100px);
+                width: 100%;
             }
-
         }
 
-        @media(max-width:768px) {
-
-            .sidebar {
-                display: none;
-            }
-
+        @media (max-width: 768px) {
             .content {
-                margin-left: 0;
+                margin-left: 0 !important;
                 width: 100%;
                 padding: 20px;
             }
@@ -599,472 +701,414 @@
                 align-items: stretch;
             }
 
-            .search-box {
-                width: 100%;
-            }
-
             .table-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 16px;
             }
 
+            .table-responsive table,
+            .table-responsive thead,
+            .table-responsive tbody,
+            .table-responsive th,
+            .table-responsive td,
+            .table-responsive tr {
+                display: block;
+                width: 100%;
+            }
+
+            .table-responsive thead {
+                display: none;
+            }
+
+            .table-responsive tr {
+                background: #fff;
+                margin-bottom: 16px;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+                border: 1px solid #eee;
+            }
+
+            .table-responsive td {
+                border: none !important;
+                position: relative;
+                padding-left: 48% !important;
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
+                min-height: 42px;
+                text-align: left !important;
+            }
+
+            .table-responsive td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 12px;
+                top: 10px;
+                width: 42%;
+                font-weight: 700;
+                white-space: nowrap;
+                color: #555;
+            }
+
+            .notification-container {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+            }
+
+            .notification {
+                min-width: unset;
+                max-width: 100%;
+            }
         }
     </style>
-
-<style id="responsive-table-cards">
-@media (max-width: 768px) {
-  .table-responsive table,
-  .table-responsive thead,
-  .table-responsive tbody,
-  .table-responsive th,
-  .table-responsive td,
-  .table-responsive tr {
-    display: block;
-    width: 100%;
-  }
-
-  .table-responsive thead {
-    display: none;
-  }
-
-  .table-responsive tr {
-    background: #fff;
-    margin-bottom: 16px;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border: 1px solid #eee;
-  }
-
-  .table-responsive td {
-    border: none !important;
-    position: relative;
-    padding-left: 48% !important;
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    min-height: 42px;
-    text-align: left !important;
-  }
-
-  .table-responsive td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 10px;
-    width: 42%;
-    font-weight: 700;
-    white-space: nowrap;
-    color: #555;
-  }
-}
-</style>
-
-<style id="responsive-sidebar-upgrade">
-.mobile-menu-btn{display:none;border:none;background:var(--primary);color:#fff;width:50px;height:50px;border-radius:14px;font-size:20px}
-.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;visibility:hidden;transition:.3s;z-index:998}
-.sidebar-overlay.show{opacity:1;visibility:visible}
-
-@media(max-width:992px){
-    .sidebar{width:90px}
-    .sidebar .menu-title,.sidebar .logo h3{display:none}
-    .sidebar .menu-item span{display:none}
-    .main{margin-left:90px}
-}
-
-@media(max-width:768px){
-    .sidebar{
-        width:280px!important;
-        left:-280px!important;
-        transition:.3s;
-        z-index:999;
-    }
-
-    .sidebar.open{left:0!important}
-
-    .sidebar .menu-title,
-    .sidebar .logo h3,
-    .sidebar .menu-item span{
-        display:block;
-    }
-
-    .main{
-        margin-left:0!important;
-        padding:18px!important;
-    }
-
-    .mobile-menu-btn{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:15px;
-    }
-
-    .topbar-actions{
-        width:100%;
-        flex-direction:column;
-    }
-
-    .search-box{
-        width:100%;
-        min-width:100%;
-    }
-}
-</style>
-
+    <script type="module" src="js/datos/theme-loader.js"></script>
 </head>
+
 <body>
-<div class="main-wrapper">
-<!-- =========================================================
-         SIDEBAR
-    ========================================================== -->
-<aside class="sidebar">
-<div>
-<div class="brand">
-<h2>RestSoft</h2>
-<span>Gestión de Clientes</span>
-</div>
-<nav class="menu">
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-line"></i>
-<span>Dashboard</span>
-</a>
-<a class="menu-item active" href="#">
-<i class="fa-solid fa-users"></i>
-<span>Clientes</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-gift"></i>
-<span>Fidelización</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-ticket"></i>
-<span>Promociones</span>
-</a>
-<a class="menu-item" href="#">
-<i class="fa-solid fa-chart-pie"></i>
-<span>Analítica</span>
-</a>
-</nav>
-</div>
-<div class="sidebar-footer">
-<h5>Clientes Premium</h5>
-<p>
-                    Gestiona clientes frecuentes,
-                    historial de consumo y fidelización avanzada.
-                </p>
-<button class="btn btn-premium w-100">
-                    Crear Cliente
-                </button>
-</div>
-</aside>
-<!-- =========================================================
-         CONTENT
-    ========================================================== -->
-<main class="content">
-<!-- TOPBAR -->
-<div class="topbar">
-<button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-<div class="topbar-title">
-<h1>Clientes</h1>
-<p>
-                        Administra clientes frecuentes, historial y programas de fidelización.
-                    </p>
-</div>
-<div class="topbar-actions">
-<div class="search-box">
-<i class="fa-solid fa-magnifying-glass"></i>
-<input placeholder="Buscar clientes..." type="text"/>
-</div>
-<div class="profile-box">
-<div>
-<h6>Camila Torres</h6>
-<span>Gerente CRM</span>
-</div>
-<img src="https://i.pravatar.cc/150?img=32"/>
-</div>
-</div>
-</div>
-<!-- STATS -->
-<div class="row g-4 stats-grid">
-<div class="col-lg-3 col-md-6">
-<div class="stats-card">
-<div>
-<h6>Total Clientes</h6>
-<h2>2,480</h2>
-<div class="stats-meta success">
-<i class="fa-solid fa-arrow-trend-up"></i>
-                                +18% crecimiento
-                            </div>
-</div>
-<div class="icon-box bg-primary-soft">
-<i class="fa-solid fa-users"></i>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6">
-<div class="stats-card">
-<div>
-<h6>Clientes VIP</h6>
-<h2>184</h2>
-<div class="stats-meta warning">
-<i class="fa-solid fa-crown"></i>
-                                Alto valor
-                            </div>
-</div>
-<div class="icon-box bg-warning-soft">
-<i class="fa-solid fa-star"></i>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6">
-<div class="stats-card">
-<div>
-<h6>Fidelizados</h6>
-<h2>1,320</h2>
-<div class="stats-meta success">
-<i class="fa-solid fa-heart"></i>
-                                Clientes activos
-                            </div>
-</div>
-<div class="icon-box bg-success-soft">
-<i class="fa-solid fa-medal"></i>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6">
-<div class="stats-card">
-<div>
-<h6>Nuevos Registros</h6>
-<h2>86</h2>
-<div class="stats-meta danger">
-<i class="fa-solid fa-user-plus"></i>
-                                Últimos 30 días
-                            </div>
-</div>
-<div class="icon-box bg-danger-soft">
-<i class="fa-solid fa-address-card"></i>
-</div>
-</div>
-</div>
-</div>
-<!-- FILTERS -->
-<div class="filters-card">
-<div class="row g-4">
-<div class="col-lg-4">
-<input class="form-control-premium" placeholder="Buscar por nombre" type="text"/>
-</div>
-<div class="col-lg-4">
-<select class="form-control-premium">
-<option>Todos los clientes</option>
-<option>VIP</option>
-<option>Frecuentes</option>
-<option>Nuevos</option>
-</select>
-</div>
-<div class="col-lg-4">
-<select class="form-control-premium">
-<option>Ordenar por consumo</option>
-<option>Más recientes</option>
-<option>Mayor frecuencia</option>
-<option>Mayor gasto</option>
-</select>
-</div>
-</div>
-</div>
-<!-- TABLE -->
-<div class="table-card">
-<div class="table-header">
-<h4>Base de Clientes</h4>
-<div class="d-flex gap-3">
-<button class="btn btn-outline-premium">
-                            Exportar
+
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+                <h3 id="nombreEmpresa"></h3>
+            </div>
+            <div class="menu-title">Navegación</div>
+            <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                    Inicio</span></a>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="empleados.html">Empleados</a>
+                <a class="" href="empleado-crear.html">Crear Empleado</a>
+                <a class="" href="empleado-editar.html">Editar Empleado</a>
+                <a class="" href="roles-permisos.html">Roles y Permisos</a>
+                <a class="" href="horarios-turnos.html">Horarios y Turnos</a>
+                <a class="" href="asistencia.html">Asistencia</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="inventario.html">Inventario</a>
+                <a class="" href="insumos-crear.html">Crear Producto</a>
+                <a class="" href="producto-editar.html">Editar Producto</a>
+                <a class="" href="entradas-mercancia.html">Entradas Mercancía</a>
+                <a class="" href="salidas-mermas.html">Salidas/Mermas</a>
+                <a class="" href="categorias-inventario.html">Categorías</a>
+                <a class="" href="proveedores.html">Proveedores</a>
+                <a class="" href="ProveedorInsumo.html">Insumos por Proveedor</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="pedidos.html">Pedidos</a>
+                <a class="" href="pedido-crear.html">Crear Pedido</a>
+                <a class="" href="pedido-detalle.html">Detalle Pedido</a>
+                <a class="" href="pedido-cocina.html">Pedido Cocina</a>
+                <a class="" href="seguimiento-pedidos.html">Seguimiento</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="mesas.html">Mesas</a>
+                <a class="" href="mapa-mesas.html">Mapa Mesas</a>
+                <a class="" href="transferir-mesa.html">Transferir Mesa</a>
+                <a class="" href="dividir-cuenta.html">Dividir Cuenta</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="reservas.html">Reservas</a>
+                <a class="" href="reserva-crear.html">Crear Reserva</a>
+                <a class="" href="reserva-editar.html">Editar Reserva</a>
+                <a class="" href="calendario-reservas.html">Calendario</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="facturacion.html">Facturación</a>
+                <a class="" href="generar-factura.html">Generar Factura</a>
+                <a class="" href="pagos.html">Pagos</a>
+                <a class="" href="propinas.html">Propinas</a>
+                <a class="" href="cierre-caja.html">Cierre Caja</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="menu-productos.html">Menú</a>
+                <a class="" href="platillo-crear.html">Crear Platillo</a>
+                <a class="" href="platillo-editar.html">Editar Platillo</a>
+                <a class="" href="promociones.html">Promociones</a>
+                <a class="" href="categorias-menu.html">Categorías Menú</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="cocina-dashboard.html">Dashboard Cocina</a>
+                <a class="" href="pedidos-preparacion.html">Pedidos Preparación</a>
+                <a class="" href="tiempos-preparacion.html">Tiempos</a>
+                <a class="" href="notificaciones-cocina.html">Notificaciones</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="menu-item active" href="clientes.html">Clientes</a>
+                <a class="" href="cliente-crear.html">Crear Cliente</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="reportes.html">Reportes</a>
+                <a class="" href="reporte-ventas.html">Ventas</a>
+                <a class="" href="reporte-inventario.html">Inventario</a>
+                <a class="" href="reporte-empleados.html">Empleados</a>
+                <a class="" href="reporte-financiero.html">Financiero</a>
+                <a class="" href="reporte-reservas.html">Reservas</a>
+                <a class="" href="estadisticas-ocupacion.html">Ocupación</a>
+            </div>
+            <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                    class="fa-solid fa-chevron-right chevron"></i></button>
+            <div class="submenu">
+                <a class="" href="configuracion-general.html">General</a>
+                <a class="" href="usuarios-sistema.html">Usuarios</a>
+                <a class="" href="impresoras.html">Impresoras</a>
+                <a class="" href="metodos-pago.html">Métodos Pago</a>
+                <a class="" href="alertas.html">Alertas</a>
+                <a class="" href="backup-restauracion.html">Backup</a>
+            </div>
+        </div>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <main class="content">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <button id="menuToggle" class="mobile-menu-btn" style="display:none;">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="topbar-title">
+                        <h1>Clientes</h1>
+                        <p>Administra clientes frecuentes, historial y programas de fidelización.</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                    <div id="infoPerfilContainer" class="profile-box">
+                        <p style="color: var(--gray); text-align: center; padding: 20px">
+                            Cargando perfil...
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD DETALLE -->
+            <div class="detail-card" id="cardDetalleCliente">
+                <div class="detail-cover"></div>
+                <div class="detail-content">
+                    <div class="detail-header">
+                        <div class="detail-avatar">
+                            <img src="" id="detailImg" alt="Cliente">
+                        </div>
+                        <button class="detail-close" id="btnCerrarDetalle" aria-label="Close">
+                            <i class="fa-solid fa-xmark"></i>
                         </button>
-<button class="btn btn-premium">
-                            Nuevo Cliente
+                    </div>
+                    <div class="detail-body">
+                        <div class="detail-info">
+                            <h3 id="detailNombre" class="mb-2"></h3>
+                            <div class="mb-4" id="detailEstado"></div>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <div class="detail-icon bg-primary-soft">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <h6>Teléfono</h6>
+                                        <p id="detailTelefono">—</p>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-icon bg-success-soft">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <h6>Correo Electrónico</h6>
+                                        <p id="detailEmail">—</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADÍSTICAS -->
+            <div class="row g-4 stats-grid">
+                <div class="col-lg-4 col-md-6">
+                    <div class="stats-card">
+                        <div>
+                            <h6>Total Clientes</h6>
+                            <h2 id="statTotal">0</h2>
+                            <div class="stats-meta success"><i class="fa-solid fa-arrow-trend-up"></i> Registrados</div>
+                        </div>
+                        <div class="icon-box bg-primary-soft"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="stats-card">
+                        <div>
+                            <h6>Fidelizados</h6>
+                            <h2 id="statFrecuentes">0</h2>
+                            <div class="stats-meta success"><i class="fa-solid fa-heart"></i> Clientes activos</div>
+                        </div>
+                        <div class="icon-box bg-success-soft"><i class="fa-solid fa-medal"></i></div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="stats-card">
+                        <div>
+                            <h6>Nuevos Registros</h6>
+                            <h2 id="statNuevos">0</h2>
+                            <div class="stats-meta danger"><i class="fa-solid fa-user-plus"></i> Últimos 30 días</div>
+                        </div>
+                        <div class="icon-box bg-danger-soft"><i class="fa-solid fa-address-card"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTRO -->
+            <div class="filters-card">
+                <div class="row g-4">
+                    <div class="col-lg-12">
+                        <input class="form-control-premium" placeholder="Buscar por nombre, teléfono o correo..."
+                            type="text" id="filtroNombre" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h4>Base de Clientes</h4>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-outline-premium" id="btnExportar">Exportar</button>
+                        <button class="btn btn-premium" id="btnNuevoCliente">Nuevo Cliente</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-premium">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Correo Electrónico</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-clientes">
+                            <tr>
+                                <td colspan="5" class="text-center p-4">
+                                    <i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando clientes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDITAR -->
+    <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formEditarCliente">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditarLabel">
+                            <i class="fa-solid fa-user-pen me-2"></i>Editar Cliente
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nombres</label>
+                                <input type="text" class="form-control" id="editNombres" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Apellidos</label>
+                                <input type="text" class="form-control" id="editApellidos" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Teléfono</label>
+                                <input type="text" class="form-control" id="editTelefono">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="editFechaNacimiento" required>
+                            </div>
+                            <!-- NUEVO CAMPO DE CONTRASEÑA CON OJITO -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Contraseña</label>
+                                <div style="position: relative;">
+                                    <input type="password" class="form-control" id="editPassword"
+                                        placeholder="Dejar vacío para mantener la actual" style="padding-right: 40px;">
+                                    <i class="fa-solid fa-eye" id="toggleEditPassword"
+                                        style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--gray);"></i>
+                                </div>
+                            </div>
+                            <div class="col-12 d-flex align-items-center mt-2">
+                                <div class="form-check form-switch m-0">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="editEstado"
+                                        style="width: 3rem; height: 1.5rem; cursor: pointer;">
+                                    <label class="form-check-label fw-bold ms-3 fs-5" for="editEstado"
+                                        style="cursor: pointer;">
+                                        Cliente Activo
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-premium">
+                            <i class="fa-solid fa-save me-2"></i>Guardar Cambios
                         </button>
-</div>
-</div>
-<div class="table-responsive">
-<table class="table-premium">
-<thead>
-<tr>
-<th>Cliente</th>
-<th>Contacto</th>
-<th>Visitas</th>
-<th>Consumo</th>
-<th>Estado</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td data-label="Cliente">
-<div class="client-box">
-<img src="https://i.pravatar.cc/120?img=12"/>
-<div>
-<h6>Alejandro Ramírez</h6>
-<span>ID #CL-2041</span>
-</div>
-</div>
-</td>
-<td data-label="Contacto">
-<strong>+57 320 458 9912</strong>
-<br/>
-<small class="text-muted">
-                                        alejandro@email.com
-                                    </small>
-</td>
-<td data-label="Visitas">48 visitas</td>
-<td data-label="Consumo">$4,850</td>
-<td data-label="Estado">
-<span class="status vip">
-                                        VIP
-                                    </span>
-</td>
-<td data-label="Acciones">
-<div class="d-flex gap-2">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-<button class="action-btn">
-<i class="fa-solid fa-pen"></i>
-</button>
-</div>
-</td>
-</tr>
-<tr>
-<td data-label="Cliente">
-<div class="client-box">
-<img src="https://i.pravatar.cc/120?img=25"/>
-<div>
-<h6>María Fernández</h6>
-<span>ID #CL-1984</span>
-</div>
-</div>
-</td>
-<td data-label="Contacto">
-<strong>+57 311 847 5621</strong>
-<br/>
-<small class="text-muted">
-                                        maria@email.com
-                                    </small>
-</td>
-<td data-label="Visitas">31 visitas</td>
-<td data-label="Consumo">$2,940</td>
-<td data-label="Estado">
-<span class="status frequent">
-                                        Frecuente
-                                    </span>
-</td>
-<td data-label="Acciones">
-<div class="d-flex gap-2">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-<button class="action-btn">
-<i class="fa-solid fa-pen"></i>
-</button>
-</div>
-</td>
-</tr>
-<tr>
-<td data-label="Cliente">
-<div class="client-box">
-<img src="https://i.pravatar.cc/120?img=18"/>
-<div>
-<h6>Laura Gómez</h6>
-<span>ID #CL-2210</span>
-</div>
-</div>
-</td>
-<td data-label="Contacto">
-<strong>+57 315 667 4481</strong>
-<br/>
-<small class="text-muted">
-                                        laura@email.com
-                                    </small>
-</td>
-<td data-label="Visitas">05 visitas</td>
-<td data-label="Consumo">$620</td>
-<td data-label="Estado">
-<span class="status new">
-                                        Nuevo
-                                    </span>
-</td>
-<td data-label="Acciones">
-<div class="d-flex gap-2">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-<button class="action-btn">
-<i class="fa-solid fa-pen"></i>
-</button>
-</div>
-</td>
-</tr>
-<tr>
-<td data-label="Cliente">
-<div class="client-box">
-<img src="https://i.pravatar.cc/120?img=45"/>
-<div>
-<h6>Daniel Torres</h6>
-<span>ID #CL-1872</span>
-</div>
-</div>
-</td>
-<td data-label="Contacto">
-<strong>+57 300 884 1255</strong>
-<br/>
-<small class="text-muted">
-                                        daniel@email.com
-                                    </small>
-</td>
-<td data-label="Visitas">62 visitas</td>
-<td data-label="Consumo">$6,240</td>
-<td data-label="Estado">
-<span class="status vip">
-                                        VIP
-                                    </span>
-</td>
-<td data-label="Acciones">
-<div class="d-flex gap-2">
-<button class="action-btn">
-<i class="fa-solid fa-eye"></i>
-</button>
-<button class="action-btn">
-<i class="fa-solid fa-pen"></i>
-</button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</main>
-</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/datos/clientes.js"></script>
+    <script>
+        document.getElementById('toggleEditPassword')?.addEventListener('click', function () {
+            const input = document.getElementById('editPassword');
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
 
-<script id="responsive-sidebar-upgrade-script">
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.querySelector(".sidebar");
-const overlay=document.getElementById("sidebarOverlay");
-
-menuToggle?.addEventListener("click",()=>{
- sidebar?.classList.toggle("open");
- overlay?.classList.toggle("show");
-});
-
-overlay?.addEventListener("click",()=>{
- sidebar?.classList.remove("open");
- overlay?.classList.remove("show");
-});
-</script>
-
+            if (type === 'password') {
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            } else {
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            }
+        });
+    </script>
 </body>
+
 </html>

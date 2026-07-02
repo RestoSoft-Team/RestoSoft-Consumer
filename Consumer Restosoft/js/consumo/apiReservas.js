@@ -1,7 +1,4 @@
-const API_BASE = "http://localhost:8080/api";
-// const token = localStorage.getItem("token");
-const token =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkByZXN0b3NvZnQuY29tIiwidXN1YXJpb0lkIjoxNiwiZW1wcmVzYUlkIjoxLCJyb2wiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzgyNjkxMjQwLCJleHAiOjE3ODI3Nzc2NDB9.32d5LzAaR52loAERHojAkbFPakFWXD5qJncPGnMB_qk";
+import { API_BASE, token } from "../consumo/config.js";
 
 export const apiReserva = {
   listarPorReservaId: async (idReserva) => {
@@ -58,7 +55,7 @@ export const apiReserva = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-         Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         reserva,
@@ -78,9 +75,9 @@ export const apiReserva = {
   actualizarReserva: async (idReserva, reserva, idsMesa) => {
     const response = await fetch(`${API_BASE}/reserva/${idReserva}`, {
       method: "PUT",
-        headers: {
+      headers: {
         "Content-Type": "application/json",
-         Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         reserva,

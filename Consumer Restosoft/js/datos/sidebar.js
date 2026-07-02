@@ -28,3 +28,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+// ====================================================
+// RESTSOFT - LÓGICA DE LOGOUT (MINIMALISTA)
+// ====================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener("click", () => {
+    // Efecto visual rápido al hacer clic
+    logoutBtn.style.opacity = "0.5";
+    logoutBtn.style.pointerEvents = "none"; // Evita doble clic
+
+    // Limpiar todo el localStorage de RestSoft
+    localStorage.removeItem("token");
+    localStorage.removeItem("restsoft_user");
+    localStorage.removeItem("restsoft_empresa");
+    localStorage.removeItem("restsoft_rol");
+    
+    // Limpia cualquier otro dato que tu app guarde
+    localStorage.clear(); 
+
+    // Redirección inmediata al login
+    window.location.href = "index.html"; // Cambia esto si tu login se llama distinto
+  });
+});

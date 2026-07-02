@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080/api";
+import { API_BASE,token } from "../consumo/config.js";
 
 export const api = {
 

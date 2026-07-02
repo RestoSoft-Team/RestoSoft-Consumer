@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RestSoft | Crear Insumo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
+        :root {
+            /* Marca */
+            --primary: #6b1e28;
+            --primary-light: #8a3b47;
+            --primary-soft: rgba(107, 30, 40, 0.08);
+
+            /* Fondo y Superficie */
+            --background: #f8f9fb;
+            --surface: #ffffff;
+            --surface-container: #f1f3f6;
+            --border-color: #e8ebf0;
+
+            /* Texto */
+            --dark: #111827;
+            --gray: #6b7280;
+            --soft: #9ca3af;
+
+            /* Estados */
+            --success: #059669;
+            --success-soft: rgba(5, 150, 105, 0.1);
+            --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.1);
+            --danger: #dc2626;
+            --danger-soft: rgba(220, 38, 38, 0.1);
+
+            /* Sombras y Bordes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.06);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+
+            /* Tamaños fijos */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 78px;
+            --topbar-height: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--dark);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ── MAIN Y TOPBAR (Complementan tu sidebar.css) ── */
+        .main {
+            padding: 34px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .title h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .title p {
+            color: var(--gray);
+            margin: 6px 0 0;
+        }
+
+        .search {
+            position: relative;
+        }
+
+        .search input {
+            width: 320px;
+            min-height: 55px;
+            border: none;
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 14px 18px 14px 48px;
+            outline: none;
+        }
+
+        .search input:focus {
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        .search i {
+            position: absolute;
+            left: 18px;
+            top: 18px;
+            color: var(--gray);
+        }
+
+        .profile {
+            background: transparent;
+        }
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            width: 100%;
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
+        }
+
+        .profile-link:hover {
+            background-color: #f9fafb;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .profile-text-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .profile img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TARJETAS Y FORMULARIOS ── */
+        .premium-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, .03);
+            transition: .3s;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            background: #f7f8fa;
+            border: none;
+            border-radius: 16px;
+            min-height: 55px;
+            padding: 14px 18px;
+            width: 100%;
+            transition: .3s;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            background: white;
+        }
+
+        textarea.form-control {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-control.is-invalid {
+            border: 1.5px solid var(--danger) !important;
+            background: #fff5f6;
+        }
+
+        .invalid-feedback {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-control.is-invalid+.invalid-feedback {
+            display: block;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            color: white;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            transition: .3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary-custom:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--dark);
+            background: none;
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-weight: 600;
+            width: 100%;
+            transition: .3s;
+            cursor: pointer;
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--dark);
+            color: white;
+        }
+
+        .summary {
+            position: sticky;
+            top: 30px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 8px;
+        }
+
+        .summary-item span:first-child {
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .summary-item strong {
+            text-align: right;
+            word-break: break-word;
+            max-width: 60%;
+            font-weight: 700;
+        }
+
+        .summary-item strong.placeholder-val {
+            color: #ccc;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-activo {
+            background: rgba(61, 139, 92, .12);
+            color: var(--success);
+        }
+
+        .badge-inactivo {
+            background: rgba(187, 58, 75, .12);
+            color: var(--danger);
+        }
+
+        /* =========================================
+   NOTIFICACIONES MODERNAS
+   ========================================= */
+        .notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            min-width: 340px;
+            max-width: 420px;
+            transform: translateX(420px);
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid transparent;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .notification.error .notification-icon {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--soft);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
+        }
+
+        /* ── SEARCHABLE SELECT ── */
+        .ss-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .ss-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .ss-input {
+            width: 100%;
+            min-height: 55px;
+            background: #f7f8fa;
+            border: 1.5px solid transparent;
+            border-radius: 16px;
+            padding: 14px 42px 14px 18px;
+            font-size: 14px;
+            color: var(--dark);
+            outline: none;
+            transition: .3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ss-input:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .ss-input::placeholder {
+            color: #b0b8c4;
+        }
+
+        .ss-arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 13px;
+            pointer-events: none;
+            transition: .25s;
+        }
+
+        .ss-arrow.open {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .ss-list {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(38, 47, 60, .15);
+            border: 1px solid #eef0f4;
+            z-index: 500;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 6px;
+            display: none;
+        }
+
+        .ss-list.open {
+            display: block;
+        }
+
+        .ss-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .ss-list::-webkit-scrollbar-thumb {
+            background: #d0d5dc;
+            border-radius: 4px;
+        }
+
+        .ss-option {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            transition: .15s;
+        }
+
+        .ss-option:hover,
+        .ss-option.hl {
+            background: #f5f6f9;
+        }
+
+        .ss-option.selected {
+            background: rgba(107, 30, 40, .08);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .ss-option .ss-opt-sub {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .ss-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .ss-wrapper.is-invalid .ss-input {
+            border-color: var(--danger) !important;
+            background: #fff5f6;
+        }
+
+        .ss-wrapper.is-invalid~.invalid-feedback {
+            display: block !important;
+        }
+    </style>
+    <script type="module" src="js/datos/theme-loader.js"></script>
+</head>
+
+
+<body>
+    <div class="notification-container" id="notificationContainer"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
+            <h3 id="nombreEmpresa"></h3>
+        </div>
+        <div class="menu-title">Navegación</div>
+
+        <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
+                Inicio</span></a>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="empleados.html">Empleados</a><a href="empleado-crear.html">Crear Empleado</a><a
+                href="empleado-editar.html">Editar Empleado</a><a href="roles-permisos.html">Roles y Permisos</a><a
+                href="horarios-turnos.html">Horarios y Turnos</a><a href="asistencia.html">Asistencia</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
+                class="fa-solid fa-chevron-right chevron rotate"></i></button>
+        <div class="submenu open"><a href="inventario.html">Inventario</a><a class="active"
+                href="insumos-crear.html">Crear Producto</a><a href="producto-editar.html">Editar Producto</a><a
+                href="entradas-mercancia.html">Entradas Mercancía</a><a href="salidas-mermas.html">Salidas/Mermas</a><a
+                href="categorias-inventario.html">Categorías</a><a href="proveedores.html">Proveedores</a><a
+                href="ProveedorInsumo.html">Insumos por Proveedor</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="pedidos.html">Pedidos</a><a href="pedido-crear.html">Crear Pedido</a><a
+                href="pedido-detalle.html">Detalle Pedido</a><a href="pedido-cocina.html">Pedido Cocina</a><a
+                href="seguimiento-pedidos.html">Seguimiento</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="mesas.html">Mesas</a><a href="mapa-mesas.html">Mapa Mesas</a><a
+                href="transferir-mesa.html">Transferir Mesa</a><a href="dividir-cuenta.html">Dividir Cuenta</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reservas.html">Reservas</a><a href="reserva-crear.html">Crear Reserva</a><a
+                href="reserva-editar.html">Editar Reserva</a><a href="calendario-reservas.html">Calendario</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
+                Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="facturacion.html">Facturación</a><a href="generar-factura.html">Generar
+                Factura</a><a href="pagos.html">Pagos</a><a href="propinas.html">Propinas</a><a
+                href="cierre-caja.html">Cierre Caja</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="menu-productos.html">Menú</a><a href="platillo-crear.html">Crear Platillo</a><a
+                href="platillo-editar.html">Editar Platillo</a><a href="promociones.html">Promociones</a><a
+                href="categorias-menu.html">Categorías Menú</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="cocina-dashboard.html">Dashboard Cocina</a><a
+                href="pedidos-preparacion.html">Pedidos Preparación</a><a href="tiempos-preparacion.html">Tiempos</a><a
+                href="notificaciones-cocina.html">Notificaciones</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="clientes.html">Clientes</a><a href="cliente-crear.html">Crear Cliente</a><a
+                href="historial-cliente.html">Historial</a><a href="fidelizacion.html">Fidelización</a><a
+                href="promociones-clientes.html">Promociones</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="reportes.html">Reportes</a><a href="reporte-ventas.html">Ventas</a><a
+                href="reporte-inventario.html">Inventario</a><a href="reporte-empleados.html">Empleados</a><a
+                href="reporte-financiero.html">Financiero</a><a href="reporte-reservas.html">Reservas</a><a
+                href="estadisticas-ocupacion.html">Ocupación</a></div>
+
+        <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
+                class="fa-solid fa-chevron-right chevron"></i></button>
+        <div class="submenu"><a href="configuracion-general.html">General</a><a
+                href="usuarios-sistema.html">Usuarios</a><a href="impresoras.html">Impresoras</a><a
+                href="metodos-pago.html">Métodos Pago</a><a href="alertas.html">Alertas</a><a
+                href="backup-restauracion.html">Backup</a></div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main">
+        <div class="topbar">
+            <!-- Contenedor que agrupa el botón y el título a la izquierda -->
+            <div style="display: flex; align-items: center; gap: 15px; flex-grow: 1;">
+                <button class="mobile-menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="title">
+                    <h1>Crear Insumo</h1>
+                    <p>Registra nuevos ingredientes y productos para el inventario.</p>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <div class="search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Buscar..." />
+                </div>
+                <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="premium-card">
+                    <div class="card-title">Información General</div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label" for="nombre">Nombre del Insumo <span
+                                    class="text-danger">*</span></label>
+                            <input id="nombre" class="form-control" placeholder="Queso Mozzarella Premium" />
+                            <div class="invalid-feedback">El nombre es obligatorio.</div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label">Categoría <span class="text-danger">*</span></label>
+                            <div id="productoCategoria"></div>
+                            <div class="invalid-feedback">Selecciona una categoría.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Proveedor <span class="text-danger">*</span></label>
+                            <div id="idProveedor"></div>
+                            <div class="invalid-feedback">Selecciona un proveedor.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="unidadMedida">Unidad <span
+                                    class="text-danger">*</span></label>
+                            <input id="unidadMedida" class="form-control" placeholder="Ej: Kg, Litros, Unidad..." />
+                            <div class="invalid-feedback">Ingresa la unidad de medida.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="stockActual">Stock Inicial <span
+                                    class="text-danger">*</span></label>
+                            <input id="stockActual" class="form-control" type="number" min="0" placeholder="50" />
+                            <div class="invalid-feedback">Ingresa un stock válido.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="stockMinimo">Stock Mínimo</label>
+                            <input id="stockMinimo" class="form-control" type="number" min="0" placeholder="10" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="costoUnitario">Costo Unitario <span
+                                    class="text-danger">*</span></label>
+                            <input id="costoUnitario" class="form-control" type="number" min="0" step="0.01"
+                                placeholder="25000" />
+                            <div class="invalid-feedback">Ingresa un costo válido.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="estado">Estado</label>
+                            <select id="estado" class="form-select">
+                                <option value="ACTIVO">Activo</option>
+                                <option value="INACTIVO">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="fechaVencimiento">Fecha Vencimiento</label>
+                            <input id="fechaVencimiento" class="form-control" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="premium-card mt-4">
+                    <div class="card-title">Descripción</div>
+                    <textarea id="descripcion" class="form-control"
+                        placeholder="Notas adicionales del insumo..."></textarea>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="premium-card summary">
+                    <div class="card-title">Resumen</div>
+                    <div class="summary-item"><span>Nombre</span><strong id="sumNombre"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Categoría</span><strong id="sumCategoria"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Proveedor</span><strong id="sumProveedor"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Unidad</span><strong id="sumUnidad"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Stock</span><strong id="sumStock" class="placeholder-val">—</strong>
+                    </div>
+                    <div class="summary-item"><span>Stock Mín.</span><strong id="sumStockMin"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Costo Unit.</span><strong id="sumCosto"
+                            class="placeholder-val">—</strong></div>
+                    <div class="summary-item"><span>Vence</span><strong id="sumVence" class="placeholder-val">—</strong>
+                    </div>
+                    <hr />
+                    <div id="sumEstadoBadge" class="badge-status badge-activo mb-3">Activo</div>
+                    <hr />
+                    <div class="d-grid gap-3">
+                        <button class="btn-primary-custom" id="btnGuardar">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Insumo
+                        </button>
+                        <button class="btn-outline-custom" id="btnCancelar">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="/js/datos/sidebar.js"></script>
+    <script type="module" src="/js/datos/crearInsumo.js"></script>
+</body>
+
+</html>
