@@ -351,18 +351,29 @@ document.getElementById('btn-exportar')?.addEventListener('click', () => {
     }
 
     const datos = listaProveedores.map(p => ({
-        'ID': p.id,
-        'Nombre': p.nombre,
-        'Email': p.email,
-        'Teléfono': p.telefono,
-        'Dirección': p.direccion,
+        'Nombre': p.nombre || '',
+        'Email': p.email || '',
+        'Teléfono': p.telefono || '',
+        'Dirección': p.direccion || '',
         'Empresa': p.nombreEmpresa || 'Sin Empresa',
         'Estado': p.estado ? 'Disponible' : 'No Disponible'
     }));
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(datos);
-    ws['!cols'] = [{ wch: 6 }, { wch: 24 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 22 }, { wch: 18 }];
+
+    // --- CALCULAR ANCHO AUTOMÁTICO PARA CADA COLUMNA ---
+    const cols = Object.keys(datos[0] || {});
+    ws['!cols'] = cols.map(key => {
+        // Busca la longitud máxima entre el título de la columna y sus celdas
+        const maxLen = Math.max(
+            key.length,
+            ...datos.map(row => String(row[key]).length)
+        );
+        // Le sumamos 2 caracteres extra de relleno para que no quede pegado al borde
+        return { wch: maxLen + 2 };
+    });
+
     XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
     const fecha = new Date().toISOString().slice(0, 10);
     XLSX.writeFile(wb, `proveedores_${fecha}.xlsx`);

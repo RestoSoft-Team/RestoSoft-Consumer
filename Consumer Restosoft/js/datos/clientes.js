@@ -191,6 +191,9 @@ function abrirModalEditar(c) {
     const email = c.email || c.usuario?.email || '';
     const fechaNacimiento = c.fechaNacimiento || c.usuario?.fechaNacimiento || '';
 
+    // Si el backend devuelve la contraseña (poco probable por seguridad, pero si lo hace, se carga)
+    const password = c.password || c.usuario?.password || '';
+
     const estadoValor = c.estado ?? c.usuario?.estado ?? false;
     const isActive = estadoValor === true || String(estadoValor).toLowerCase() === 'activo' || String(estadoValor).toLowerCase() === 'true';
 
@@ -200,6 +203,7 @@ function abrirModalEditar(c) {
     document.getElementById('editTelefono').value = telefono;
     document.getElementById('editEmail').value = email;
     document.getElementById('editFechaNacimiento').value = fechaNacimiento;
+    document.getElementById('editPassword').value = password; // Precargamos si existe
     document.getElementById('editEstado').checked = isActive;
 
     bootstrapModal.show();
@@ -216,8 +220,15 @@ document.getElementById('formEditarCliente').addEventListener('submit', async fu
         email: document.getElementById('editEmail').value.trim(),
         telefono: document.getElementById('editTelefono').value.trim(),
         fechaNacimiento: document.getElementById('editFechaNacimiento').value,
-        estado: document.getElementById('editEstado').checked
+        estado: document.getElementById('editEstado').checked,
+        idRol: 3 // <--- AGREGA ESTA LÍNEA (Asegúrate de que 3 sea el ID del rol Cliente)
     };
+
+    // Lógica de la contraseña:
+    const passValue = document.getElementById('editPassword').value.trim();
+    if (passValue !== "") {
+        datosCliente.password = passValue;
+    }
 
     try {
         const clienteActualizado = await api.actualizarCliente(id, datosCliente);
@@ -308,7 +319,7 @@ function cargarPerfilUsuario(perfilData) {
 
     // Forzamos los estilos del contenedor blanco con sombra
     const styleBox = "display: flex; align-items: center; gap: 14px; background: #ffffff; padding: 10px 14px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); text-decoration: none; color: inherit;";
-    
+
     if (perfilData) {
         const iniciales =
             (
@@ -317,7 +328,7 @@ function cargarPerfilUsuario(perfilData) {
             ).toUpperCase() || "EP";
 
         const styleImg = "width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; text-transform: uppercase;";
-        
+
         const avatarHTML = perfilData.usuario.imagenUrl
             ? `<img src="${perfilData.usuario.imagenUrl}" alt="Perfil" style="${styleImg}" />`
             : `<div style="${styleImg}">${iniciales}</div>`;

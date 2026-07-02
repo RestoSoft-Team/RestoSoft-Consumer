@@ -437,7 +437,6 @@ function exportarCSV() {
             'Stock Anterior': Number(e.stockAnterior ?? e.stock_anterior ?? 0),
             'Cantidad': Number(e.cantidad || 0),
             'Stock Nuevo': Number(e.stockNuevo ?? e.stock_nuevo ?? 0),
-            'Costo Unitario': Number(e.costoUnitario ?? insumoLocal?.costoUnitario ?? 0),
             'Fecha': String(parseFecha(e.fechaMovimiento || e.fechaEntrada || e.fecha_movimiento || e.fecha))
         };
     });
