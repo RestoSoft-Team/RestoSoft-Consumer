@@ -1,4 +1,5 @@
 import { apiProfile } from "../consumo/apiProfile.js";
+import { generarSidebar } from './create-sidebar.js';
 
 let currentUsuario = null;
 let selectedImageFile = null;
@@ -197,6 +198,27 @@ async function initProfile() {
   try {
     // El backend ahora devuelve UsuarioCompletoResponse
     const data = await apiProfile.obtenerInfoMe();
+
+    const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "MESERO", "COCINA"];
+
+    if (!rolesPermitidos.includes(data?.rol?.nombre)) {
+      console.error("Acceso no autorizado");
+
+      const codigo = "403";
+      const mensaje = encodeURIComponent(
+        "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador.",
+      );
+
+      window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+    generarSidebar(
+      "sidebar-container",
+      "configuracion",
+      "mi_perfil",
+      data.rol.nombre,
+    );
+
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 
     const empresaData = data?.empresa || data?.data?.empresa;

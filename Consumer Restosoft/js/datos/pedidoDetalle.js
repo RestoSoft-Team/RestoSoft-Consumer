@@ -2,6 +2,7 @@ import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { apiProfile } from '../consumo/apiProfile.js';
 import { showNotification } from './notificaciones.js';
+import { generarSidebar } from './create-sidebar.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -48,7 +49,7 @@ if (document.readyState === 'loading') {
 
 async function initDetallePage() {
     cargarPerfilUsuario();
-    setupCancelarPedidoListeners(); // Registramos los eventos del modal de cancelación
+    setupCancelarPedidoListeners();
 
     try {
         const [mesas, pedidos, cats, platos] = await Promise.all([
@@ -165,7 +166,6 @@ function setupCancelarPedidoListeners() {
         dom.btnConfirmarCancelacion.addEventListener('click', async () => {
             const motivo = dom.motivoCancelacion.value.trim();
 
-            // Validación obligatoria
             if (!motivo) {
                 dom.errorMotivo.style.display = 'block';
                 return;
@@ -180,7 +180,6 @@ function setupCancelarPedidoListeners() {
                 dom.modalCancelar.style.display = 'none';
                 showNotification("Pedido Cancelado", "El pedido fue cancelado y las mesas liberadas correctamente.", "success", "fa-circle-check");
                 
-                // Redirigir a pedidos después de 2 segundos
                 setTimeout(() => {
                     window.location.href = 'pedidos.html';
                 }, 2000);
@@ -227,7 +226,6 @@ async function cargarPedidoSeleccionado() {
     dom.txtEstadoPedido.innerHTML = `<i class="fa-solid fa-clock"></i> ${pedidoActual.estado}`;
     dom.txtMesero.textContent = pedidoActual.nombresMeseros?.join(', ') || 'Sin asignar';
 
-    // Lógica para mostrar/ocultar botón de cancelar
     if (dom.btnCancelarPedido) {
         if (pedidoActual.estado !== 'PAGADO' && pedidoActual.estado !== 'CANCELADO') {
             dom.btnCancelarPedido.style.display = 'inline-flex';
@@ -271,6 +269,13 @@ function renderProductosPedido(detalles) {
         const precioTotal = det.precioUnitario * totalUnidades;
         const nombrePlato = det.nombrePlato || 'Producto';
         const tipoPlato = det.categoriaPlato || 'General';
+
+        // 👇 BUSCAMOS LA IMAGEN DEL PLATO EN TODOSLOSPLATOS 👇
+        const platoInfo = todosLosPlatos.find(p => p.id === det.idPlato);
+        const imagenUrl = platoInfo?.imagenUrl;
+        const imageHtml = imagenUrl && !imagenUrl.includes('default-plate.png')
+            ? `<img src="${imagenUrl}" alt="${nombrePlato}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 18px;">`
+            : `<i class="fa-solid fa-burger"></i>`;
 
         let unidadesHTML = '';
         if (unidades.length > 0) {
@@ -324,7 +329,7 @@ function renderProductosPedido(detalles) {
             <div class="product-accordion-item ${claseDiv}">
                 <div class="product-item">
                     <div class="product-left">
-                        <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
+                        <div class="product-icon">${imageHtml}</div>
                         <div>
                             <div class="product-name">
                                 ${nombrePlato} 
@@ -366,6 +371,24 @@ function actualizarEstadisticas(detalles) {
 }
 
 async function cargarPerfilUsuario() {
+
+    const perfilData = await apiProfile.obtenerInfoMe();
+
+    const rolesPermitidos = ["MESERO", "ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+    generarSidebar('sidebar-container', "pedidos", "detalle_pedido", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     if (!infoPerfilContainer) return;
@@ -430,10 +453,17 @@ function renderPlatos() {
         dom.platosContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay platos.</p></div>`;
         return;
     }
-    dom.platosContainer.innerHTML = platosFiltrados.map(plato => `
+    
+    // 👇 ACTUALIZADO: Renderiza la imagen si existe en el modal también 👇
+    dom.platosContainer.innerHTML = platosFiltrados.map(plato => {
+        const imageHtml = plato.imagenUrl && !plato.imagenUrl.includes('default-plate.png')
+            ? `<img src="${plato.imagenUrl}" alt="${plato.nombre}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">`
+            : `<i class="fa-solid fa-bowl-food"></i>`;
+            
+        return `
         <div class="plato-card">
             <div class="plato-header">
-                <div class="plato-icon"><i class="fa-solid fa-bowl-food"></i></div>
+                <div class="plato-icon">${imageHtml}</div>
                 <div class="plato-info">
                     <h5>${plato.nombre}</h5>
                     <p>${(plato.descripcion || '').substring(0, 30)}...</p>
@@ -450,7 +480,8 @@ function renderPlatos() {
                     <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 async function handlePlatosClick(e) {

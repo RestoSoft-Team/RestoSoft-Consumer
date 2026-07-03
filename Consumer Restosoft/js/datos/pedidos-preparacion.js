@@ -2,6 +2,7 @@ import { apiCocina } from '../consumo/apiCocina.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { apiProfile } from '../consumo/apiProfile.js';
 import { showNotification } from './notificaciones.js'; 
+import { generarSidebar } from './create-sidebar.js';
 
 const TIEMPO_MAX_PREPARACION = 15;
 const API_BASE = "http://localhost:8080/api";
@@ -255,12 +256,32 @@ function actualizarTiemposEnVivo() {
 }
 
 async function cargarPerfilUsuario() {
+
+
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     if (!infoPerfilContainer) return;
 
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+
+        const rolesPermitidos = ["COCINA", "ADMINISTRADOR"];
+
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            console.error("Acceso no autorizado");
+
+            const codigo = "403";
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+
+            window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+        }
+
+        generarSidebar('sidebar-container', "cocina", "preparacion", perfilData.rol.nombre);
+
         const nombreRaw = perfilData?.empresa?.nombre || "";
         if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
         else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;

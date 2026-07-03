@@ -975,200 +975,124 @@
         </div>
     </div>
 
-    <div class="layout">
-        <div class="sidebar">
-            <div class="logo">
-                <div class="logo-box"><i class="fa-solid fa-utensils"></i></div>
-                <h3 id="nombreEmpresa"></h3>
+    <div id="sidebar-container" class="sidebar"></div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <main class="main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="page-title">
+                    <h1>Gestión de Proveedores</h1>
+                    <p>Administra distribuidores, abastecimiento y relaciones comerciales.</p>
+                </div>
             </div>
-            <div class="menu-title">Navegación</div>
-            <a class="menu-item" href="Dashboard-example.html"><i class="fa-solid fa-chart-line"></i><span>Dashboard /
-                    Inicio</span></a>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-users"></i> Gestión de Empleados</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="empleados.html">Empleados</a><a class=""
-                    href="empleado-crear.html">Crear Empleado</a><a class="" href="empleado-editar.html">Editar
-                    Empleado</a><a class="" href="roles-permisos.html">Roles y Permisos</a><a class=""
-                    href="horarios-turnos.html">Horarios y Turnos</a><a class="" href="asistencia.html">Asistencia</a>
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input placeholder="Buscar proveedores..." type="text" id="input-busqueda" />
+                </div>
+
+                <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <div id="infoPerfilContainer" class="profile">
+                    <p style="color: var(--gray); text-align: center; padding: 20px">
+                        Cargando perfil...
+                    </p>
+                </div>
             </div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-boxes-stacked"></i> Inventario</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="inventario.html">Inventario</a><a class=""
-                    href="insumos-crear.html">Crear Producto</a><a class="" href="producto-editar.html">Editar
-                    Producto</a><a class="" href="entradas-mercancia.html">Entradas Mercancía</a><a class=""
-                    href="salidas-mermas.html">Salidas/Mermas</a><a class=""
-                    href="categorias-inventario.html">Categorías</a><a class="menu-item active"
-                    href="proveedores.html">Proveedores</a><a class="" href="ProveedorInsumo.html">Insumos por
-                    Proveedor</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-cart-shopping"></i> Pedidos</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="pedidos.html">Pedidos</a><a class="" href="pedido-crear.html">Crear
-                    Pedido</a><a class="" href="pedido-detalle.html">Detalle Pedido</a><a class=""
-                    href="pedido-cocina.html">Pedido Cocina</a><a class=""
-                    href="seguimiento-pedidos.html">Seguimiento</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-table-cells"></i> Gestión de Mesas</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="mesas.html">Mesas</a><a class="" href="mapa-mesas.html">Mapa
-                    Mesas</a><a class="" href="transferir-mesa.html">Transferir Mesa</a><a class=""
-                    href="dividir-cuenta.html">Dividir Cuenta</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-calendar-days"></i> Reservas</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="reservas.html">Reservas</a><a class=""
-                    href="reserva-crear.html">Crear Reserva</a><a class="" href="reserva-editar.html">Editar
-                    Reserva</a><a class="" href="calendario-reservas.html">Calendario</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-file-invoice-dollar"></i> Facturación y
-                    Pagos</span><i class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="facturacion.html">Facturación</a><a class=""
-                    href="generar-factura.html">Generar Factura</a><a class="" href="pagos.html">Pagos</a><a class=""
-                    href="propinas.html">Propinas</a><a class="" href="cierre-caja.html">Cierre Caja</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-utensils"></i> Menú y Productos</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="menu-productos.html">Menú</a><a class=""
-                    href="platillo-crear.html">Crear Platillo</a><a class="" href="platillo-editar.html">Editar
-                    Platillo</a><a class="" href="promociones.html">Promociones</a><a class=""
-                    href="categorias-menu.html">Categorías Menú</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-kitchen-set"></i> Cocina / Bar</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="cocina-dashboard.html">Dashboard Cocina</a><a class=""
-                    href="pedidos-preparacion.html">Pedidos Preparación</a><a class=""
-                    href="tiempos-preparation.html">Tiempos</a><a class=""
-                    href="notificaciones-cocina.html">Notificaciones</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-user-group"></i> Clientes</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="clientes.html">Clientes</a><a class=""
-                    href="cliente-crear.html">Crear Cliente</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-chart-pie"></i> Reportes</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="reportes.html">Reportes</a><a class=""
-                    href="reporte-ventas.html">Ventas</a><a class="" href="reporte-inventario.html">Inventario</a><a
-                    class="" href="reporte-empleados.html">Empleados</a><a class=""
-                    href="reporte-financiero.html">Financiero</a><a class="" href="reporte-reservas.html">Reservas</a><a
-                    class="" href="estadisticas-ocupacion.html">Ocupación</a></div>
-            <button class="menu-group-btn"><span><i class="fa-solid fa-gear"></i> Configuración</span><i
-                    class="fa-solid fa-chevron-right chevron"></i></button>
-            <div class="submenu"><a class="" href="configuracion-general.html">General</a><a class=""
-                    href="usuarios-sistema.html">Usuarios</a><a class="" href="impresoras.html">Impresoras</a><a
-                    class="" href="metodos-pago.html">Métodos Pago</a><a class="" href="alertas.html">Alertas</a><a
-                    class="" href="backup-restauracion.html">Backup</a></div>
         </div>
 
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-        <main class="main">
-            <div class="topbar">
-                <div class="topbar-left">
-                    <button id="menuToggle" class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
-                    <div class="page-title">
-                        <h1>Gestión de Proveedores</h1>
-                        <p>Administra distribuidores, abastecimiento y relaciones comerciales.</p>
-                    </div>
+        <div class="stats-grid">
+            <div class="card-premium stat-card">
+                <div>
+                    <h3 id="stat-total-proveedores">0</h3>
+                    <p>Proveedores Registrados</p>
                 </div>
-                <div class="topbar-actions">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input placeholder="Buscar proveedores..." type="text" id="input-busqueda" />
-                    </div>
-
-                    <button id="logoutBtn" class="logout-icon-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                    <div id="infoPerfilContainer" class="profile">
-                        <p style="color: var(--gray); text-align: center; padding: 20px">
-                            Cargando perfil...
-                        </p>
-                    </div>
-                </div>
+                <div class="stat-icon primary-soft"><i class="fa-solid fa-truck-fast"></i></div>
             </div>
-
-            <div class="stats-grid">
-                <div class="card-premium stat-card">
-                    <div>
-                        <h3 id="stat-total-proveedores">0</h3>
-                        <p>Proveedores Registrados</p>
-                    </div>
-                    <div class="stat-icon primary-soft"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="card-premium stat-card">
+                <div>
+                    <h3 id="stat-total-empresas">0</h3>
+                    <p>Empresas Asociadas</p>
                 </div>
-                <div class="card-premium stat-card">
-                    <div>
-                        <h3 id="stat-total-empresas">0</h3>
-                        <p>Empresas Asociadas</p>
-                    </div>
-                    <div class="stat-icon warning-soft"><i class="fa-solid fa-building"></i></div>
-                </div>
-                <div class="card-premium stat-card">
-                    <div>
-                        <h3>96%</h3>
-                        <p>Cumplimiento Logístico</p>
-                    </div>
-                    <div class="stat-icon success-soft"><i class="fa-solid fa-shield-check"></i></div>
-                </div>
+                <div class="stat-icon warning-soft"><i class="fa-solid fa-building"></i></div>
             </div>
-
-            <div class="card-premium">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="fw-bold mb-1">Lista de Proveedores</h4>
-                        <p class="text-secondary mb-0">Empresas registradas para abastecimiento.</p>
-                    </div>
-                    <button class="btn-outline-premium" id="btn-exportar"><i class="fa-solid fa-file-excel me-2"></i>
-                        Exportar Excel</button>
+            <div class="card-premium stat-card">
+                <div>
+                    <h3>96%</h3>
+                    <p>Cumplimiento Logístico</p>
                 </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead id="theadProveedores">
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Dirección</th>
-                                <th>Empresa</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-proveedores"></tbody>
-                    </table>
-                </div>
+                <div class="stat-icon success-soft"><i class="fa-solid fa-shield-check"></i></div>
             </div>
+        </div>
 
-            <div class="card-premium form-section">
-                <div class="form-title">
-                    <h4>Registrar Nuevo Proveedor</h4>
-                    <p>Agrega distribuidores vinculándolos automáticamente a tu empresa.</p>
+        <div class="card-premium">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold mb-1">Lista de Proveedores</h4>
+                    <p class="text-secondary mb-0">Empresas registradas para abastecimiento.</p>
                 </div>
-                <form id="form-proveedor">
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <input class="input-premium" id="input-nombre" placeholder="Nombre" type="text" required />
-                        </div>
-                        <div class="col-lg-6">
-                            <input class="input-premium" id="input-email" placeholder="Correo electrónico" type="email"
-                                required />
-                        </div>
-                        <div class="col-lg-6">
-                            <input class="input-premium" id="input-telefono" placeholder="Teléfono" type="text"
-                                required />
-                        </div>
-                        <div class="col-lg-6">
-                            <input class="input-premium" id="input-direccion" placeholder="Dirección" type="text"
-                                required />
-                        </div>
-                        <div class="col-12">
-                            <select class="input-premium" id="select-estado" required>
-                                <option value="true" selected>Disponible</option>
-                                <option value="false">No Disponible</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-end gap-3 mt-4">
-                        <button type="button" class="btn-outline-premium"
-                            onclick="document.getElementById('form-proveedor').reset()">Cancelar</button>
-                        <button type="submit" class="btn-premium"><i class="fa-solid fa-plus me-2"></i> Guardar
-                            Proveedor</button>
-                    </div>
-                </form>
+                <button class="btn-outline-premium" id="btn-exportar"><i class="fa-solid fa-file-excel me-2"></i>
+                    Exportar Excel</button>
             </div>
-        </main>
+            <div class="table-responsive">
+                <table>
+                    <thead id="theadProveedores">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Empresa</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-proveedores"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-premium form-section">
+            <div class="form-title">
+                <h4>Registrar Nuevo Proveedor</h4>
+                <p>Agrega distribuidores vinculándolos automáticamente a tu empresa.</p>
+            </div>
+            <form id="form-proveedor">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <input class="input-premium" id="input-nombre" placeholder="Nombre" type="text" required />
+                    </div>
+                    <div class="col-lg-6">
+                        <input class="input-premium" id="input-email" placeholder="Correo electrónico" type="email"
+                            required />
+                    </div>
+                    <div class="col-lg-6">
+                        <input class="input-premium" id="input-telefono" placeholder="Teléfono" type="text" required />
+                    </div>
+                    <div class="col-lg-6">
+                        <input class="input-premium" id="input-direccion" placeholder="Dirección" type="text"
+                            required />
+                    </div>
+                    <div class="col-12">
+                        <select class="input-premium" id="select-estado" required>
+                            <option value="true" selected>Disponible</option>
+                            <option value="false">No Disponible</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <button type="button" class="btn-outline-premium"
+                        onclick="document.getElementById('form-proveedor').reset()">Cancelar</button>
+                    <button type="submit" class="btn-premium"><i class="fa-solid fa-plus me-2"></i> Guardar
+                        Proveedor</button>
+                </div>
+            </form>
+        </div>
+    </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>

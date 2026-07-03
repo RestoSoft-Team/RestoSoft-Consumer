@@ -1,5 +1,6 @@
 import { api } from '../consumo/apiMesas.js';
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 
 // 1. DIMENSIONES BASE Y ESTADO GLOBAL
@@ -126,7 +127,22 @@ function actualizarEstadisticas() {
     dom.statTotales.textContent = totales;
     dom.statPorcentaje.textContent = `${porcentaje}%`;
 }
-async function cargarPerfilUsuario() {
+async function cargarPerfilUsuario() { const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["MESERO", "ADMINISTRADOR"];
+
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            console.error("Acceso no autorizado");
+
+            const codigo = "403";
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+
+            window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+        }
+        generarSidebar('sidebar-container', "mesas", "mapa_mesas", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     

@@ -19,8 +19,8 @@ const PanelClienteApp = (function () {
     zonaActiva: null,
     reservaEnEdicion: null,
     modoActivo: "CREAR",
-    reservaOriginal: null, // Guarda el estado inicial (con mesas) para comparar cambios
-    hayCambios: false, // Bandera para habilitar el botón de guardar
+    reservaOriginal: null,
+    hayCambios: false,
   };
 
   const dom = {};
@@ -73,13 +73,15 @@ const PanelClienteApp = (function () {
 
       if (configData) {
         state.idEmpresa = configData.idEmpresa;
-        aplicarBranding(configData);
         dom.topbarNombre.textContent =
           configData.brandingNombre || "Restaurante";
         dom.topbarLogo.src =
           configData.brandingLogo || "https://via.placeholder.com/40";
         document.title = `Mis Reservas | ${configData.brandingNombre || ""}`;
       }
+
+      // Obtenemos estilos desde la API y los guardamos en LocalStorage
+      await estilosInicio();
 
       const [perfilData, misReservasData, mesasData, zonasData] =
         await Promise.all([
@@ -116,31 +118,27 @@ const PanelClienteApp = (function () {
     }
   }
 
-  function aplicarBranding(data) {
-    const root = document.documentElement;
-    if (data.tipografiaFuenteGoogle) {
-      const fontName = data.tipografiaFuenteGoogle.replace(/ /g, "+");
-      const fontLink = document.createElement("link");
-      fontLink.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@300;400;500;600;700;800;900&display=swap`;
-      fontLink.rel = "stylesheet";
-      document.head.appendChild(fontLink);
+  // Función que obtiene los estilos y los guarda en LocalStorage para que theme-loader.js los use
+  async function estilosInicio() {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      const response = await fetch("http://localhost:8080/api/estilosEmpresa", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) return;
+
+      const tema = await response.json();
+
+      localStorage.setItem("restsoft_theme", JSON.stringify(tema));
+    } catch (error) {
+      console.error("Error al cargar el tema:", error);
     }
-    const setVar = (name, val) => {
-      if (val) root.style.setProperty(name, val);
-    };
-    setVar("--c-primary", data.colorPrimario);
-    setVar("--c-primary-hover", data.colorPrimarioHover);
-    setVar("--c-dark", data.colorOscuro);
-    setVar("--c-bg", data.colorBg);
-    setVar("--c-bg-alt", data.colorBgAlt);
-    setVar("--c-card", data.colorCard);
-    setVar("--c-text", data.colorTexto);
-    setVar("--c-text-sec", data.colorTextoSec);
-    setVar("--c-border", data.colorBorde);
-    setVar("--font-main", data.tipografiaFuente);
-    setVar("--r-card", data.bordeTarjeta);
-    setVar("--r-btn", data.bordeBoton);
-    setVar("--sh-soft", data.sombraSuave);
   }
 
   function cargarPerfilUsuario(perfil) {
@@ -170,6 +168,8 @@ const PanelClienteApp = (function () {
 
   function cerrarSesion() {
     localStorage.removeItem("token_cliente");
+    localStorage.removeItem("idEmpresaActual");
+    localStorage.removeItem("slugEmpresaActual");
     window.location.href = "/login-cliente.html";
   }
 
@@ -179,13 +179,11 @@ const PanelClienteApp = (function () {
       const id = parseInt(rm.reserva.id);
       if (!mapa.has(id)) mapa.set(id, { reserva: rm.reserva, mesas: [] });
       // Forzar el ID de la mesa a entero también aquí
-      mapa
-        .get(id)
-        .mesas.push({
-          ...rm.mesa,
-          id: parseInt(rm.mesa.id),
-          idZona: parseInt(rm.mesa.idZona),
-        });
+      mapa.get(id).mesas.push({
+        ...rm.mesa,
+        id: parseInt(rm.mesa.id),
+        idZona: parseInt(rm.mesa.idZona),
+      });
     });
     state.reservasAgrupadas = Array.from(mapa.values());
   }
@@ -250,7 +248,7 @@ const PanelClienteApp = (function () {
       ).length;
       let badgeHtml =
         seleccionadasEnZona > 0
-          ? `<div style="position: absolute; top: 12px; right: 12px; background: var(--c-primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">${seleccionadasEnZona}</div>`
+          ? `<div style="position: absolute; top: 12px; right: 12px; background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">${seleccionadasEnZona}</div>`
           : "";
 
       return `

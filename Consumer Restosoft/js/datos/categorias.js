@@ -1,5 +1,6 @@
 import api from '../consumo/apiCategoria.js';
 import { apiProfile } from "../consumo/apiProfile.js"; // <-- Importación añadida
+import { generarSidebar } from './create-sidebar.js';
 
 // ── Estado en memoria ──────────────────────────────────────────
 let listaCategorias = [];
@@ -121,12 +122,12 @@ function renderizarGrid() {
         // Lógica para el estado y colores
         const estadoRaw = (cat.estado || 'ACTIVO').toUpperCase();
         const esActivo = estadoRaw === 'ACTIVO' || estadoRaw === 'ACTIVA' || estadoRaw === 'DISPONIBLE';
-        
+
         // Colores directo en el estilo para garantizar que se vean
-        const badgeStyle = esActivo 
-            ? 'background:var(--success-soft); color:var(--success);' 
+        const badgeStyle = esActivo
+            ? 'background:var(--success-soft); color:var(--success);'
             : 'background:var(--danger-soft); color:var(--danger);';
-            
+
         const badgeText = estadoRaw.charAt(0).toUpperCase() + estadoRaw.slice(1).toLowerCase();
 
         card.innerHTML = `
@@ -315,6 +316,22 @@ async function cargarCategorias() {
 // PERFIL DE USUARIO (BARRA SUPERIOR)
 // ══════════════════════════════════════════════════════════════
 function cargarPerfilUsuario(perfilData) {
+
+    const rolesPermitidos = ["ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+    generarSidebar('sidebar-container', "inventario", "categorias_inv", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 

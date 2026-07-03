@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Control de Ingreso | RestoSoft</title>
+    <!-- Añadimos Font Awesome para que el ícono funcione -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+    <link href="css/asistencia-kiosco.css" rel="stylesheet"/>
+</head>
+<body>
+
+    <div class="kiosco-container" id="kioscoContainer">
+        <div class="kiosco-icon"><i class="fa-solid fa-id-card"></i></div>
+        <h1 id="kioscoTitulo">Escanea tu carnet</h1>
+        <p id="kioscoSubtitulo">Esperando código...</p>
+    </div>
+
+    <!-- Input oculto visualmente pero enfocable para el lector -->
+    <input type="text" id="inputCodigoBarras" autocomplete="off" style="position: absolute; left: -9999px; top: -9999px; opacity: 0;"/>
+
+    <script type="module" src="js/datos/asistencia-kiosco.js"></script>
+</body>
+</html>

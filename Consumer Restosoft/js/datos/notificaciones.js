@@ -15,11 +15,10 @@ style.innerHTML = `
     .notification-container { 
         position: fixed; top: 24px; right: 24px; z-index: 10000; 
         display: flex; flex-direction: column; gap: 12px; 
-        max-height: calc(100vh - 48px); /* Evita que salgan de la pantalla */
-        overflow-y: auto; /* Permite scroll si hay muchas */
+        max-height: calc(100vh - 48px); 
+        overflow-y: auto; 
         overflow-x: hidden;
     }
-    /* Ocultar la barra de scroll para que se vea limpio */
     .notification-container::-webkit-scrollbar { width: 0px; }
 
     .notification { 
@@ -44,7 +43,7 @@ style.innerHTML = `
     .notification-close { background: none; border: none; color: var(--soft); cursor: pointer; font-size: 16px; padding: 2px; transition: color 0.2s ease; flex-shrink: 0; }
     .notification-close:hover { color: var(--dark); }
 
-    /* CAMPANA Y PANEL FLOTANTE (MINIMALISTA) */
+    /* CAMPANA Y PANEL FLOTANTE */
     #global-notif-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: var(--surface); border: none; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); cursor: pointer; z-index: 9998; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: transform 0.3s ease, background 0.3s ease; }
     #global-notif-btn:hover { transform: scale(1.1); background: var(--primary-light); }
     #global-notif-btn.shake { animation: shake 0.5s ease infinite; }
@@ -93,19 +92,17 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
 `);
 
-// SEGURIDAD ANTI-TAMPER (Vigilancia del DOM)
+// SEGURIDAD ANTI-TAMPER
 if (isBellRestricted) {
     const observer = new MutationObserver(() => {
         const btnCheck = document.getElementById('global-notif-btn');
         if (btnCheck) {
             const style = window.getComputedStyle(btnCheck);
-            // Si alguien le quita el display none o lo hace visible, recargamos la página
             if (style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0') {
-                window.location.reload(); // Fuerza el refresco si manipulan el DOM
+                window.location.reload(); 
             }
         }
     });
-    // Observar cambios en todo el body (atributos de estilo, hijos, etc.)
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
 }
 
@@ -128,7 +125,7 @@ function guardarNotificacionesEnMemoria() {
 }
 
 function actualizarPanel() {
-    if (isBellRestricted) return; // No actualizar panel si está restringido
+    if (isBellRestricted) return; 
 
     if (notificacionesActivas.length === 0) {
         badge.style.display = 'none';
@@ -219,7 +216,7 @@ export function showNotification(titulo, mensaje, tipo = 'success', icono = 'fa-
 
 // 4. SINCRONIZACIÓN CON BASE DE DATOS AL CARGAR
 async function sincronizarNotificacionesConBD() {
-    if (isBellRestricted) return; // No sincronizar si está restringido
+    if (isBellRestricted) return; 
 
     try {
         const pedidos = await apiCocina.getPedidosActivos();
@@ -255,48 +252,53 @@ async function sincronizarNotificacionesConBD() {
 }
 
 // 5. WEBSOCKET GLOBAL LISTENER
-connectWebSocket((canal, data) => {
-    if (canal === 'COCINA') {
-        if (data.tipo === 'NUEVO_PEDIDO') {
-            showNotification("¡Nuevo Pedido!", `El pedido #RS-${data.idPedido} acaba de llegar a cocina.`, "success", "fa-bell-concierge");
+// 🚀 AÑADIMOS VALIDACIÓN PARA EVITAR EL ERROR DE SOCKJS NO DEFINIDO 🚀
+if (typeof SockJS !== 'undefined' && typeof Stomp !== 'undefined') {
+    connectWebSocket((canal, data) => {
+        if (canal === 'COCINA') {
+            if (data.tipo === 'NUEVO_PEDIDO') {
+                showNotification("¡Nuevo Pedido!", `El pedido #RS-${data.idPedido} acaba de llegar a cocina.`, "success", "fa-bell-concierge");
+            } 
+            else if (data.tipo === 'PRODUCTO_AGREGADO') {
+                showNotification("Producto Agregado", `Se agregaron productos al pedido #RS-${data.idPedido}.`, "warning", "fa-circle-plus");
+            }
+            else if (data.tipo === 'ESTADO_ACTUALIZADO') {
+                if (data.estadoUnidad === 'ENTREGADO' && data.idUnidad) {
+                    const existeEnCampana = notificacionesActivas.find(n => n.idUnidad === data.idUnidad);
+                    if (existeEnCampana) {
+                        const cardElement = document.getElementById(`notif-card-${data.idUnidad}`);
+                        if (cardElement) cardElement.classList.add('removing');
+                        setTimeout(() => {
+                            notificacionesActivas = notificacionesActivas.filter(n => n.idUnidad !== data.idUnidad);
+                            actualizarPanel();
+                        }, 400);
+                    }
+                }
+
+                let estadoTxt = "cambió de estado";
+                let tipoNotif = "success";
+                let iconoNotif = "fa-arrows-rotate";
+                if (data.estadoUnidad === 'PREPARANDO') { estadoTxt = "empezó a prepararse"; tipoNotif = "warning"; iconoNotif = "fa-fire"; } 
+                else if (data.estadoUnidad === 'LISTO') { estadoTxt = "está listo para recoger"; } 
+                else if (data.estadoUnidad === 'ENTREGADO') { estadoTxt = "fue entregado a la mesa"; }
+                showNotification(`${estadoTxt.toUpperCase()}`, `El producto ${data.plato} de la ${data.mesa} ${estadoTxt}.`, tipoNotif, iconoNotif);
+            }
         } 
-        else if (data.tipo === 'PRODUCTO_AGREGADO') {
-            showNotification("Producto Agregado", `Se agregaron productos al pedido #RS-${data.idPedido}.`, "warning", "fa-circle-plus");
-        }
-        else if (data.tipo === 'ESTADO_ACTUALIZADO') {
-            if (data.estadoUnidad === 'ENTREGADO' && data.idUnidad) {
-                const existeEnCampana = notificacionesActivas.find(n => n.idUnidad === data.idUnidad);
-                if (existeEnCampana) {
-                    const cardElement = document.getElementById(`notif-card-${data.idUnidad}`);
-                    if (cardElement) cardElement.classList.add('removing');
-                    setTimeout(() => {
-                        notificacionesActivas = notificacionesActivas.filter(n => n.idUnidad !== data.idUnidad);
-                        actualizarPanel();
-                    }, 400);
+        else if (canal === 'NOTIFICACION') {
+            if (data.tipo === 'PLATO_LISTO' && !isBellRestricted) {
+                const exists = notificacionesActivas.find(n => n.idUnidad === data.idUnidad);
+                if (!exists) {
+                    notificacionesActivas.push(data);
+                    actualizarPanel();
+                    reproducirSonido();
+                    if (!panel.classList.contains('show')) btn.classList.add('shake');
                 }
             }
-
-            let estadoTxt = "cambió de estado";
-            let tipoNotif = "success";
-            let iconoNotif = "fa-arrows-rotate";
-            if (data.estadoUnidad === 'PREPARANDO') { estadoTxt = "empezó a prepararse"; tipoNotif = "warning"; iconoNotif = "fa-fire"; } 
-            else if (data.estadoUnidad === 'LISTO') { estadoTxt = "está listo para recoger"; } 
-            else if (data.estadoUnidad === 'ENTREGADO') { estadoTxt = "fue entregado a la mesa"; }
-            showNotification(`${estadoTxt.toUpperCase()}`, `El producto ${data.plato} de la ${data.mesa} ${estadoTxt}.`, tipoNotif, iconoNotif);
         }
-    } 
-    else if (canal === 'NOTIFICACION') {
-        if (data.tipo === 'PLATO_LISTO' && !isBellRestricted) {
-            const exists = notificacionesActivas.find(n => n.idUnidad === data.idUnidad);
-            if (!exists) {
-                notificacionesActivas.push(data);
-                actualizarPanel();
-                reproducirSonido();
-                if (!panel.classList.contains('show')) btn.classList.add('shake');
-            }
-        }
-    }
-});
+    });
+} else {
+    console.log("ℹ️ SockJS no está cargado en esta página. Notificaciones en tiempo real desactivadas (solo alertas locales).");
+}
 
 actualizarPanel();
 sincronizarNotificacionesConBD();

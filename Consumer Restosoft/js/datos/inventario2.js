@@ -1,5 +1,6 @@
 import { api } from '../consumo/ApiInventario2.js';
 import { apiProfile } from "../consumo/apiProfile.js";
+import { generarSidebar } from './create-sidebar.js';
 
 let productosExportar = [];
 let productosCargados = [];
@@ -497,6 +498,10 @@ document.querySelector('[data-accion="exportar"]')?.addEventListener('click', ()
 // PERFIL DE USUARIO (BARRA SUPERIOR)
 // ══════════════════════════════════════════════════════════════
 function cargarPerfilUsuario(perfilData) {
+
+    generarSidebar('sidebar-container', "inventario", "inventario", perfilData.rol.nombre);
+
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 

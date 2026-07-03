@@ -2,6 +2,7 @@ import { api } from '../consumo/apiMesas.js';
 import { apiPedido } from '../consumo/apiCrearPedido.js';
 import { connectWebSocket } from '../consumo/websocket.js'; 
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 // =========================================
 // 1. ESTADO Y CONFIGURACIÓN GLOBAL
@@ -242,6 +243,24 @@ function renderTables() {
 // 6. PERFIL DE USUARIO (ADAPTADO DE RESERVAS)
 // =========================================
 async function cargarPerfilUsuario() {
+
+     const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["MESERO", "ADMINISTRADOR"];
+
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            console.error("Acceso no autorizado");
+
+            const codigo = "403";
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+
+            window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+        }
+
+        generarSidebar('sidebar-container', "mesas", "mesas", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     

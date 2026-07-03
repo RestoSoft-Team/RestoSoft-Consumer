@@ -1,6 +1,7 @@
 import { apiReserva } from "../consumo/apiReservas.js";
 import { api as apiMesas } from "../consumo/apiMesas.js";
 import { apiProfile } from "../consumo/apiProfile.js";
+import { generarSidebar } from "./create-sidebar.js";
 
 const ID_EMPRESA = 1;
 
@@ -112,6 +113,26 @@ async function cargarReservasGeneral() {
 }
 
 function cargarPerfilUsuario(perfilData) {
+  const rolesPermitidos = ["RECEPCIONISTA", "ADMINISTRADOR"];
+
+  if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+    console.error("Acceso no autorizado");
+
+    const codigo = "403";
+    const mensaje = encodeURIComponent(
+      "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador.",
+    );
+
+    window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+  }
+
+  generarSidebar(
+    "sidebar-container",
+    "reservas",
+    "calendario",
+    perfilData.rol.nombre,
+  );
+
   const infoPerfilContainer = document.getElementById("infoPerfilContainer");
   const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 

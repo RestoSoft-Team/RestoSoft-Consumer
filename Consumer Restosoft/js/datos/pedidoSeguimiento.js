@@ -1,6 +1,7 @@
 import { apiSeguimiento as api } from '../consumo/apiSeguimientoPedido.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -11,7 +12,7 @@ const dom = {
 
 let todosLosPedidos = [];
 let filtroActivo = 'TODOS';
-let isLoading = false; // 👇 Bandera para evitar spam de peticiones al backend
+let isLoading = false; 
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -158,8 +159,25 @@ function actualizarTiemposDOM() {
     });
 }
 
-// 👇 Cargar perfil dinámicamente
 async function cargarPerfilUsuario() {
+
+    const perfilData = await apiProfile.obtenerInfoMe();
+
+    const rolesPermitidos = ["MESERO", "ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+    generarSidebar('sidebar-container', "pedidos", "seguimiento", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     if (!infoPerfilContainer) return;
