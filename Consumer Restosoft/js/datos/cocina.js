@@ -1,6 +1,7 @@
 import { apiCocina } from '../consumo/apiCocina.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 
 const dom = {
@@ -224,7 +225,24 @@ async function cargarPerfilUsuario() {
     if (!infoPerfilContainer) return;
 
     try {
+
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["COCINA", "ADMINISTRADOR"];
+
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            console.error("Acceso no autorizado");
+
+            const codigo = "403";
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+
+            window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+        }
+
+        generarSidebar('sidebar-container', "cocina", "pedidos_cocina", perfilData.rol.nombre);
+
 
         const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
         const nombreRaw = empresaData?.nombre || "";

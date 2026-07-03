@@ -1,5 +1,6 @@
 import api from '../consumo/apiProveedores.js';
 import { apiProfile } from "../consumo/apiProfile.js";
+import { generarSidebar } from './create-sidebar.js';
 
 // ── Estado en memoria ──────────────────────────────────────────
 let listaProveedores = [];
@@ -436,6 +437,21 @@ async function inicializarModulo() {
 }
 
 function cargarPerfilUsuario(perfilData) {
+
+    const rolesPermitidos = ["ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+    generarSidebar('sidebar-container', "inventario", "proveedores", perfilData.rol.nombre);
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 

@@ -1,5 +1,6 @@
 import { api } from '../consumo/ApiInventario.js';
 import { apiProfile } from "../consumo/apiProfile.js"; // Importación para el perfil
+import { generarSidebar } from './create-sidebar.js';
 
 const $ = id => document.getElementById(id);
 
@@ -237,7 +238,7 @@ async function cargarCategoriasDropdown(idSeleccionado = null) {
                 const idReal = cat.idcategoria || cat.id;
                 return `<option value="${idReal}" ${idSeleccionado == idReal ? 'selected' : ''}>${cat.nombre}</option>`;
             }).join('');
-            
+
     } catch (error) {
         console.error("Error al cargar categorías en el formulario:", error);
         selectCategoria.innerHTML = '<option value="">Error al cargar categorías</option>';
@@ -282,6 +283,23 @@ async function precargarDatosInsumo() {
 // PERFIL DE USUARIO (BARRA SUPERIOR)
 // ══════════════════════════════════════════════════════════════
 function cargarPerfilUsuario(perfilData) {
+
+    const rolesPermitidos = ["ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+    generarSidebar('sidebar-container', "inventario", "editar_producto", perfilData.rol.nombre);
+
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 

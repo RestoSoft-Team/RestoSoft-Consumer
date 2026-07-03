@@ -2,6 +2,7 @@ import { apiPedidos } from '../consumo/apiPedidos.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { apiProfile } from '../consumo/apiProfile.js';
 import { showNotification } from './notificaciones.js'; 
+import { generarSidebar } from './create-sidebar.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 const TIEMPO_MAX_PREPARACION = 15;
@@ -28,7 +29,7 @@ if (document.readyState === 'loading') {
 
 async function init() {
     cargarPerfilUsuario();
-    await cargarDatos();
+    cargarDatos();
 
     connectWebSocket((canal, data) => {
         if (canal === 'COCINA') {
@@ -100,20 +101,34 @@ function getUnidadesRetrasadas(pedido) {
 }
 
 async function cargarPerfilUsuario() {
-    const infoPerfilContainer = document.getElementById("infoPerfilContainer");
-    const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
-    
-    if (!infoPerfilContainer) return;
-
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["MESERO", "ADMINISTRADOR"];
+
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            console.error("Acceso no autorizado");
+
+            const codigo = "403";
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+
+            window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+        }
+
+        generarSidebar('sidebar-container', "pedidos", "pedidos", perfilData.rol.nombre);
+
+        const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+        const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+
+        if (!infoPerfilContainer) return;
+
         const empresaData = perfilData?.empresa || perfilData?.Data?.empresa;
         const nombreRaw = empresaData?.nombre || "";
 
-        if (nombreRaw.trim() !== "" && nombreEmpresaContainer) {
-            nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
-        } else if (nombreEmpresaContainer) {
-            nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
+        if (nombreEmpresaContainer) {
+            nombreEmpresaContainer.innerHTML = nombreRaw.trim() !== "" ? `<h6>${nombreRaw.toUpperCase()}</h6>` : `<h6>RESTOSOFT</h6>`;
         }
 
         const urlPerfil = "perfil.html";
@@ -151,14 +166,18 @@ async function cargarPerfilUsuario() {
         }
     } catch (error) {
         console.error("Error al cargar el perfil:", error);
-        infoPerfilContainer.innerHTML = `
-            <a href="perfil.html" class="profile-link">
-                <div class="profile-text-avatar">EP</div>
-                <div class="profile-info">
-                    <strong>Error de conexión</strong>
-                    <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
-                </div>
-            </a>`;
+        // En caso de error, intentamos pintar igualmente el contenedor de perfil
+        const infoPerfilContainer = document.getElementById("infoPerfilContainer");
+        if (infoPerfilContainer) {
+            infoPerfilContainer.innerHTML = `
+                <a href="perfil.html" class="profile-link">
+                    <div class="profile-text-avatar">EP</div>
+                    <div class="profile-info">
+                        <strong>Error de conexión</strong>
+                        <div style="font-size: 13px; color: var(--gray)">No se pudo cargar</div>
+                    </div>
+                </a>`;
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 import { apiPedido } from '../consumo/apiCrearPedido.js';
 import { apiProfile } from '../consumo/apiProfile.js';
 import { showNotification } from './notificaciones.js';
+import { generarSidebar } from './create-sidebar.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -8,7 +9,7 @@ const dom = {
     selectZona: document.getElementById('selectZona'),
     selectMesa: document.getElementById('selectMesa'),
     txtObservaciones: document.getElementById('txtObservaciones'),
-    txtEmailCliente: document.getElementById('txtEmailCliente'), // 👈 NUEVA REFERENCIA
+    txtEmailCliente: document.getElementById('txtEmailCliente'),
     btnConfirmar: document.getElementById('btnConfirmarPedido'),
     statSubtotal: document.getElementById('stat-subtotal'),
     statImpuestos: document.getElementById('stat-impuestos'),
@@ -216,6 +217,24 @@ function renderTagsMesasUnidas() {
 }
 
 async function cargarPerfilUsuario(perfilData) {
+
+    const rolesPermitidos = ["MESERO","ADMINISTRADOR"];
+
+    if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+        console.error("Acceso no autorizado");
+
+        const codigo = "403";
+        const mensaje = encodeURIComponent(
+            "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+        );
+
+        window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+    }
+
+
+    generarSidebar('sidebar-container', "pedidos", "crear_pedido", perfilData.rol.nombre);
+
+
     const infoPerfilContainer = document.getElementById("infoPerfilContainer");
     const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
     
@@ -349,10 +368,15 @@ function renderPlatos() {
         dom.platosContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>No hay platos en esta categoría.</p></div>`;
         return;
     }
-    dom.platosContainer.innerHTML = platosFiltrados.map(plato => `
+    dom.platosContainer.innerHTML = platosFiltrados.map(plato => {
+        const imageHtml = plato.imagenUrl && !plato.imagenUrl.includes('default-plate.png')
+            ? `<img src="${plato.imagenUrl}" alt="${plato.nombre}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 14px;">`
+            : `<i class="fa-solid fa-bowl-food"></i>`;
+            
+        return `
         <div class="plato-card">
             <div class="plato-header">
-                <div class="plato-icon"><i class="fa-solid fa-bowl-food"></i></div>
+                <div class="plato-icon">${imageHtml}</div>
                 <div class="plato-info">
                     <h5>${plato.nombre}</h5>
                     <p>${(plato.descripcion || '').substring(0, 40)}...</p>
@@ -365,11 +389,12 @@ function renderPlatos() {
                     <input type="number" class="qty-input" value="1" min="1">
                     <button class="qty-btn" data-action="plus">+</button>
                 </div>
-                <button class="btn-add-cart" data-id="${plato.id}" data-nombre="${plato.nombre}" data-precio="${plato.precio}">
+                <button class="btn-add-cart" data-id="${plato.id}" data-nombre="${plato.nombre}" data-precio="${plato.precio}" data-imagen="${plato.imagenUrl || ''}">
                     <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 function handlePlatosClick(e) {
@@ -384,7 +409,7 @@ function handlePlatosClick(e) {
     if (addBtn) {
         const input = addBtn.parentElement.querySelector('.qty-input');
         const cantidad = parseInt(input.value);
-        agregarAlCarrito(addBtn.dataset.id, addBtn.dataset.nombre, parseFloat(addBtn.dataset.precio), cantidad);
+        agregarAlCarrito(addBtn.dataset.id, addBtn.dataset.nombre, parseFloat(addBtn.dataset.precio), cantidad, addBtn.dataset.imagen);
         const originalHTML = addBtn.innerHTML;
         addBtn.innerHTML = '<i class="fa-solid fa-check"></i> Agregado';
         addBtn.style.background = 'var(--success)';
@@ -392,10 +417,10 @@ function handlePlatosClick(e) {
     }
 }
 
-function agregarAlCarrito(id, nombre, precio, cantidad) {
+function agregarAlCarrito(id, nombre, precio, cantidad, imagenUrl) {
     const existente = carrito.find(item => item.id === id);
     if (existente) existente.cantidad += cantidad;
-    else carrito.push({ id, nombre, precio, cantidad });
+    else carrito.push({ id, nombre, precio, cantidad, imagenUrl });
     renderCarrito();
 }
 
@@ -417,10 +442,14 @@ function renderCarrito() {
     } else {
         dom.listaProductos.innerHTML = carrito.map(item => {
             const subtotal = item.precio * item.cantidad;
+            const cartImageHtml = item.imagenUrl && !item.imagenUrl.includes('default-plate.png')
+                ? `<img src="${item.imagenUrl}" alt="${item.nombre}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">`
+                : `<i class="fa-solid fa-burger"></i>`;
+
             return `
                 <div class="product-item" data-id="${item.id}">
                     <div class="product-info">
-                        <div class="product-icon"><i class="fa-solid fa-burger"></i></div>
+                        <div class="product-icon">${cartImageHtml}</div>
                         <div>
                             <h5>${item.nombre}</h5>
                             <span>Cant: ${item.cantidad} x ${fmtCOP.format(item.precio)}</span>

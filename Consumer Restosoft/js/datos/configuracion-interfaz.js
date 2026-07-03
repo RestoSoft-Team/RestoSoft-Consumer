@@ -1,5 +1,6 @@
 import { estilosEmpresaApi } from "../consumo/apiConfiguracion-interfaz.js";
 import { apiProfile } from "../consumo/apiProfile.js";
+import { generarSidebar } from './create-sidebar.js';
 
 // ================================
 // VARIABLES CSS
@@ -154,7 +155,27 @@ async function cargarDatosIniciales() {
 }
 
 function cargarPerfilUsuario(perfilData) {
- const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
+  const rolesPermitidos = ["ADMINISTRADOR"];
+
+  if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+    console.error("Acceso no autorizado");
+
+    const codigo = "403";
+    const mensaje = encodeURIComponent(
+      "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador.",
+    );
+
+    window.location.href = `error.html?code=${codigo}&msg=${mensaje}`;
+  }
+
+  generarSidebar(
+    "sidebar-container",
+    "configuracion",
+    "interfaz",
+    perfilData.rol.nombre,
+  );
+
+  const nombreEmpresaContainer = document.getElementById("nombreEmpresa");
 
   const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
   const nombreRaw = empresaData?.nombre || "";
@@ -164,7 +185,6 @@ function cargarPerfilUsuario(perfilData) {
   } else {
     nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;
   }
-
 
   const urlPerfil = "perfil.html";
 

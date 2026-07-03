@@ -83,6 +83,21 @@ const AuthApp = (function () {
           localStorage.setItem("token_cliente", res.token);
         }
 
+        const estilosResponse = await fetch(
+          `http://localhost:8080/api/estilosEmpresa`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${res.token}`,
+            },
+          },
+        );
+
+        if (estilosResponse.ok) {
+          const tema = await estilosResponse.json();
+          localStorage.setItem("restsoft_theme", JSON.stringify(tema));
+        }
+
         // NOTIFICACIÓN DE ÉXITO
         showNotification(
           "Inicio de sesión exitoso. Redirigiendo...",

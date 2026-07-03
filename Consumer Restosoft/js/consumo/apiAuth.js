@@ -20,16 +20,13 @@ export const apiAuth = {
   registrarCliente: async (idEmpresa, clienteData, imagenFile) => {
     const formData = new FormData();
 
-    // Adjuntamos el JSON como un Blob bajo la key "cliente"
     const clienteBlob = new Blob([JSON.stringify(clienteData)], { type: "application/json" });
     formData.append("cliente", clienteBlob);
 
-    // Si hay imagen, la adjuntamos bajo la key "imagen"
     if (imagenFile) {
       formData.append("imagen", imagenFile);
     }
 
-    // Inyectamos el idEmpresa directamente en la URL
     const response = await fetch(`${API_BASE}/usuarios/clientes/${idEmpresa}`, {
       method: "POST",
       body: formData,

@@ -142,12 +142,13 @@ textarea.form-control { min-height: 120px; }
 .tag-badge .remove-tag { color: var(--gray); cursor: pointer; font-size: 11px; transition: .2s; }
 .tag-badge .remove-tag:hover { color: var(--danger); transform: scale(1.2); }
 
-/* LISTA PRODUCTOS CARRITO */
 .product-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 22px; background: #fafafa; margin-bottom: 18px; transition: .3s; animation: slideIn 0.3s ease forwards; }
 .product-item.removing { animation: slideOut 0.3s ease forwards; }
 .product-item:hover { background: white; box-shadow: var(--shadow); }
 .product-info { display: flex; align-items: center; gap: 18px; }
-.product-icon { width: 68px; height: 68px; border-radius: 20px; background: #f3ebec; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px; }
+
+.product-icon { width: 68px; height: 68px; border-radius: 20px; background: #f3ebec; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px; overflow: hidden; flex-shrink: 0; }
+
 .product-info h5 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
 .product-info span { color: var(--gray); font-size: 14px; }
 .product-actions { display: flex; align-items: center; gap: 14px; }
@@ -207,29 +208,28 @@ textarea.form-control { min-height: 120px; }
 .categoria-pill.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 
 .platos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; overflow-y: auto; padding-right: 10px; }
-/* TARJETA DE PRODUCTO EN EL MODAL */
 .plato-card { 
     background: var(--surface); 
-    border: 2px solid var(--gray-light); /* Borde definido por defecto */
+    border: 2px solid var(--gray-light); 
     border-radius: 20px; 
     padding: 20px; 
     display: flex; 
     flex-direction: column; 
     justify-content: space-between; 
-    transition: all 0.3s ease; /* Transición suave */
+    transition: all 0.3s ease; 
 }
 
-/* EFECTO AL PASAR EL CURSOR */
 .plato-card:hover { 
-    border-color: var(--primary); /* El borde se pone del color principal */
-    background: var(--primary-soft); /* El fondo se pinta de un rojo suave */
-    transform: translateY(-5px); /* Eleva un poco la tarjeta */
+    border-color: var(--primary); 
+    background: var(--primary-soft); 
+    transform: translateY(-5px); 
     box-shadow: var(--shadow); 
 }
 
-/* Mantenemos los colores internos igual para que no se pierdan */
 .plato-header { display: flex; gap: 15px; margin-bottom: 15px; }
-.plato-icon { width: 50px; height: 50px; background: #f3ebec; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; flex-shrink: 0; }
+
+.plato-icon { width: 50px; height: 50px; background: #f3ebec; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; flex-shrink: 0; overflow: hidden; }
+
 .plato-info h5 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; color: var(--dark); }
 .plato-info p { margin: 0; font-size: 13px; color: var(--gray); }
 .plato-precio { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 15px; }

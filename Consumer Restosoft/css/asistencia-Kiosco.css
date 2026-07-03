@@ -1,0 +1,15 @@
+body {
+    margin: 0; height: 100vh; display: flex;
+    align-items: center; justify-content: center;
+    background: var(--background, #fbfcfb);
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s;
+}
+.kiosco-icon { font-size: 80px; color: var(--primary, #6b1e28); margin-bottom: 20px; text-align: center; }
+.kiosco-container { text-align: center; }
+#kioscoTitulo { font-size: 36px; font-weight: 800; margin-bottom: 10px; }
+#kioscoSubtitulo { font-size: 18px; color: var(--gray, #6f7782); }
+#inputCodigoBarras { position: absolute; opacity: 0; pointer-events: none; }
+body.exito  { background: rgba(61, 139, 92, 0.15); }
+body.salida { background: rgba(217, 164, 65, 0.15); }
+body.error  { background: rgba(197, 61, 79, 0.15); }
