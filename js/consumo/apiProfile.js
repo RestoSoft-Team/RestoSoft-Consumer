@@ -58,7 +58,7 @@ export const apiProfileCliente = {
   obtenerInfoMe: async () => {
     const response = await fetch(`${API_BASE}/usuarios/me`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("TOKEN_cliente")}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
     });
 
@@ -85,7 +85,7 @@ export const apiProfileCliente = {
     const response = await fetch(`${API_BASE}/usuarios/${idEmpleado}`, {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("TOKEN_cliente")}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
       body: formData,
     });

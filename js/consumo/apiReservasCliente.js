@@ -1,8 +1,8 @@
 import { API_BASE } from "./config.js";
 import { api as apiMesas } from "./apiMesas.js";
 import { apiProfileCliente } from "./apiProfile.js";
+import { TOKEN } from "./config.js";
 
-const TOKEN = localStorage.getItem("TOKEN_cliente");
 const apiProfile = apiProfileCliente;
 
 export { apiMesas, apiProfile };
