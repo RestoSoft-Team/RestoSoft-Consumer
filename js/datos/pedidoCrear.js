@@ -479,7 +479,7 @@ function actualizarEstadisticas() {
 function bloquearUsuarioPorManipulacion(motivo) {
     console.error("Bloqueo de seguridad: " + motivo);
     showNotification("Acceso Ilegal", "Se ha detectado manipulación del sistema. Se cerrará la sesión.", "error", "fa-shield-halved");
-    localStorage.removeItem("TOKEN");
+    localStorage.removeItem("token");
     sessionStorage.clear();
     setTimeout(() => window.location.href = "index.html", 2000);
 }

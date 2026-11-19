@@ -3,6 +3,7 @@ import estilosInicio from "../consumo/apiEstilos.js";
 
 const AuthApp = (function () {
   function iniciar() {
+    validarSesion()
     initLogin();
     initRegistro();
   }
@@ -54,6 +55,16 @@ const AuthApp = (function () {
 
     setTimeout(cerrarNotif, 4000);
   };
+
+ function validarSesion() {
+   if (
+     !localStorage.getItem("idEmpresaActual") ||
+     !localStorage.getItem("slugEmpresaActual")
+   ) {
+     window.location.href = "/";
+   }
+ }
+
 
   function initLogin() {
     const loginForm = document.getElementById("login-form");
