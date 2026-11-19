@@ -18,3 +18,4 @@ import { API_BASE, TOKEN } from "../consumo/config.js";
       console.error("Error al cargar el tema:", error);
     }
   }
+  
