@@ -1,6 +1,4 @@
-import { API_BASE,TOKEN } from "../consumo/config.js";
-
-const getToken = () => TOKEN;
+import { API_BASE, TOKEN } from "../consumo/config.js";
 
 export const api = {
 
@@ -39,7 +37,7 @@ export const api = {
         const response = await fetch(`${API_BASE}/zonas/upload-plano`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`
+                'Authorization': `Bearer ${TOKEN}`
             },
             body: formData 
         });
@@ -49,8 +47,8 @@ export const api = {
 
     obtenerPlanoEmpresa: async () => {
         const [zonasRes, mesasRes] = await Promise.all([
-            fetch(`${API_BASE}/zonas`, { headers: { 'Authorization': `Bearer ${getToken()}` }}),
-            fetch(`${API_BASE}/mesas`, { headers: { 'Authorization': `Bearer ${getToken()}` }})
+            fetch(`${API_BASE}/zonas`, { headers: { 'Authorization': `Bearer ${TOKEN}` }}),
+            fetch(`${API_BASE}/mesas`, { headers: { 'Authorization': `Bearer ${TOKEN}` }})
         ]);
 
         if (!zonasRes.ok || !mesasRes.ok) throw new Error("Error al cargar el plano actual");
@@ -65,7 +63,7 @@ export const api = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getToken()}`
+                'Authorization': `Bearer ${TOKEN}`
             },
             body: JSON.stringify(payload)
         });

@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function limpiarSesionAnterior() {
-    localStorage.removeItem("TOKEN");
+    localStorage.removeItem("token");
     localStorage.removeItem("restsoft_user");
     localStorage.removeItem("restsoft_empresa");
     localStorage.removeItem("restsoft_rol");
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/api/auth/login`, {
+      const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
       limpiarSesionAnterior();
 
       // Guardar nueva sesión de forma segura
-      localStorage.setItem("TOKEN", data.TOKEN);
+      localStorage.setItem("token", data.token);
       guardarSiExiste("restsoft_user", data.usuario);
       guardarSiExiste("restsoft_empresa", data.empresa);
       guardarSiExiste("restsoft_rol", data.rol);
