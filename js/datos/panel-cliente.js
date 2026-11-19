@@ -149,8 +149,9 @@ const PanelClienteApp = (function () {
   function cerrarSesion() {
     localStorage.removeItem("token_cliente");
     localStorage.removeItem("idEmpresaActual");
+    const slug = localStorage.getItem("slugEmpresaActual");
     localStorage.removeItem("slugEmpresaActual");
-    window.location.href = "/login-cliente.html";
+    window.location.href = `/${slug}`;
   }
 
   function agruparReservas(raw) {
