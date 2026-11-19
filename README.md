@@ -1,5 +1,12 @@
 # RestoSoft V2 - Frontend Templates
 
+![HTML5](https://img.shields.io/badge/HTML5-5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-3-1572B6?logo=css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla%20JS-F7DF1E?logo=javascript&logoColor=black)
+![Font Awesome](https://img.shields.io/badge/Font%20Awesome-Iconos-528DD7?logo=fontawesome&logoColor=white)
+![REST](https://img.shields.io/badge/REST%20API-JSON-02569B?logo=json&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Servidor%20local-339933?logo=nodedotjs&logoColor=white)
+
 ## Descripción
 
 RestoSoft V2 es una colección de plantillas HTML, CSS y JavaScript diseñadas para la gestión integral de restaurantes, cafeterías, bares y negocios de alimentos y bebidas.
