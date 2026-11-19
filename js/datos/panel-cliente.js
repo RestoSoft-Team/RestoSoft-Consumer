@@ -147,7 +147,7 @@ const PanelClienteApp = (function () {
   }
 
   function cerrarSesion() {
-    localStorage.removeItem("TOKEN_cliente");
+    localStorage.removeItem("token_cliente");
     localStorage.removeItem("idEmpresaActual");
     localStorage.removeItem("slugEmpresaActual");
     window.location.href = "/login-cliente.html";

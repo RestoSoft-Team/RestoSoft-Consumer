@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.style.pointerEvents = "none"; // Evita doble clic
 
     // Limpiar todo el localStorage de RestSoft
-    localStorage.removeItem("TOKEN");
+    localStorage.removeItem("token");
     localStorage.removeItem("restsoft_user");
     localStorage.removeItem("restsoft_empresa");
     localStorage.removeItem("restsoft_rol");

@@ -20,8 +20,7 @@ export function aplicarTema(c) {
 }
 
 export async function inicializarTema() {
-  const THEME_KEY = 'restsoft_theme';
-  const temaGuardado = localStorage.getItem(THEME_KEY);
+  const temaGuardado = localStorage.getItem('restsoft_theme');
 
   if (!temaGuardado) {
     try {

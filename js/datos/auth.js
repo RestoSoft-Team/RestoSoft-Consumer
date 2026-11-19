@@ -1,7 +1,5 @@
 import { apiAuth } from "../consumo/apiAuth.js";
-import { API_BASE } from "../consumo/config.js";
 import estilosInicio from "../consumo/apiEstilos.js";
-
 
 const AuthApp = (function () {
   function iniciar() {
@@ -16,7 +14,6 @@ const AuthApp = (function () {
       return;
     }
 
-    // Mapear iconos y títulos según el tipo de alerta
     const config = {
       success: { icon: "fa-circle-check", title: "Operación Exitosa" },
       warning: { icon: "fa-triangle-exclamation", title: "Aviso" },
@@ -25,7 +22,6 @@ const AuthApp = (function () {
 
     const { icon, title } = config[type] || config.success;
 
-    // Crear el elemento de la notificación
     const notif = document.createElement("div");
     notif.className = `notification ${type}`;
     notif.innerHTML = `
@@ -41,27 +37,21 @@ const AuthApp = (function () {
     </button>
   `;
 
-    // Agregar al DOM
     contenedor.appendChild(notif);
 
-    // Forzar reflow para que la animación de entrada funcione
     void notif.offsetWidth;
 
-    // Mostrar con animación
     setTimeout(() => notif.classList.add("show"), 10);
 
-    // Función para cerrar y eliminar
     const cerrarNotif = () => {
       notif.classList.remove("show");
       setTimeout(() => notif.remove(), 400);
     };
 
-    // Cerrar al hacer clic en la X
     notif
       .querySelector(".notification-close")
       .addEventListener("click", cerrarNotif);
 
-    // Auto-cerrar a los 4 segundos
     setTimeout(cerrarNotif, 4000);
   };
 
@@ -88,7 +78,6 @@ const AuthApp = (function () {
 
         estilosInicio();
 
-        // NOTIFICACIÓN DE ÉXITO
         showNotification(
           "Inicio de sesión exitoso. Redirigiendo...",
           "success",
@@ -140,10 +129,8 @@ const AuthApp = (function () {
       e.preventDefault();
       const btn = registerForm.querySelector(".btn-register");
 
-      // 1. Leer el idEmpresa del localStorage
-      const idEmpresa = localStorage.getItem("idEmpresaActual") || 1;
+      const idEmpresa = localStorage.getItem("idEmpresaActual");
 
-      // 2. Construimos el JSON EXACTAMENTE como lo pide el DTO ClienteRequest
       const clienteData = {
         nombres: document.getElementById("reg-nombres").value,
         apellidos: document.getElementById("reg-apellidos").value,
@@ -158,14 +145,12 @@ const AuthApp = (function () {
       btn.disabled = true;
 
       try {
-        // 3. Enviamos el idEmpresa como primer parámetro
         await apiAuth.registrarCliente(
           idEmpresa,
           clienteData,
           imagenSeleccionada,
         );
 
-        // NOTIFICACIÓN DE ÉXITO
         showNotification(
           "Cuenta creada exitosamente. Redirigiendo...",
           "success",
@@ -176,7 +161,6 @@ const AuthApp = (function () {
           window.location.href = "/login-cliente.html";
         }, 1500);
       } catch (error) {
-        // NOTIFICACIÓN DE ERROR (Reemplaza al alert)
         showNotification(
           error.message || "Error al registrar la cuenta.",
           "error",
