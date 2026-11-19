@@ -1,4 +1,5 @@
-const WS_BASE = "http://localhost:8080/ws-restosoft";
+import { API_BASE, TOKEN } from "../consumo/config.js";
+const WS_BASE = `${API_BASE}/ws-restosoft`;
 let stompClient = null;
 let subscribers = [];
 
@@ -10,8 +11,6 @@ export function connectWebSocket(onMessageCallback) {
     const socket = new SockJS(WS_BASE);
     stompClient = Stomp.over(socket);
     stompClient.debug = null; 
-
-    const TOKEN = localStorage.getItem("TOKEN") || "TU_TOKEN_FALLBACK"; 
 
     const headers = {
         'Authorization': `Bearer ${TOKEN}`
