@@ -1,4 +1,6 @@
 import { api } from '../consumo/apiPlanoMesas.js';
+import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 let state = {
     step: 1,
@@ -511,3 +513,22 @@ document.getElementById("savePlanBtn").addEventListener("click", async () => {
 });
 
 cargarPlanoExistente();
+
+async function inicializarSesionYMenu() {
+    try {
+        const perfilData = await apiProfile.obtenerInfoMe();
+        const rolesPermitidos = ["ADMINISTRADOR"];
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+            window.location.href = `error.html?code=403&msg=${mensaje}`;
+            return;
+        }
+        generarSidebar('sidebar-container', "mesas", "editar_plano", perfilData.rol.nombre);
+    } catch (e) {
+        console.error("No se pudo inicializar el menú:", e);
+        window.location.href = "login.html"; 
+    }
+}
+inicializarSesionYMenu();

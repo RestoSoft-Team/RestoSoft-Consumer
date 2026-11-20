@@ -1,5 +1,6 @@
 import { apiCierre } from '../consumo/apiCierre.js';
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 const EMPRESA_ID = 1;
 const today = new Date().toISOString().split('T')[0];
@@ -356,6 +357,18 @@ btnGuardarBorrador.addEventListener('click', () => {
 async function inicializarCierreCaja() {
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA"];
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+            window.location.href = `error.html?code=403&msg=${mensaje}`;
+            return;
+        }
+        
+        generarSidebar('sidebar-container', "facturacion", "cierre_caja", perfilData.rol.nombre);
+
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);

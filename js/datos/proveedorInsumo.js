@@ -14,32 +14,6 @@ let listaProveedoresModal = [];
 let seleccionInsumo = null;
 let seleccionProveedor = null;
 
-// ── SIDEBAR MOBILE ──
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-menuToggle?.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-    sidebarOverlay.style.opacity = sidebar.classList.contains('open') ? '1' : '0';
-    sidebarOverlay.style.visibility = sidebar.classList.contains('open') ? 'visible' : 'hidden';
-});
-sidebarOverlay?.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-    sidebarOverlay.style.opacity = '0';
-    sidebarOverlay.style.visibility = 'hidden';
-});
-
-function checkMobile() {
-    if (menuToggle) {
-        menuToggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
-        menuToggle.style.alignItems = 'center';
-        menuToggle.style.justifyContent = 'center';
-    }
-}
-window.addEventListener('resize', checkMobile);
-checkMobile();
-
 // ══════════════════════════════════════════════════════════════
 // NOTIFICACIÓN MODERNA
 // ══════════════════════════════════════════════════════════════

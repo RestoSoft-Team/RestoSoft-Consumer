@@ -306,6 +306,18 @@ function mostrarNotificacion(texto, tipo) {
 async function inicializarPropinas() {
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "MESERO"];
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+            window.location.href = `error.html?code=403&msg=${mensaje}`;
+            return;
+        }
+        
+        generarSidebar('sidebar-container', "facturacion", "propinas", perfilData.rol.nombre);
+
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);
