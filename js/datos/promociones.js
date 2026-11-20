@@ -389,6 +389,18 @@ cancelBtn.addEventListener('click', resetForm);
 async function inicializarPromociones() {
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["ADMINISTRADOR"];
+        if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+            const mensaje = encodeURIComponent(
+                "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+            );
+            window.location.href = `error.html?code=403&msg=${mensaje}`;
+            return;
+        }
+        
+        generarSidebar('sidebar-container', "menu", "promociones", perfilData.rol.nombre);
+
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);

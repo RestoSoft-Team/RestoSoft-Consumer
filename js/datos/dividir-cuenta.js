@@ -1,6 +1,7 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
 import { showNotification } from './notificaciones.js';
 import { apiProfile } from '../consumo/apiProfile.js';
+import { generarSidebar } from './create-sidebar.js';
 
 const fmtCOP = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
 
@@ -116,6 +117,18 @@ async function cargarPerfilUsuario() {
     if (!infoPerfilContainer) return;
     try {
         const perfilData = await apiProfile.obtenerInfoMe();
+
+        const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "MESERO"];
+                if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
+                    const mensaje = encodeURIComponent(
+                        "No tienes permisos para acceder a esta página. Si crees que se trata de un error, comunícate con un administrador."
+                    );
+                    window.location.href = `error.html?code=403&msg=${mensaje}`;
+                    return;
+                }
+                
+        generarSidebar('sidebar-container', "mesas", "dividir_cuenta", perfilData.rol.nombre);
+
         const nombreRaw = perfilData?.empresa?.nombre || "";
         if (nombreRaw.trim() !== "" && nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>${nombreRaw.toUpperCase()}</h6>`;
         else if (nombreEmpresaContainer) nombreEmpresaContainer.innerHTML = `<h6>RESTOSOFT</h6>`;

@@ -1,5 +1,5 @@
 import { API_BASE, TOKEN } from "../consumo/config.js";
-const WS_BASE = `${API_BASE}/ws-restosoft`;
+const WS_BASE = `${API_BASE.replace(/\/api\/?$/, "")}/ws-restosoft`;
 let stompClient = null;
 let subscribers = [];
 

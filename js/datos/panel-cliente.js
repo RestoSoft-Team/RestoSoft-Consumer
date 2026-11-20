@@ -151,7 +151,7 @@ const PanelClienteApp = (function () {
     localStorage.removeItem("idEmpresaActual");
     const slug = localStorage.getItem("slugEmpresaActual");
     localStorage.removeItem("slugEmpresaActual");
-    window.location.href = `/${slug}`;
+    window.location.href = slug ? `/${slug}` : "/";
   }
 
   function agruparReservas(raw) {
