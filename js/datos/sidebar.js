@@ -46,6 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.removeItem("restsoft_user");
     localStorage.removeItem("restsoft_empresa");
     localStorage.removeItem("restsoft_rol");
+    localStorage.removeItem("restsoft_menu");
+    localStorage.removeItem("restsoft_cart");
     
     // Limpia cualquier otro dato que tu app guarde
     localStorage.clear(); 

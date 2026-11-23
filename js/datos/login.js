@@ -1,4 +1,4 @@
-import { API_BASE} from "../consumo/config.js";
+import { apiAuthAdmin } from "../consumo/apiAuthAdmin.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
@@ -134,21 +134,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      let data = apiAuthAdmin.login();
 
-      const contentType = response.headers.get("content-type");
-      let data = null;
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        throw new Error("Error del servidor. Intenta nuevamente más tarde.");
-      }
-
-      if (!response.ok) {
+      if (!data) {
         let errorMessage = "Ocurrió un error inesperado al iniciar sesión.";
         if (data.message) {
           errorMessage = data.message;
@@ -187,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         error.message.includes("Failed to fetch")
       ) {
         displayMessage =
-          "No se pudo conectar con el servidor. Verifica tu conexión o que el backend esté activo.";
+          "No se pudo conectar con el servidor. Verifica tu conexión.";
       }
 
       showNotification("Error de autenticación", displayMessage, "error");

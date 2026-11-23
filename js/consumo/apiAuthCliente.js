@@ -1,6 +1,6 @@
 import { API_BASE } from "./config.js";
 
-export const apiAuth = {
+export const apiAuthCliente = {
   login: async (email, password) => {
     const response = await fetch(`${API_BASE}/auth/cliente`, {
       method: "POST",
