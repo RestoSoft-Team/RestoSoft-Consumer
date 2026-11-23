@@ -2,7 +2,7 @@ import { API_BASE } from "./config";
 
 export const apiAuthAdmin = {
 
-   login: async () => {
+   login: async (payload) => {
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

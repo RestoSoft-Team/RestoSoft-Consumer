@@ -1,4 +1,4 @@
-import {apiAuthCliente } from "../consumo/apiAuthClienteCliente.js";
+import {apiAuthCliente } from "../consumo/apiAuthCliente.js";
 import estilosInicio from "../consumo/apiEstilos.js";
 
 const AuthApp = (function () {
