@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      let data = apiAuthAdmin.login();
+      let data = await apiAuthAdmin.login(payload);
 
       if (!data) {
         let errorMessage = "Ocurrió un error inesperado al iniciar sesión.";
