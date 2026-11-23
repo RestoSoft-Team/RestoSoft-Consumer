@@ -1,4 +1,4 @@
-import { apiAuth } from "../consumo/apiAuth.js";
+import {apiAuthCliente } from "../consumo/apiAuthClienteCliente.js";
 import estilosInicio from "../consumo/apiEstilos.js";
 
 const AuthApp = (function () {
@@ -81,7 +81,7 @@ const AuthApp = (function () {
       btn.disabled = true;
 
       try {
-        const res = await apiAuth.login(email, password);
+        const res = await apiAuthCliente.login(email, password);
 
         if (res.token) {
           localStorage.setItem("token_cliente", res.token);
@@ -156,7 +156,7 @@ const AuthApp = (function () {
       btn.disabled = true;
 
       try {
-        await apiAuth.registrarCliente(
+        await apiAuthCliente.registrarCliente(
           idEmpresa,
           clienteData,
           imagenSeleccionada,
