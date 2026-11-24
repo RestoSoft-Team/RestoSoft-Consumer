@@ -1,5 +1,5 @@
 import api from '../consumo/apiClientes.js';
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { generarSidebar } from './create-sidebar.js';
 
 let selectedFile = null;
@@ -121,6 +121,9 @@ document.getElementById('btnGuardar')?.addEventListener('click', async () => {
     }
 
     // 3. Construir el objeto de datos
+    // Body limpio: solo datos funcionales del cliente. La empresa la
+    // resuelve el back con el token y el rol "CLIENTE" también lo
+    // resuelve el back por nombre (usuarioService.crearCliente).
     const clienteData = {
         nombres,
         apellidos,
@@ -129,7 +132,6 @@ document.getElementById('btnGuardar')?.addEventListener('click', async () => {
         fechaNacimiento,
         password: password, // Se envía la contraseña que escribió el usuario
         estado: estado,
-        idRol: 3, // Asegúrate de que 3 sea el ID del rol "Cliente" en tu BD
         eliminarImagen: false
     };
 
@@ -252,7 +254,9 @@ function cargarPerfilUsuario(perfilData) {
 // ── INICIALIZACIÓN ────────────────────────────────────────
 async function init() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
     } catch (profileError) {
         console.warn("No se pudo cargar el perfil:", profileError);

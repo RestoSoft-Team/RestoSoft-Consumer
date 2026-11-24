@@ -522,11 +522,14 @@ document.getElementById("savePlanBtn").addEventListener("click", async () => {
     btn.disabled = true;
 
     try {
-        const zonasRequest = state.zonas.map(z => ({ idTemporal: z.id, nombreZona: z.nombre, planoUrl: state.planoUrl || "diagrama_vectorial.jpg", estado: "LIBRE", idEmpresa: 1 }));
+        // El wizard crea la empresa nueva: el back asigna a zonas y mesas
+        // el id de esa empresa (RegistroWizardServiceImpl). Los ids de
+        // empresa hardcodeados aquí eran basura que el back ignoraba.
+        const zonasRequest = state.zonas.map(z => ({ idTemporal: z.id, nombreZona: z.nombre, planoUrl: state.planoUrl || "diagrama_vectorial.jpg", estado: "LIBRE" }));
         const mesasRequest = state.mesas.map((m, index) => {
             const numMesa = m.numero || (index + 1);
             const numeroFinal = String(numMesa).toUpperCase().startsWith("M-") ? numMesa : "M-" + numMesa;
-            return { numeroMesa: numeroFinal, disponibilidadPersonas: m.disponibilidadPersonas, posicionX: m.x, posicionY: m.y, tipoMesa: m.tipo, estado: m.estado, idempresa: 1, idZona: m.idZona };
+            return { numeroMesa: numeroFinal, disponibilidadPersonas: m.disponibilidadPersonas, posicionX: m.x, posicionY: m.y, tipoMesa: m.tipo, estado: m.estado, idZona: m.idZona };
         });
 
         const payloadFinal = { empresa: state.empresa, admin: state.admin, zonas: zonasRequest, mesas: mesasRequest };

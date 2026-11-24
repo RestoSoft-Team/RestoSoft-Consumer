@@ -1,10 +1,8 @@
 import { apiVentas } from '../consumo/apiVentas.js';
 import { apiPedidoDetalle } from '../consumo/apiDetallePedido.js';
 import { apiPromociones } from '../consumo/apiPromociones.js';
-import { apiProfile } from '../consumo/apiProfile.js';
-import { API_BASE } from "../consumo/config.js";
-
-const EMPRESA_ID = 1;
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
+import { API_BASE, TOKEN } from "../consumo/config.js";
 
 const urlParams = new URLSearchParams(window.location.search);
 const queryPedidoId = urlParams.get('pedidoId');
@@ -38,7 +36,7 @@ async function cargarPedido(id) {
 
         // Cargar todas las mesas de la empresa
         try {
-            const mesas = await apiPedidoDetalle.getMesas(EMPRESA_ID);
+            const mesas = await apiPedidoDetalle.getMesas();
             window.mesasDisponibles = mesas;
         } catch (e) {
             console.error('Error al cargar mesas:', e);
@@ -162,7 +160,7 @@ function renderizarPedido(pedido) {
 
 async function inicializarPedidosActivos() {
     try {
-        const pedidos = await apiPedidoDetalle.getPedidosActivos(EMPRESA_ID);
+        const pedidos = await apiPedidoDetalle.getPedidosActivos();
         if (pedidos.length === 0) {
             pedidoIdSelect.innerHTML = '<option value="">No hay pedidos activos</option>';
             pedidoInfo.textContent = 'No hay pedidos activos disponibles para facturar.';
@@ -224,8 +222,9 @@ document.getElementById('btnGenerarFactura').addEventListener('click', async () 
         return;
     }
 
-    const idUsuario = window.pedidoActual && window.pedidoActual.idusuario ? window.pedidoActual.idusuario.id : 1;
-    const idEmpresa = window.pedidoActual && window.pedidoActual.idempresa ? window.pedidoActual.idempresa.id : 1;
+    // Datos funcionales del pedido que se factura. La empresa se resuelve
+    // en el back a partir del token (JWT); no viaja en el body.
+    const idUsuario = window.pedidoActual && window.pedidoActual.idusuario ? window.pedidoActual.idusuario.id : null;
     const idsMetodosPago = [parseInt(document.getElementById('metodoPago').value)];
     const valorTotal = window.totalFactura;
 
@@ -235,7 +234,6 @@ document.getElementById('btnGenerarFactura').addEventListener('click', async () 
             const updateData = {
                 observaciones: window.pedidoActual.observaciones,
                 idmesa: selectedMesaId,
-                idempresa: idEmpresa,
                 estado: window.pedidoActual.estado,
                 idusuario: idUsuario,
                 fecha: window.pedidoActual.fecha
@@ -243,7 +241,10 @@ document.getElementById('btnGenerarFactura').addEventListener('click', async () 
             
             await fetch(`${API_BASE}/pedido/${idPedido}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${TOKEN}`
+                },
                 body: JSON.stringify(updateData)
             });
         }
@@ -254,7 +255,6 @@ document.getElementById('btnGenerarFactura').addEventListener('click', async () 
             observaciones: `Cliente: ${clienteName}. Factura generada desde pedido ${idPedido}. Propina servicio: $${window.propinaCalculada}`,
             idPedido: idPedido,
             idUsuario: idUsuario,
-            idEmpresa: idEmpresa,
             idMetodosPago: idsMetodosPago,
             fecha: new Date().toISOString()
         };
@@ -333,7 +333,8 @@ function cargarPerfilUsuario(perfilData) {
 
 async function inicializarGenerarFactura() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);

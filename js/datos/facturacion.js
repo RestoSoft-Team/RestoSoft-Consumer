@@ -1,5 +1,5 @@
 import { apiVentas } from '../consumo/apiVentas.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 import { apiPedidoDetalle } from '../consumo/apiDetallePedido.js';
 import { showNotification } from './notificaciones.js';
 import { generarSidebar } from './create-sidebar.js';
@@ -111,7 +111,7 @@ async function mostrarModalDetalle(idVenta, idPedido, cliente, valorTotal, obser
     }
 }
 
-async function cargarDatos(EMPRESA_ID) {
+async function cargarDatos() {
     try {
         const ventas = await apiVentas.listarVentas();
         const totalDia = await apiVentas.obtenerTotalDia(today);
@@ -238,12 +238,13 @@ function cargarPerfilUsuario(perfilData) {
 
 async function inicializarFacturacion() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        // La empresa la resuelve el back con el token (JWT).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
         
-        // Obtenemos el ID de la empresa dinámicamente del TOKEN
-        const EMPRESA_ID = perfilData.empresa.id;
-        await cargarDatos(EMPRESA_ID);
+        await cargarDatos();
         
     } catch (e) {
         console.error('Error loading profile info:', e);

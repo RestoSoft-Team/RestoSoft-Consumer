@@ -14,13 +14,13 @@ function getAuthHeaders(extraHeaders = {}) {
 export const apiReporteEmpleados = {
 
     
-    obtenerAsistencia: async (idEmpresa, inicio, fin) => {
+    obtenerAsistencia: async (inicio, fin) => {
 
         try {
 
+            // La empresa se resuelve en el back a partir del token (JWT).
             const url = `${API_BASE}/reportes/asistencia`
-                + `?idEmpresa=${idEmpresa}`
-                + `&inicio=${inicio}`
+                + `?inicio=${inicio}`
                 + `&fin=${fin}`;
 
             const response = await fetch(url, {

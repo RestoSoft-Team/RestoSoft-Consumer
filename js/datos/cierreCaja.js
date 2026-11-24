@@ -1,8 +1,10 @@
 import { apiCierre } from '../consumo/apiCierre.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 import { generarSidebar } from './create-sidebar.js';
 
-const EMPRESA_ID = 1;
+// Perfil de sesión validado (se asigna en inicializarCierreCaja).
+let perfilSesion = null;
+
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('fechaCierre').value = today;
 
@@ -49,7 +51,7 @@ function actualizarDiferencia() {
 
 async function cargarCierre() {
     try {
-        const resumen = await apiCierre.obtenerResumenDiario(EMPRESA_ID, today);
+        const resumen = await apiCierre.obtenerResumenDiario(today);
         resumenDatos = resumen;
         balanceFinalValor = resumen.balanceFinal;
 
@@ -105,8 +107,9 @@ async function guardarCierre(estado) {
         balanceFinal: resumenDatos.balanceFinal,
         observaciones: observacionesEl.value.trim(),
         estado: estado,
-        idUsuario: 1, 
-        idEmpresa: EMPRESA_ID
+        // Usuario que cierra la caja: el de la sesión (transicional hasta
+        // que el back lo resuelva con el token; hoy lo lee del body).
+        idUsuario: perfilSesion ? perfilSesion.usuario.id : null
     };
 
     try {
@@ -356,7 +359,10 @@ btnGuardarBorrador.addEventListener('click', () => {
 // Cargar datos del perfil y luego iniciar carga de caja
 async function inicializarCierreCaja() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
+        perfilSesion = perfilData;
 
         const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA"];
         if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {

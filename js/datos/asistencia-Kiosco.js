@@ -5,8 +5,23 @@ const titulo = document.getElementById("kioscoTitulo");
 const subtitulo = document.getElementById("kioscoSubtitulo");
 
 const params = new URLSearchParams(window.location.search);
-// Si no viene en la URL, por defecto usamos la empresa 1
-const ID_EMPRESA = parseInt(params.get("empresa")) || 1;
+// La empresa del kiosco llega por la URL del enlace generado desde el
+// panel (kiosco.html?empresa=N). Sin ese parámetro la pantalla no está
+// configurada: no se asume ninguna empresa por defecto y no se envía
+// nada al back.
+const ID_EMPRESA = parseInt(params.get("empresa"), 10);
+const kioscoConfigurado = Number.isInteger(ID_EMPRESA) && ID_EMPRESA > 0;
+
+function mostrarKioscoNoConfigurado() {
+    document.body.classList.add("error");
+    titulo.textContent = "Kiosco no configurado";
+    subtitulo.textContent = "Falta el parámetro de empresa en el enlace (?empresa=N)";
+    input.readOnly = true;
+}
+
+if (!kioscoConfigurado) {
+    mostrarKioscoNoConfigurado();
+}
 
 function mantenerFoco() { 
     input.focus(); 
@@ -43,6 +58,10 @@ function mostrarResultado(mensaje, tipo) {
 }
 
 async function procesarCodigo(codigo) {
+    if (!kioscoConfigurado) {
+        mostrarKioscoNoConfigurado();
+        return;
+    }
     try {
         // Mostrar estado de procesando inmediatamente
         document.body.classList.add("procesando");

@@ -4,6 +4,7 @@ export const apiReserva = {
   listarPorReservaId: async (idReserva) => {
     const response = await fetch(
       `${API_BASE}/reserva-mesa/reserva/${idReserva}`,
+      { headers: { Authorization: `Bearer ${TOKEN}` } },
     );
 
     if (!response.ok) {
@@ -42,7 +43,9 @@ export const apiReserva = {
   },
 
   listarPorMesaId: async (idMesa) => {
-    const response = await fetch(`${API_BASE}/reserva-mesa/mesa/${idMesa}`);
+    const response = await fetch(`${API_BASE}/reserva-mesa/mesa/${idMesa}`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+    });
 
     if (!response.ok) {
       throw new Error("Error al listar reservas de la mesa");
@@ -97,6 +100,7 @@ export const apiReserva = {
   eliminarReserva: async (idReserva) => {
     const response = await fetch(`${API_BASE}/reserva/${idReserva}`, {
       method: "DELETE",
+      headers: { Authorization: `Bearer ${TOKEN}` },
     });
 
     return response.ok;
@@ -107,6 +111,7 @@ export const apiReserva = {
       `${API_BASE}/reserva-mesa/reserva/${idReserva}/mesa/${idMesa}`,
       {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${TOKEN}` },
       },
     );
 
@@ -118,6 +123,7 @@ export const apiReserva = {
       `${API_BASE}/reserva-mesa/reserva/${idReserva}`,
       {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${TOKEN}` },
       },
     );
 

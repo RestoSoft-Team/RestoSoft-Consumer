@@ -9,7 +9,6 @@ import estilosInicio from "../consumo/apiEstilos.js";
 const PanelClienteApp = (function () {
   let state = {
     perfil: null,
-    idEmpresa: null,
     mesas: [],
     zonas: [],
     reservasAgrupadas: [],
@@ -69,11 +68,19 @@ const PanelClienteApp = (function () {
 
   async function cargarDatosIniciales() {
     try {
-      const slug = localStorage.getItem("slugEmpresaActual") || "restosoft";
+      // Sin slug guardado no hay sesión de empresa: limpiamos la sesión
+      // del cliente y mandamos a la página de error, que devuelve a "/"
+      // para iniciar desde el landing de la empresa correcta.
+      const slug = localStorage.getItem("slugEmpresaActual");
+      if (!slug) {
+        localStorage.removeItem("token_cliente");
+        localStorage.removeItem("idEmpresaActual");
+        window.location.href = "no-encontrado.html";
+        return;
+      }
       const configData = await ApiCliente.obtenerEmpresa(slug);
 
       if (configData) {
-        state.idEmpresa = configData.idEmpresa;
         dom.topbarNombre.textContent =
           configData.brandingNombre || "Restaurante";
         dom.topbarLogo.src =
@@ -88,8 +95,8 @@ const PanelClienteApp = (function () {
         await Promise.all([
           apiProfile.obtenerInfoMe(),
           apiReservaCliente.listarMisReservas(),
-          apiMesas.obtenerMesas(state.idEmpresa),
-          apiMesas.obtenerZonas(state.idEmpresa),
+          apiMesas.obtenerMesas(),
+          apiMesas.obtenerZonas(),
         ]);
 
       state.perfil = perfilData;
@@ -446,7 +453,6 @@ const PanelClienteApp = (function () {
       hora: dom.horaReserva.value + ":00",
       idusuario: state.perfil.usuario.id,
       cantidadPersonas: state.cantidadPersonasCalculada,
-      idempresa: state.idEmpresa,
       estado: estadoReserva,
     };
 
@@ -628,7 +634,6 @@ const PanelClienteApp = (function () {
           hora: r.hora,
           idusuario: state.perfil.usuario.id,
           cantidadPersonas: r.cantidadPersonas,
-          idempresa: state.idEmpresa,
           estado: "CONFIRMADA",
         };
 
@@ -689,7 +694,6 @@ const PanelClienteApp = (function () {
           hora: r.hora,
           idusuario: state.perfil.usuario.id,
           cantidadPersonas: r.cantidadPersonas,
-          idempresa: state.idEmpresa,
           estado: "CANCELADA",
         };
 

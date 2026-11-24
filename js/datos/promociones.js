@@ -1,6 +1,6 @@
 import { listarPromociones, obtenerPromocion, crearPromocion, actualizarPromocion, eliminarPromocion } from '../consumo/apiPromociones.js';
 import { listarPlatos } from '../consumo/apiPlatos.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 
 const container = document.getElementById('promocionesContainer');
 const form = document.getElementById('promoForm');
@@ -16,12 +16,10 @@ const submitBtn = document.getElementById('submitBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const formTitle = document.getElementById('formTitle');
 
-const EMPRESA_ID = 1;
-
 // Cargar platos para el select múltiple
 async function cargarPlatosSelect() {
     try {
-        const platos = await listarPlatos(EMPRESA_ID);
+        const platos = await listarPlatos();
         platosSelect.innerHTML = platos.map(p =>
             `<option value="${p.id}">${p.nombre}</option>`
         ).join('');
@@ -34,7 +32,7 @@ async function cargarPlatosSelect() {
 // Cargar promociones
 async function cargarPromociones() {
     try {
-        const promos = await listarPromociones(EMPRESA_ID);
+        const promos = await listarPromociones();
         if (promos.length === 0) {
             container.innerHTML = '<p class="text-muted">No hay promociones registradas.</p>';
             return;
@@ -357,7 +355,6 @@ form.addEventListener('submit', async (e) => {
         nombre: nombreInput.value.trim(),
         descripcion: descripcionInput.value.trim(),
         valorDescuento: parseFloat(valorInput.value),
-        idEmpresa: EMPRESA_ID,
         fechaInicio: fechaInicio.value,
         fechaFin: fechaFin.value,
         estado: estadoSelect.value,
@@ -388,7 +385,9 @@ cancelBtn.addEventListener('click', resetForm);
 
 async function inicializarPromociones() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
 
         const rolesPermitidos = ["ADMINISTRADOR"];
         if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {

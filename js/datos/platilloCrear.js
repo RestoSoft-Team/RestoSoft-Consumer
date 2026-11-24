@@ -1,10 +1,8 @@
 import { apiPlato } from '../consumo/apiPlatos.js';
 import { apiCategoria } from '../consumo/apiCategorias.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 import { showNotification } from './notificaciones.js';
 import { generarSidebar } from './create-sidebar.js';
-
-const EMPRESA_ID = 1;
 
 // 👇 LEEMOS Y BORRAMOS INMEDIATAMENTE
 // Si existe, lo guardamos en la variable y lo eliminamos del sessionStorage.
@@ -110,7 +108,6 @@ dom.form.addEventListener('submit', async (e) => {
         descripcion: dom.descripcion.value.trim(),
         precio: parseFloat(dom.precio.value),
         idcategoria: parseInt(dom.categoria.value),
-        idempresa: EMPRESA_ID,
         estado: 'ACTIVO',
         representativo: false
     };
@@ -200,7 +197,9 @@ async function cargarPerfilUsuario(perfilData) {
 
 async function inicializar() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);

@@ -1,15 +1,12 @@
 ﻿import { API_BASE, TOKEN } from "../consumo/config.js";
 
-const getHeaders = (empresaId) => {
-    return {
-        'idempresa': empresaId.toString(),
-        'Authorization': `Bearer ${TOKEN}`
-    };
-};
+// La empresa se resuelve en el back a partir del token (JWT).
+// Ninguna petición de promociones envía identidad de empresa.
+const authHeader = { 'Authorization': `Bearer ${TOKEN}` };
 
-export async function listarPromociones(empresaId = 1) {
+export async function listarPromociones() {
     const response = await fetch(`${API_BASE}/promociones`, {
-        headers: getHeaders(empresaId)
+        headers: authHeader
     });
     return response.ok ? await response.json() : [];
 }
@@ -31,9 +28,8 @@ export async function obtenerPromocion(id) {
 export async function crearPromocion(data) {
     const response = await fetch(`${API_BASE}/promociones`, {
         method: 'POST',
-        headers: { 
+        headers: {
             'Content-Type': 'application/json',
-            'idempresa': data.idEmpresa ? data.idEmpresa.toString() : '1',
             'Authorization': `Bearer ${TOKEN}`
         },
         body: JSON.stringify(data)
@@ -44,9 +40,8 @@ export async function crearPromocion(data) {
 export async function actualizarPromocion(id, data) {
     const response = await fetch(`${API_BASE}/promociones/${id}`, {
         method: 'PUT',
-        headers: { 
+        headers: {
             'Content-Type': 'application/json',
-            'idempresa': data.idEmpresa ? data.idEmpresa.toString() : '1',
             'Authorization': `Bearer ${TOKEN}`
         },
         body: JSON.stringify(data)

@@ -1,10 +1,8 @@
 import { apiHorarios }  from "../consumo/apiHorarios.js";
 import { apiEmpleados } from "../consumo/apiEmpleados.js";
 // --- AGREGADO: Importaciones para perfil y sidebar ---
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { generarSidebar } from './create-sidebar.js';
-
-const ID_EMPRESA = 1;
 
 const DIAS = ["LUNES","MARTES","MIERCOLES","JUEVES","VIERNES","SABADO","DOMINGO"];
 const DIAS_LABEL = { LUNES:"Lun", MARTES:"Mar", MIERCOLES:"Mié", JUEVES:"Jue", VIERNES:"Vie", SABADO:"Sáb", DOMINGO:"Dom" };
@@ -62,7 +60,7 @@ function mostrarLoader(v) { if (dom.loader) dom.loader.style.display = v ? "flex
 
 // --- AGREGADO: Función para cargar perfil, validar rol y generar sidebar ---
 function cargarPerfilUsuario(perfilData) {
-    const rolesPermitidos = ["ADMINISTRADOR", "GERENTE"]; 
+    const rolesPermitidos = ["ADMINISTRADOR"];
 
     if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
         console.error("Acceso no autorizado");
@@ -228,7 +226,7 @@ async function consultar() {
     if (!idUsuario) { showNotification("Selecciona un empleado.", "warning"); return; }
     mostrarLoader(true);
     try {
-        const data = await apiHorarios.listar(parseInt(idUsuario), ID_EMPRESA);
+        const data = await apiHorarios.listar(parseInt(idUsuario));
         state.horarios = data;
         renderTabla(data);
     } catch (e) {
@@ -279,7 +277,6 @@ async function guardarHorario() {
 
     const data = {
         idusuario:    idUsuario,
-        idempresa:    ID_EMPRESA,
         horaEntrada:  horaEntrada + ":00",
         horaSalida:   horaSalida  + ":00",
         diaSemana:    dia
@@ -342,8 +339,9 @@ async function confirmarEliminar() {
 document.addEventListener("DOMContentLoaded", async () => {
     mostrarLoader(true);
     try {
-        // --- AGREGADO: Obtener perfil antes de cargar datos del módulo ---
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // --- AGREGADO: Obtener perfil (único origen: sesionContext) ---
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
 
         const empleados = await apiEmpleados.listar();

@@ -41,16 +41,17 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.style.opacity = "0.5";
     logoutBtn.style.pointerEvents = "none"; // Evita doble clic
 
-    // Limpiar todo el localStorage de RestSoft
+    // Limpiar SOLO las claves de la sesión del panel (admin).
+    // NO usar localStorage.clear(): borraba también la sesión del
+    // cliente (token_cliente, slugEmpresaActual, idEmpresaActual)
+    // y otros datos de este mismo navegador.
     localStorage.removeItem("token");
     localStorage.removeItem("restsoft_user");
     localStorage.removeItem("restsoft_empresa");
     localStorage.removeItem("restsoft_rol");
     localStorage.removeItem("restsoft_menu");
     localStorage.removeItem("restsoft_cart");
-    
-    // Limpia cualquier otro dato que tu app guarde
-    localStorage.clear(); 
+    localStorage.removeItem("perfilData");
 
     // Redirección inmediata al login
     window.location.href = "index.html"; // Cambia esto si tu login se llama distinto

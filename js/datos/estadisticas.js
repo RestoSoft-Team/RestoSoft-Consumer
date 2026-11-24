@@ -1,5 +1,5 @@
 import { apiPedidoDetalle as api } from '../consumo/apiDetallePedido.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 import { connectWebSocket } from '../consumo/websocket.js';
 import { showNotification } from './notificaciones.js';
 import { generarSidebar } from './create-sidebar.js';
@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     setFechasDefecto('month');
     
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         if (perfilData?.empresa?.nombre) {
             nombreEmpresa = perfilData.empresa.nombre.toUpperCase();
             const empTitle = document.getElementById('nombreEmpresa');

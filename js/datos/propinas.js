@@ -1,5 +1,5 @@
 import { listarVentas } from 'js/datos/ventas.js';
-import { apiProfile } from 'js/consumo/apiProfile.js';
+import { obtenerPerfilSesion } from 'js/consumo/sesionContext.js';
 import { API_BASE, TOKEN } from "../consumo/config.js";
 
 const tbody = document.getElementById('tbodyPropinas');
@@ -78,7 +78,7 @@ function cargarPerfilUsuario(perfilData) {
 
 async function cargarPropinas() {
     try {
-        const ventas = await listarVentas(EMPRESA_ID);
+        const ventas = await listarVentas();
         window.ventasDelDia = ventas; // Guardar ventas para cálculo por desempeño
         
         let totalEfectivo = 0;
@@ -147,8 +147,7 @@ async function getEmpleados() {
     try {
         const response = await fetch(`${API_BASE}/usuarios?rol=MESERO`, {
             headers: {
-                'Authorization': `Bearer ${TOKEN}`,
-                'idempresa': EMPRESA_ID.toString()
+                'Authorization': `Bearer ${TOKEN}`
             }
         });
         return response.ok ? await response.json() : [];
@@ -305,7 +304,9 @@ function mostrarNotificacion(texto, tipo) {
 
 async function inicializarPropinas() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
 
         const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "MESERO"];
         if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
