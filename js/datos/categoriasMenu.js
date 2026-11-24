@@ -1,5 +1,5 @@
 import { apiCategoria } from '../consumo/apiCategorias.js';
-import { apiProfile } from '../consumo/apiProfile.js';
+import { obtenerPerfilSesion } from '../consumo/sesionContext.js';
 import { showNotification } from './notificaciones.js';
 import { generarSidebar } from './create-sidebar.js';
 
@@ -110,7 +110,8 @@ dom.form.addEventListener('submit', async (e) => {
         showNotification('Campo vacío', 'El nombre de la categoría es obligatorio.', 'warning', 'fa-triangle-exclamation');
         return;
     }
-    const data = { nombre: nombre, idEmpresa: 1 }; 
+    // La empresa la resuelve el back a partir del token (JWT).
+    const data = { nombre: nombre };
 
     try {
         if (id) {
@@ -176,7 +177,9 @@ async function cargarPerfilUsuario(perfilData) {
 
 async function inicializar() {
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // Perfil con validación de sesión (único origen: sesionContext).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
     } catch (e) {
         console.error('Error loading profile info:', e);

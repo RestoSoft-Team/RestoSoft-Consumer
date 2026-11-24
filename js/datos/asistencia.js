@@ -1,10 +1,8 @@
 import { apiAsistencia } from "../consumo/apiAsistencia.js";
 import { apiEmpleados }  from "../consumo/apiEmpleados.js";
 // --- AGREGADO: Importaciones para perfil y sidebar ---
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { generarSidebar } from './create-sidebar.js';
-
-const ID_EMPRESA = 1;
 
 // ─── Estado ───
 const state = {
@@ -63,7 +61,7 @@ function mostrarLoader(v) {
 // --- AGREGADO: Función para cargar perfil, validar rol y generar sidebar ---
 function cargarPerfilUsuario(perfilData) {
     // 1. Definir los roles permitidos para este módulo
-    const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "GERENTE"]; 
+    const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA"];
 
     if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
         console.error("Acceso no autorizado");
@@ -213,14 +211,14 @@ async function consultarHistorial() {
     
     mostrarLoader(true);
     try {
-        const data = await apiAsistencia.listar(parseInt(idUsuario), ID_EMPRESA);
+        const data = await apiAsistencia.listar(parseInt(idUsuario));
         state.historial = data;
         renderTabla(data);
         
         clearInterval(intervaloRefresco); 
         intervaloRefresco = setInterval(async () => {
             if (!dom.modalEntrada.classList.contains('show') && !dom.modalSalida.classList.contains('show')) {
-                const newData = await apiAsistencia.listar(parseInt(idUsuario), ID_EMPRESA);
+                const newData = await apiAsistencia.listar(parseInt(idUsuario));
                 state.historial = newData;
                 renderTabla(newData);
             }
@@ -244,7 +242,7 @@ async function confirmarEntrada() {
     }
     dom.btnConfirmarEntrada.disabled = true;
     try {
-        await apiAsistencia.registrarEntrada(idUsuario, ID_EMPRESA);
+        await apiAsistencia.registrarEntrada(idUsuario);
         showNotification("Entrada registrada correctamente.", "success");
         cerrarModalEntrada();
         if (dom.selectEmpleado.value === String(idUsuario)) {
@@ -389,8 +387,9 @@ function exportarPDFAsistencia() {
 document.addEventListener("DOMContentLoaded", async () => {
     mostrarLoader(true);
     try {
-        // --- AGREGADO: Obtener perfil antes de cargar datos del módulo ---
-        const perfilData = await apiProfile.obtenerInfoMe();
+        // --- AGREGADO: Obtener perfil (único origen: sesionContext) ---
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
         cargarPerfilUsuario(perfilData);
 
         const empleados = await apiEmpleados.listar();

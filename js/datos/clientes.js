@@ -215,14 +215,15 @@ document.getElementById('formEditarCliente').addEventListener('submit', async fu
     e.preventDefault();
     const id = document.getElementById('editId').value;
 
+    // Body limpio: el back resuelve el rol de cliente por nombre y la
+    // empresa por token; el idRol hardcodeado ya no viaja en el body.
     const datosCliente = {
         nombres: document.getElementById('editNombres').value.trim(),
         apellidos: document.getElementById('editApellidos').value.trim(),
         email: document.getElementById('editEmail').value.trim(),
         telefono: document.getElementById('editTelefono').value.trim(),
         fechaNacimiento: document.getElementById('editFechaNacimiento').value,
-        estado: document.getElementById('editEstado').checked,
-        idRol: 3 // <--- AGREGA ESTA LÍNEA (Asegúrate de que 3 sea el ID del rol Cliente)
+        estado: document.getElementById('editEstado').checked
     };
 
     // Lógica de la contraseña:

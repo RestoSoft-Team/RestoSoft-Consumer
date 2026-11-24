@@ -471,13 +471,14 @@ document.getElementById("savePlanBtn").addEventListener("click", async () => {
     btn.disabled = true;
 
     try {
+        // La empresa la resuelve el back a partir del token (JWT);
+        // los ids de empresa (hardcodeados en 0) ya no viajan en el body.
         const zonasRequest = state.zonas.map(z => ({
             id: z.idDB,
             idTemporal: z.idDB ? null : z.id,
             nombreZona: z.nombre,
             planoUrl: state.planoUrl || "diagrama_vectorial.jpg",
-            estado: "DISPONIBLE",
-            idEmpresa: 0 
+            estado: "DISPONIBLE"
         }));
         
         const mesasRequest = state.mesas.map(m => ({
@@ -488,12 +489,10 @@ document.getElementById("savePlanBtn").addEventListener("click", async () => {
             posicionY: m.y,
             tipoMesa: m.tipo,
             estado: m.estado,
-            idempresa: 0, 
             idZona: m.idZona 
         }));
 
         const payloadFinal = { 
-            idEmpresa: 0, 
             zonas: zonasRequest, 
             mesas: mesasRequest 
         };

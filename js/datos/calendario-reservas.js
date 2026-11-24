@@ -1,9 +1,7 @@
 import { apiReserva } from "../consumo/apiReservas.js";
 import { api as apiMesas } from "../consumo/apiMesas.js";
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { generarSidebar } from "./create-sidebar.js";
-
-const ID_EMPRESA = 1;
 
 const state = {
   mesas: [],
@@ -76,11 +74,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function cargarDatosEstaticos() {
   try {
-    const [mesasData, zonasData, clientesData, perfilData] = await Promise.all([
-      apiMesas.obtenerMesas(ID_EMPRESA),
-      apiMesas.obtenerZonas(ID_EMPRESA),
+    // Perfil con validación de sesión (único origen: sesionContext).
+    const perfilData = await obtenerPerfilSesion();
+    if (!perfilData) return;
+
+    const [mesasData, zonasData, clientesData] = await Promise.all([
+      apiMesas.obtenerMesas(),
+      apiMesas.obtenerZonas(),
       apiReserva.listarClientes(),
-      apiProfile.obtenerInfoMe(),
     ]);
 
     state.mesas = mesasData;
@@ -100,7 +101,7 @@ async function cargarDatosEstaticos() {
 
 async function cargarReservasGeneral() {
   try {
-    const rawData = await apiReserva.listarPorEmpresaGeneral(ID_EMPRESA);
+    const rawData = await apiReserva.listarPorEmpresaGeneral();
     state.reservasGeneralData = agruparReservas(rawData);
   } catch (error) {
     console.error("Error crítico al cargar reservas generales:", error);
@@ -823,7 +824,6 @@ async function procesarGuardado() {
       (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
     idusuario: parseInt(state.clienteSeleccionado.id),
     cantidadPersonas: state.cantidadPersonasCalculada,
-    idempresa: ID_EMPRESA,
     estado:
       state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
   };

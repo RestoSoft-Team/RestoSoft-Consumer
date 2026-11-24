@@ -1,6 +1,6 @@
 import { apiPedidoDetalle as api } from "../consumo/apiDetallePedido.js";
 import { showNotification } from "./notificaciones.js";
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { API_BASE, TOKEN } from "../consumo/config.js";
 import { generarSidebar } from "./create-sidebar.js";
 
@@ -119,7 +119,12 @@ async function init() {
     }
 
     try {
-      const perfilData = await apiProfile.obtenerInfoMe();
+      // Perfil con validación de sesión (único origen: sesionContext).
+      const perfilData = await obtenerPerfilSesion();
+      if (!perfilData) return;
+
+      // Datos que exige ePayco en su confirmación (webhook público sin
+      // token): la empresa y el usuario viajan como parámetros del pago.
       const idEmpresa = perfilData.empresa.id;
       const idUsuario = perfilData.usuario.id;
 
@@ -360,7 +365,9 @@ async function cargarPerfilUsuario() {
   const infoPerfilContainer = document.getElementById("infoPerfilContainer");
   if (!infoPerfilContainer) return;
   try {
-    const perfilData = await apiProfile.obtenerInfoMe();
+    // Perfil con validación de sesión (único origen: sesionContext).
+    const perfilData = await obtenerPerfilSesion();
+    if (!perfilData) return;
 
     const rolesPermitidos = ["ADMINISTRADOR", "RECEPCIONISTA", "MESERO"];
         if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {

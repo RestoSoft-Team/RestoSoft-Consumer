@@ -1,9 +1,7 @@
 import { apiReserva } from "../consumo/apiReservas.js";
 import { api as apiMesas } from "../consumo/apiMesas.js";
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 import { generarSidebar } from './create-sidebar.js';
-
-const ID_EMPRESA = 1;
 
 const state = {
   mesas: [],
@@ -242,13 +240,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function cargarDatosIniciales() {
   try {
-    const [mesasData, zonasData, clientesData, reservasDiariasRaw, perfilData] =
+    // Perfil con validación de sesión (único origen: sesionContext).
+    const perfilData = await obtenerPerfilSesion();
+    if (!perfilData) return;
+
+    const [mesasData, zonasData, clientesData, reservasDiariasRaw] =
       await Promise.all([
-        apiMesas.obtenerMesas(ID_EMPRESA),
-        apiMesas.obtenerZonas(ID_EMPRESA),
+        apiMesas.obtenerMesas(),
+        apiMesas.obtenerZonas(),
         apiReserva.listarClientes(),
-        apiReserva.listarPorEmpresaDiario(ID_EMPRESA),
-        apiProfile.obtenerInfoMe(),
+        apiReserva.listarPorEmpresaDiario(),
       ]);
 
     state.mesas = mesasData;
@@ -734,7 +735,6 @@ async function procesarGuardado() {
       (dom.horaReserva.value.split(":").length === 2 ? ":00" : ""),
     idusuario: parseInt(state.clienteSeleccionado.id),
     cantidadPersonas: state.cantidadPersonasCalculada,
-    idempresa: ID_EMPRESA,
     estado:
       state.modoActivo === "EDITAR" ? dom.estadoReserva.value : "PENDIENTE",
   };
@@ -756,7 +756,7 @@ async function procesarGuardado() {
     }
 
     const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
+      await apiReserva.listarPorEmpresaDiario();
     agruparReservas(reservasDiariasRaw);
     renderListaReservas();
     resetearFormulario();
@@ -779,7 +779,7 @@ async function procesarEliminado() {
   try {
     await apiReserva.eliminarReserva(state.reservaEnEdicion);
     const reservasDiariasRaw =
-      await apiReserva.listarPorEmpresaDiario(ID_EMPRESA);
+      await apiReserva.listarPorEmpresaDiario();
     agruparReservas(reservasDiariasRaw);
     renderListaReservas();
 

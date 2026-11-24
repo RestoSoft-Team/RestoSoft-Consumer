@@ -13,13 +13,15 @@ function getAuthHeaders(extraHeaders = {}) {
 export const apiAsistencia = {
 
     /**
-     * Registra la entrada de un empleado.
+     * Registra la entrada del empleado seleccionado en el dropdown.
+     * La empresa se resuelve en el back a partir del token (JWT).
+     * El body solo lleva el dato funcional: el usuario del turno.
      */
-    registrarEntrada: async (idUsuario, idEmpresa) => {
+    registrarEntrada: async (idUsuario) => {
         const response = await fetch(`${API_BASE}/asistencias/entrada`, {
             method: "POST",
             headers: getAuthHeaders({ "Content-Type": "application/json" }),
-            body: JSON.stringify({ idusuario: idUsuario, idempresa: idEmpresa })
+            body: JSON.stringify({ idusuario: idUsuario })
         });
         if (!response.ok) {
             const err = await response.json().catch(() => ({}));
@@ -48,14 +50,14 @@ export const apiAsistencia = {
     },
 
     /**
-     * Lista el historial de asistencia de un empleado.
-     * GET /api/asistencias/usuario/{idUsuario}/empresa/{idEmpresa}
+     * Lista el historial de asistencia del empleado seleccionado.
+     * La empresa se resuelve en el back a partir del token (JWT).
+     * GET /api/asistencias/usuario/{idUsuario}
      */
-    listar: async (idUsuario, idEmpresa) => {
+    listar: async (idUsuario) => {
         try {
-            // --- CORRECCIÓN DE LA URL AQUÍ ---
             const response = await fetch(
-                `${API_BASE}/asistencias/usuario/${idUsuario}/empresa/${idEmpresa}`,
+                `${API_BASE}/asistencias/usuario/${idUsuario}`,
                 {
                     method: "GET",
                     headers: getAuthHeaders()
@@ -70,7 +72,10 @@ export const apiAsistencia = {
     },
 
     /**
-     * Marca asistencia mediante lector de código de barras.
+     * Marca asistencia mediante lector de código de barras (kiosco público).
+     * La pantalla del kiosco no tiene sesión: la empresa llega por la URL
+     * del enlace (?empresa=N) hasta que el back resuelva la empresa del
+     * usuario a partir del propio carnet (tarea pendiente de back).
      */
     marcarPorCodigo: async (codigoBarras, idEmpresa) => {
         const response = await fetch(`${API_BASE}/asistencias/marcar`, {

@@ -1,9 +1,9 @@
 import { apiReporteEmpleados } from "../consumo/apiReporteEmpleado.js";
-import { apiProfile } from "../consumo/apiProfile.js";
+import { obtenerPerfilSesion } from "../consumo/sesionContext.js";
 // --- AGREGADO: Importación para generar sidebar dinámico ---
 import { generarSidebar } from './create-sidebar.js';
 
-let ID_EMPRESA = null;
+let perfilSesion = null;
 
 const state = {
     datos: [],          
@@ -62,7 +62,7 @@ function mostrarLoader(v) {
 // --- MODIFICADO: Se añadió validación de rol y generación de sidebar ---
 function cargarPerfilUsuario(perfilData) {
   // 1. Validar rol permitido
-  const rolesPermitidos = ["ADMINISTRADOR", "GERENTE"];
+  const rolesPermitidos = ["ADMINISTRADOR"];
   if (!rolesPermitidos.includes(perfilData?.rol?.nombre)) {
       console.error("Acceso no autorizado");
       const codigo = "403";
@@ -133,14 +133,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     dom.btnExportarPDF.disabled = true; 
 
     try {
-        const perfilData = await apiProfile.obtenerInfoMe();
-        const empresaData = perfilData?.empresa || perfilData?.data?.empresa;
+        // Perfil con validación de sesión (único origen: sesionContext).
+        // La empresa del reporte la resuelve el back con el token (JWT).
+        const perfilData = await obtenerPerfilSesion();
+        if (!perfilData) return;
 
-        ID_EMPRESA = empresaData?.id ?? null;
-
-        if (!ID_EMPRESA) {
-            throw new Error("No se pudo determinar la empresa del usuario.");
-        }
+        perfilSesion = perfilData;
 
         // Se carga el perfil y se valida el acceso
         cargarPerfilUsuario(perfilData);
@@ -167,8 +165,8 @@ function formatearFecha(date) {
 }
 
 async function generarReporte() {
-    if (!ID_EMPRESA) {
-        showNotification("No se pudo determinar tu empresa. Recarga la página.", "error");
+    if (!perfilSesion) {
+        showNotification("No se pudo validar tu sesión. Recarga la página.", "error");
         return;
     }
 
@@ -190,7 +188,7 @@ async function generarReporte() {
     mostrarLoader(true);
 
     try {
-        const datos = await apiReporteEmpleados.obtenerAsistencia(ID_EMPRESA, inicio, fin);
+        const datos = await apiReporteEmpleados.obtenerAsistencia(inicio, fin);
         state.datos = datos;
 
         if (!datos || datos.length === 0) {

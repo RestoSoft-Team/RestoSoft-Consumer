@@ -13,13 +13,14 @@ function getAuthHeaders(extraHeaders = {}) {
 export const apiHorarios = {
 
     /**
-     * Lista los horarios de un empleado en una empresa.
-     * GET /api/horarios/usuario/{idUsuario}/empresa/{idEmpresa}
+     * Lista los horarios del empleado seleccionado en el dropdown.
+     * La empresa se resuelve en el back a partir del token (JWT).
+     * GET /api/horarios/usuario/{idUsuario}
      */
-    listar: async (idUsuario, idEmpresa) => {
+    listar: async (idUsuario) => {
         try {
             const r = await fetch(
-                `${API_BASE}/horarios/usuario/${idUsuario}/empresa/${idEmpresa}`,
+                `${API_BASE}/horarios/usuario/${idUsuario}`,
                 {
                     headers: getAuthHeaders()
                 }
